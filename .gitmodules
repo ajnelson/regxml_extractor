@@ -1,3 +1,6 @@
 [submodule "deps/fiwalk"]
 	path = deps/fiwalk
 	url = https://github.com/sleuthkit/sleuthkit.git
+[submodule "deps/hivex"]
+	path = deps/hivex
+	url = https://github.com/ajnelson/hivex.git
