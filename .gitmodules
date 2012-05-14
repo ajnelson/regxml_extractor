@@ -1,0 +1,3 @@
+[submodule "deps/fiwalk"]
+	path = deps/fiwalk
+	url = https://github.com/sleuthkit/sleuthkit.git
