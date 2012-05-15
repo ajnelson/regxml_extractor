@@ -4,7 +4,7 @@ This script converts RegXML files from disk sequences to a single
 SQLite database of cells.  For usage, see usage().
 """
 
-__version__ == "0.1.0"
+__version__ = "0.1.0"
 
 import dfxml, os, sys, sqlite3
 
