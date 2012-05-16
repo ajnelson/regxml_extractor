@@ -4,6 +4,7 @@
 AC_PREREQ(2.61)
 AC_INIT(regxmlify, 0.1.0, ajnelson@cs.ucsc.edu)
 AM_INIT_AUTOMAKE(regxmlify, 0.1.0)
+AC_OUTPUT(Makefile python/Makefile scripts/Makefile)
 
 # Checks for programs.
 
