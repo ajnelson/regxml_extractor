@@ -1,2 +1,2 @@
 SUBDIRS = scripts
-EXTRA_DIST = bootstrap.sh README.md
+EXTRA_DIST = bootstrap.sh
