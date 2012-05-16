@@ -9,10 +9,19 @@ AC_OUTPUT(Makefile scripts/Makefile)
 # Checks for programs.
 
 AC_CHECK_PROG(HAVE_FIWALK,fiwalk,yes)
+if test "$HAVE_FIWALK" != "yes"; then
+  AC_MSG_ERROR([fiwalk not found; refer to README for compilation notes.])
+fi
 
 AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
+if test "$HAVE_HIVEXML" != "yes"; then
+  AC_MSG_ERROR([hivexml not found; refer to README for compilation notes.])
+fi
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
+if test "$HAVE_XMLLINT" != "yes"; then
+  AC_MSG_ERROR([xmllint not found; the package for libxml2 includes this.])
+fi
 
 # Checks for libraries.
 
