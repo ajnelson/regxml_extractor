@@ -6,7 +6,9 @@ AC_INIT(regxmlify, 0.1.0, ajnelson@cs.ucsc.edu)
 
 # Checks for programs.
 
-AC_CHECK_PROGS(CANRUN,fiwalk hivexml)
+AC_CHECK_PROG(HAVE_FIWALK,fiwalk,yes)
+
+AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
 
 # Checks for libraries.
 
