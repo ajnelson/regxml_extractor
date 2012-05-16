@@ -1,1 +1,1 @@
-bin_SCRIPTS = regxmlify.sh
+bin_SCRIPTS = regxmlify_image.sh
