@@ -12,7 +12,7 @@ if test "x$(which extract_hives.py)" = "x" ; then
 fi
 
 #Does it look like we ran before?
-if [ $(ls *hive | wc -l) -gt 0 ]; then
+if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
   echo "Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive"
 else
   #Invoke extraction script
