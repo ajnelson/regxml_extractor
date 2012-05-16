@@ -1,2 +1,2 @@
-SUBDIRS = python scripts
-EXTRA_DIST = bootstrap.sh
+SUBDIRS = scripts
+EXTRA_DIST = bootstrap.sh README.md

@@ -1,2 +1,2 @@
-bin_SCRIPTS = regxmlify_image.sh
-EXTRA_DIST = regxmlify_image.sh
+bin_SCRIPTS = extract_hives.py make_database.py regxmlify_image.sh
+EXTRA_DIST = extract_hives.py make_database.py regxmlify_image.sh
