@@ -8,14 +8,17 @@ AC_OUTPUT(Makefile scripts/Makefile)
 
 # Checks for programs.
 
+AC_CHECK_PROG(HAVE_ICAT,icat,yes)
+if test "$HAVE_ICAT" != "yes"; then
+  AC_MSG_ERROR([icat not found; refer to README for SleuthKit compilation notes.])
 AC_CHECK_PROG(HAVE_FIWALK,fiwalk,yes)
 if test "$HAVE_FIWALK" != "yes"; then
-  AC_MSG_ERROR([fiwalk not found; refer to README for compilation notes.])
+  AC_MSG_ERROR([fiwalk not found; refer to README for SleuthKit compilation notes.])
 fi
 
 AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
 if test "$HAVE_HIVEXML" != "yes"; then
-  AC_MSG_ERROR([hivexml not found; refer to README for compilation notes.])
+  AC_MSG_ERROR([hivexml not found; refer to README for Hivex compilation notes.])
 fi
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
