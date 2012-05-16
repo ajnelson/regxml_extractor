@@ -5,6 +5,26 @@ Converts Windows Registry hives to a descriptive XML format.
 
 The collective software in this project takes a disk image and outputs a set of RegXML files, one per hive extracted from the image.
 
+Dependencies
+============
+
+This program depends on Fiwalk and Hivex.
+
+To install hivex, you must have the following packages installed (assuming a default environment for the named distros):
+
+Fedora 16: gcc libxml2-devel python-devel
+
+Ubuntu 12.04: libxml2-dev python-dev
+
+A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex/tree/nelson_ifip12).
+
+To install Fiwalk, compile the Sleuth Kit provided [here](https://github.com/kfairbanks/sleuthkit).
+
+This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java, which can be satisfied with the Oracle Java Development Kit (JDK) RPM.
+
+Your environment's PYTHONPATH variable must include the Fiwalk python directory, which would be under:
+<sleuthkit directory>/tools/fiwalk/python
+
 References
 ==========
 
