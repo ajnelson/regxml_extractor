@@ -12,6 +12,8 @@ AC_CHECK_PROG(HAVE_FIWALK,fiwalk,yes)
 
 AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
 
+AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
+
 # Checks for libraries.
 
 # Checks for header files.
