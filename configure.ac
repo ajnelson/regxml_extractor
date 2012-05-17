@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(regxmlify, 0.1.0, ajnelson@cs.ucsc.edu)
-AM_INIT_AUTOMAKE(regxmlify, 0.1.0)
+AC_INIT(regxml_extractor, 0.1.0, ajnelson@cs.ucsc.edu)
+AM_INIT_AUTOMAKE(regxml_extractor, 0.1.0)
 AC_OUTPUT(Makefile scripts/Makefile)
 
 # Checks for programs.
@@ -36,7 +36,7 @@ fi
 
 # Checks for library functions.
 
-#AJN Not sure I want these yet...
+#These might be useful later
 #AC_CONFIG_SUBDIRS([deps/fiwalk
 #                   deps/hivex])
 
