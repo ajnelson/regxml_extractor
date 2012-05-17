@@ -28,7 +28,7 @@ else
   do
     hivexml "${x}" >"${x}.regxml" 2>${x}.hivexml.err.log && \
     xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log&& \
-    echo $x >>linted.txt ;
+    echo "$x\t$x.regxml" >>linted.txt ;
   done
   # When all regxml is pretty-printed, generate a database
   if [ -f linted.txt ]; then

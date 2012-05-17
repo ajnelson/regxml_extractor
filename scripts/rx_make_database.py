@@ -3,9 +3,8 @@
 This script converts RegXML files from disk sequences to a single
 SQLite database of cells.  For usage, see usage().
 
-Users may want to revise two functions within this module:
+Users may want to revise a function within this module:
     image_file_from_regxml_path
-    hive_file_from_regxml_path
 They are for identifying associated disk images from file paths.
 """
 
@@ -23,11 +22,6 @@ import struct
 def image_file_from_regxml_path(regxml_path):
     """Assumes pathing as done by the UCSC WASP work_parallel script.  Last four components will be <image name>/fiout.xml/[n].hive/[n].regxml."""
     return regxml_path.split("/")[-4]
-
-def hive_file_from_regxml_path(regxml_path):
-    """Assumes hive file is kept in same directory as derived RegXML:
-        n.hive.regxml -> n.hive"""
-    return regxml_path[:-len(".regxml")]
 
 SQL_CREATE_TABLE_IMAGEANNO = """
 CREATE TABLE image_anno (
@@ -372,10 +366,15 @@ def main():
     successful_regxmls = {}
     successful_regxml_file = open(sys.argv[1], "r")
     for line in successful_regxml_file:
-        #AJN - this is from UCSC's processing, assumes hive path is embedded in RegXML path
-        cleaned_line = line.strip()
-        hive_path = hive_file_from_regxml_path(cleaned_line)
-        successful_regxmls[hive_path] = cleaned_line
+        cleaned_line_parts = line.strip().split("\t")
+        if len(cleaned_line_parts) == 2:
+            hive_path = cleaned_line_parts[0]
+            xml_path = cleaned_line_parts[1]
+        elif len(cleaned_line_parts) == 0:
+            continue
+        else:
+            raise Exception("Unexpected number of line components when reading hive-regxml mapping:\nrepr(line) = " + repr(line))
+        successful_regxmls[hive_path] = xml_path
     print successful_regxmls
 
     #Produce a list of the images to use
