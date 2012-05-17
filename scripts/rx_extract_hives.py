@@ -10,7 +10,6 @@ import sys,os,datetime
 import argparse
 
 tally = 0
-imageabspath = None
 
 def proc_dfxml(fi):
     global tally
