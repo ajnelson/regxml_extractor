@@ -15,6 +15,14 @@ from operator import itemgetter
 #For endian conversions
 import struct
 
+def image_file_from_regxml_path(regxml_path):
+    """Assumes pathing as done by the UCSC WASP work_parallel script.  Last four components will be <image name>/fiout.xml/[n].hive/[n].regxml."""
+    return regxml_path.split("/")[-4]
+
+def hive_file_from_regxml_path(regxml_path):
+    """Assumes pathing as done by the UCSC WASP work_parallel script."""
+    return "/" + "/".join(regxml_path.split("/")[4:-1])
+
 SQL_CREATE_TABLE_IMAGEANNO = """
 CREATE TABLE image_anno (
     image_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -85,7 +93,7 @@ CREATE TABLE hives_failed (
 
 def usage():
     print "Usage: " + sys.argv[0] + " <successful regxml list> <hive meta list> <output database file> [<Drive sequence listing>]"
-    print "The regxml list should only have regxml files from successfully completed producing processes (such as hivexml)."
+    print "The regxml list should only have regxml files from successfully completed producing processes (such as hivexml).  Files should be given as absolute paths."
     print "The hive meta list should have absolute paths to RegXML files, with each line containing a hive file absolute path, the hive's full in-image path as given in DFXML, and its maccr times (in that order)."
     print "The drive sequence listing should have one line per drive image, and the following line being either the next image taken of that drive, or a blank line to indicate the drive's timeline is complete.  A sequence line should have two tab-delimited fields, first the image name, second the name of the image sequence."
     print "Outut database must not exist."
@@ -238,10 +246,6 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     insert_db(cursor, "cell_analysis", record_dict)
     #Committing on every key fairly well kills performance.  Implement a throttled committer if desired.
 
-def image_file_from_regxml_path(regxml_path):
-    """Assumes pathing as done by the UCSC WASP work_parallel script.  Last four components will be <image name>/fiout.xml/[n].hive/[n].regxml."""
-    return regxml_path.split("/")[-4]
-
 def update_db(connection, cursor, table_name, update_dict, id_field, id, commit):
     if len(update_dict.keys()) > 0:
         sql_update_columns = []
@@ -358,13 +362,13 @@ def main():
                 last_image = image
 
     #Produce a list of the RegXML files that completed
-    #List does double-duty as a map
+    #List does double-duty as a map from a regxml file to the hive file from which it was derived.
     successful_regxmls = {}
     successful_regxml_file = open(sys.argv[1], "r")
     for line in successful_regxml_file:
         #AJN - this is from UCSC's processing, assumes hive path is embedded in RegXML path
         cleaned_line = line.strip()
-        hive_path = "/" + "/".join(cleaned_line.split("/")[4:-1])
+        hive_path = hive_file_from_regxml_path(cleaned_line)
         successful_regxmls[hive_path] = cleaned_line
     print successful_regxmls
 
@@ -495,7 +499,8 @@ def main():
     #Now we have data...but possibly too much.
     cursor.execute("SELECT COUNT(*) FROM cell_analysis WHERE hive_id IN (SELECT hive_id FROM hives_failed);")
     row = cursor.fetchone()
-    sys.stderr.write("Note:  Deleting %d rows from cell_analysis due to processing for that hive failing.\n" % row[0])
+    if row[0] > 0:
+        sys.stderr.write("Note:  Deleting %d rows from cell_analysis due to processing for hives failing.\n" % row[0])
     cursor.execute("DELETE FROM cell_analysis WHERE hive_id IN (SELECT hive_id FROM hives_failed);")
 
     #Now it's just right.
