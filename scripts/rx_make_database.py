@@ -466,6 +466,7 @@ def main():
         conn.commit()
 
         #Process the RegXML into cell records, capturing notes on failure
+        reader = None
         try:
             reader = dfxml.read_regxml(xmlfile=open(work_order["regxml_path"], "r"), callback=lambda co: process_regxml_callback_object(co, current_hive_id, previous_hive_id, cursor))
         except Exception as ex:
@@ -474,20 +475,20 @@ def main():
         conn.commit() #Ensure the last updates made it in
 
         #Update the hive and image records with the necessarily-computed times
-        image_updates = {}
-        hive_column_value_updates = {}
-        hive_column_value_updates["mtime_hive_root"] = str(reader.registry_object.mtime())
-        if "mtime_latest_key" in dir(reader.registry_object):
-            hive_column_value_updates["mtime_latest_key"] = str(reader.registry_object.mtime_latest_key)
-        if "mtime_earliest_key" in dir(reader.registry_object):
-            hive_column_value_updates["mtime_earliest_key"] = str(reader.registry_object.mtime_earliest_key)
-        if "time_last_clean_shutdown" in dir(reader.registry_object):
-            image_updates["last_clean_shutdown_time_hive"] = str(reader.registry_object.time_last_clean_shutdown)
+        if reader is not None:
+            image_updates = {}
+            hive_column_value_updates = {}
+            hive_column_value_updates["mtime_hive_root"] = str(reader.registry_object.mtime())
+            if "mtime_latest_key" in dir(reader.registry_object):
+                hive_column_value_updates["mtime_latest_key"] = str(reader.registry_object.mtime_latest_key)
+            if "mtime_earliest_key" in dir(reader.registry_object):
+                hive_column_value_updates["mtime_earliest_key"] = str(reader.registry_object.mtime_earliest_key)
+            if "time_last_clean_shutdown" in dir(reader.registry_object):
+                image_updates["last_clean_shutdown_time_hive"] = str(reader.registry_object.time_last_clean_shutdown)
 
-        #Update tables
-        update_db(conn, cursor, "hive_analysis", hive_column_value_updates, "hive_id", current_hive_id, True)
-        update_db(conn, cursor, "image_anno", image_updates, "image_id", current_image_id, True)
-
+            #Update tables
+            update_db(conn, cursor, "hive_analysis", hive_column_value_updates, "hive_id", current_hive_id, True)
+            update_db(conn, cursor, "image_anno", image_updates, "image_id", current_image_id, True)
         sys.stderr.write("Note:  Just finished with hive %d.\n" % current_hive_id)
 
     #TODO Also add to the where clause that this should not run on Vista systems.  This means digging for that key that notes where the system type is, I know Carvey noted it...
