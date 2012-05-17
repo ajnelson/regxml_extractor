@@ -2,9 +2,14 @@
 """
 This script converts RegXML files from disk sequences to a single
 SQLite database of cells.  For usage, see usage().
+
+Users may want to revise two functions within this module:
+    image_file_from_regxml_path
+    hive_file_from_regxml_path
+They are for identifying associated disk images from file paths.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 import dfxml, os, sys, sqlite3
 
@@ -20,8 +25,9 @@ def image_file_from_regxml_path(regxml_path):
     return regxml_path.split("/")[-4]
 
 def hive_file_from_regxml_path(regxml_path):
-    """Assumes pathing as done by the UCSC WASP work_parallel script."""
-    return "/" + "/".join(regxml_path.split("/")[4:-1])
+    """Assumes hive file is kept in same directory as derived RegXML:
+        n.hive.regxml -> n.hive"""
+    return regxml_path[:-len(".regxml")]
 
 SQL_CREATE_TABLE_IMAGEANNO = """
 CREATE TABLE image_anno (
