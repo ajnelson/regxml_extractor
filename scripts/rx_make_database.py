@@ -2,13 +2,9 @@
 """
 This script converts RegXML files from disk sequences to a single
 SQLite database of cells.  For usage, see usage().
-
-Users may want to revise a function within this module:
-    image_file_from_regxml_path
-They are for identifying associated disk images from file paths.
 """
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 import dfxml, os, sys, sqlite3
 
@@ -18,10 +14,6 @@ from operator import itemgetter
 
 #For endian conversions
 import struct
-
-def image_file_from_regxml_path(regxml_path):
-    """Assumes pathing as done by the UCSC WASP work_parallel script.  Last four components will be <image name>/fiout.xml/[n].hive/[n].regxml."""
-    return regxml_path.split("/")[-4]
 
 SQL_CREATE_TABLE_IMAGEANNO = """
 CREATE TABLE image_anno (
@@ -384,10 +376,9 @@ def main():
     for line in image_list_file:
         cleaned_line = line.strip()
         if cleaned_line != "":
-            hive_dump_path, dfxml_hive_path, hive_mtime, hive_atime, hive_ctime, hive_crtime = cleaned_line.split("\t")
+            hive_dump_path, image_file, dfxml_hive_path, hive_mtime, hive_atime, hive_ctime, hive_crtime = cleaned_line.split("\t")
             if hive_dump_path in successful_regxmls:
                 regxml_path = successful_regxmls[hive_dump_path]
-                image_file = image_file_from_regxml_path(regxml_path)
                 if working_with_priors:
                     #We want all the input drives to have a prior image or None explicitly specified.  So, don't use .get().
                     prior_image = image_sequence_priors[image_file]
