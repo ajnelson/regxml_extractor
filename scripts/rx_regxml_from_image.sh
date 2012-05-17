@@ -20,7 +20,7 @@ else
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
-rm -f linted.txt
+rm -f linted.txt out.sqlite
 if [ $(ls *hive | wc -l) -eq 0 ]; then
   echo "No hives extracted."
 else
