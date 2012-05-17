@@ -2,7 +2,30 @@
 
 Converts Windows Registry hives to a descriptive XML format.
 
-The collective software in this project takes a disk image and outputs a set of RegXML files, one per hive extracted from the image.
+The collective software in this project takes a disk image and outputs a set of RegXML files, one per hive extracted from the image.  These hives' RegXML forms are also converted from RegXML to a SQLite database.
+
+## Building
+
+To build from the tarball:
+    ./configure && make install
+(As these are scripts, there isn't much need for `make`.)
+
+To build as from upstream:
+    ./bootstrap
+    ./configure && make install
+
+## Running
+
+    cd results_directory
+    regxml_extractor.sh image_file
+
+Output:
+* `*.hive` --- Hive files extracted from file system.
+* `*.hive.regxml` --- RegXML produced from the hive of matching number.
+* `*.hive.checked.regxml` --- RegXML, pretty-printed and validated by xmllint.
+* `out.sqlite` --- SQLite database representing all hives' contents that could be read by `dfxml.py` and `rx_make_database.py`.
+* `*.err.log` --- Standard error of the process generating the matching file name.  Be on the lookout for non-0-byte error logs.
+If you don't want to install the scripts, you can run the above from the extracted source directory.
 
 ## Dependencies
 
