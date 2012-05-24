@@ -25,19 +25,7 @@ fi
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
 if test "$HAVE_XMLLINT" != "yes"; then
-  AC_MSG_ERROR([xmllint not found; the package for libxml2 includes this.])
+  AC_MSG_ERROR([xmllint not found; please install the package for libxml2, includes xmllint.])
 fi
-
-# Checks for libraries.
-
-# Checks for header files.
-
-# Checks for typedefs, structures, and compiler characteristics.
-
-# Checks for library functions.
-
-#These might be useful later
-#AC_CONFIG_SUBDIRS([deps/fiwalk
-#                   deps/hivex])
 
 AC_OUTPUT
