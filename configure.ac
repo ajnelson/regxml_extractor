@@ -25,7 +25,7 @@ fi
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
 if test "$HAVE_XMLLINT" != "yes"; then
-  AC_MSG_ERROR([xmllint not found; please install the package for libxml2, includes xmllint.])
+  AC_MSG_ERROR([xmllint not found; this may be in libxml2 or the associated utilities package.  Install the package with 'apt-get install libxml2-utils' or 'yum install TODO'.])
 fi
 
 AC_OUTPUT
