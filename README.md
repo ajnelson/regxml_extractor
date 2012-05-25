@@ -47,8 +47,8 @@ Also, in Ubuntu, compilation and installation from tarballs requires a path augm
 
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
-* Fedora Core 16: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
-* Ubuntu 12:04: libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
+* Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
 
 For development or building from Git, these packages are also necessary:
 
@@ -75,7 +75,7 @@ To build from tarballs, run from the extracted source directory:
 
 To build from Git source, also include these packages:
 
-* Fedora Core 16: TODO
+* Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
 
 Compilation from Git includes an extra command:
