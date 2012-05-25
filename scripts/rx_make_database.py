@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 """
-This script converts RegXML files from disk sequences to a single
-SQLite database of cells.  For usage, see usage().
+For usage, run without arguments.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 import dfxml, os, sys, sqlite3
 
 import hashlib
 import base64
 from operator import itemgetter
+import argparse
 
 #For endian conversions
 import struct
@@ -82,13 +82,6 @@ CREATE TABLE hives_failed (
     error_text TEXT
 );
 """
-
-def usage():
-    print "Usage: " + sys.argv[0] + " <successful regxml list> <hive meta list> <output database file> [<Drive sequence listing>]"
-    print "The regxml list should only have regxml files from successfully completed producing processes (such as hivexml).  Files should be given as absolute paths."
-    print "The hive meta list should have absolute paths to RegXML files, with each line containing a hive file absolute path, the hive's full in-image path as given in DFXML, and its maccr times (in that order)."
-    print "The drive sequence listing should have one line per drive image, and the following line being either the next image taken of that drive, or a blank line to indicate the drive's timeline is complete.  A sequence line should have two tab-delimited fields, first the image name, second the name of the image sequence."
-    print "Outut database must not exist."
 
 def filetime_to_timestamp(ft):
     WINDOWS_TICK = 10000000
@@ -312,11 +305,14 @@ def hive_type_from_path(dfxml_hive_path, collapse_names=True):
     return hive_type
 
 def main():
-    if len(sys.argv) < 4:
-        usage()
-        exit(1)
-    if os.path.exists(sys.argv[3]):
-        usage()
+    parser = argparse.ArgumentParser(prog="rx_make_database.py", description="Convert RegXML files from disk sequences to a single SQLite database of Registry cells.")
+    parser.add_argument("successful_regxml_list", action="store", help="The regxml list should only have regxml files from successfully completed producing processes (such as hivexml checked with xmllint).  Files should be given as absolute paths.")
+    parser.add_argument("hive_meta_list", action="store", help="The hive meta list should have absolute paths to RegXML files, with each line containing a hive file absolute path, the hive's full in-image path as given in DFXML, and its maccr times (in that order).")
+    parser.add_argument("output_database_file", action="store", help="Outut database must not exist.")
+    parser.add_argument("--drive_sequence_listing", required=False, action="store", help="The drive sequence listing should have one line per drive image, and the following line being either the next image taken of that drive, or a blank line to indicate the drive's timeline is complete.  A sequence line should have two tab-delimited fields, first the image name, second the name of the image sequence.")
+    args = parser.parse_args()
+    if os.path.exists(args.output_database_file):
+        parser.print_help()
         exit(1)
     
     #Identify disk image sequences
@@ -329,11 +325,11 @@ def main():
     working_with_priors = False
 
     #Populate disk image sequence index if optional parameter is passed
-    if len(sys.argv) == 5:
+    if args.drive_sequence_listing is not None:
         working_with_priors = True
         image_sequences = [[]]
 
-        sequence_file = open(sys.argv[4], "r")
+        sequence_file = open(args.drive_sequence_listing, "r")
         line_no = 0
         for line in sequence_file:
             line_no += 1
@@ -356,7 +352,7 @@ def main():
     #Produce a list of the RegXML files that completed
     #List does double-duty as a map from a regxml file to the hive file from which it was derived.
     successful_regxmls = {}
-    successful_regxml_file = open(sys.argv[1], "r")
+    successful_regxml_file = open(args.successful_regxml_list, "r")
     for line in successful_regxml_file:
         cleaned_line_parts = line.strip().split("\t")
         if len(cleaned_line_parts) == 2:
@@ -372,7 +368,7 @@ def main():
     #Produce a list of the images to use
     work_list_unordered = []
 
-    image_list_file = open(sys.argv[2], "r")
+    image_list_file = open(args.hive_meta_list, "r")
     for line in image_list_file:
         cleaned_line = line.strip()
         if cleaned_line != "":
@@ -391,7 +387,7 @@ def main():
     print work_list
 
     #Begin the SQL database
-    conn = sqlite3.connect(sys.argv[3])
+    conn = sqlite3.connect(args.output_database_file)
     conn.isolation_level = "EXCLUSIVE"
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
