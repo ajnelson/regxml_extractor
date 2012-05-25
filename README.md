@@ -90,7 +90,7 @@ regxml_extractor is tested with tag `sleuthkit-fiwalk-v1`; the `FIwalk-dev` bran
 
 This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in particular), which can be satisfied with the Oracle Java Development Kit (JDK) RPM, or the openjdk package noted below.
 
-* Fedora Core 16: TODO
+* Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
 
 To compile from the zip archive or Git, run:
