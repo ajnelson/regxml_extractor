@@ -4,14 +4,14 @@ Converts Windows Registry hives to a descriptive XML format.
 
 The collective software in this project takes a disk image and outputs a set of RegXML files, one per hive extracted from the image.  These hives' RegXML forms are also converted from RegXML to a SQLite database.
 
-## Building
+## Building regxml_extractor
 
 To build from the tarball:
     ./configure && make install
 (As these are scripts, there isn't much need for `make`.)
 
 To build as from upstream:
-    ./bootstrap
+    ./bootstrap.sh
     ./configure && make install
 
 ## Running
@@ -27,11 +27,29 @@ Output:
 * `*.err.log` --- Standard error of the process generating the matching file name.  Be on the lookout for non-0-byte error logs.
 If you don't want to install the scripts, you can run the above from the extracted source directory.
 
+## Tested environments
+
+This program has been tested in the following environments:
+
+* Fedora Core 16 (TODO)
+* Ubuntu 12.04
+
 ## Dependencies
 
 This program depends on The Sleuth Kit, Fiwalk, Python, Hivex and libxml2.
 
+Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.  Append this to your shell's .rc file (e.g. .bashrc for Bash):
+
+    export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
+Package summary: all of the following packages will need to be installed (software that require these are noted below):
+
+Fedora Core 16: TODO
+Ubuntu 12:04: libxml2-dev python-dev g++ libtool openjdk-7-jdk
+
 ### Hivex
+
+A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex.git), in the branch 'nelson_ifip12'.  Package dependencies are equivalent to the [upstream hivex](https://github.com/libguestfs/hivex.git).
 
 To build hivex, you must have the following packages installed (assuming a default environment for the named distros):
 
@@ -39,35 +57,42 @@ Fedora 16: gcc libxml2-devel python-devel
 
 Ubuntu 12.04: libxml2-dev python-dev
 
-To build from Git source (not tarballs), also include these packages:
+To build from tarballs, run from the extracted source directory:
+./configure && make && sudo make install
+(./configure --prefix=foo does not work, unfortunately; but if you do not have sudo rights, the hivexml program can be executed in-place from xml/hivexml.)
+
+To build from Git source, also include these packages:
 
 Fedora 16: TODO
 
-Ubuntu 12.04: git libtool autopoint ocaml autoconf libxml2-dev python-dev python-dateutil
+Ubuntu 12.04: git libtool autopoint ocaml autoconf libxml2-dev python-dev python-dateutil gettext
 
-A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex/tree/nelson_ifip12) (note the branch `nelson_ifip12`).  Package dependencies are as above.
+Compilation includes an extra command:
+./autogen.sh && ./configure && make && sudo make install
 
 ### Fiwalk and The Sleuth Kit
 
-To install Fiwalk, compile The Sleuth Kit provided [here](https://github.com/kfairbanks/sleuthkit/tree/FIwalk_dev) (note the branch `FIwalk_dev`).
+To install Fiwalk, compile The Sleuth Kit provided [here](https://github.com/kfairbanks/sleuthkit/tree/FIwalk_dev) (note the branch `FIwalk_dev`).  The Github tag '[sleuthkit-fiwalk-v1.zip](https://github.com/kfairbanks/sleuthkit/zipball/sleuthkit-fiwalk-v1)' provides a zip archive which we describe building below.
 
 This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in particular), which can be satisfied with the Oracle Java Development Kit (JDK) RPM, or the openjdk package noted below.
 
 Fedora Core 16: TODO
 
-Ubuntu 12.04: openjdk-7-jdk
+Ubuntu 12.04: g++ libtool openjdk-7-jdk
 
-Fiwalk in particular requires a path augmentation or a prefix adjustment.
-
-In Ubuntu, the standard "./configure && make && make install" puts a TSK library in "/usr/local/lib", and Fiwalk does not find this.  For now, either augment LD_LIBRARY_PATH in your shell's .rc file (e.g. .bashrc for bash):
-export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-
-Or configure to place TSK in /usr:
-./configure --prefix=/usr && make && sudo make install
+To compile from the zip archive, run:
+./bootstrap && ./configure && make && sudo make install
 
 Last, for regxml_extractor to work, your environment's PYTHONPATH variable (which can also be set in .bashrc) must include the Fiwalk python directory, which would be under:
     <sleuthkit source directory>/tools/fiwalk/python
 This is to include an updated dfxml.py.
+
+## xmllint
+
+We use the version supplied by package manager:
+
+Fedora Core 16: TODO
+Ubuntu 12.04: libxml2-utils
 
 ## References
 
