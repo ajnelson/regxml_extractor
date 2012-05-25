@@ -310,6 +310,7 @@ def main():
     parser.add_argument("hive_meta_list", action="store", help="The hive meta list should have absolute paths to RegXML files, with each line containing a hive file absolute path, the hive's full in-image path as given in DFXML, and its maccr times (in that order).")
     parser.add_argument("output_database_file", action="store", help="Outut database must not exist.")
     parser.add_argument("--drive_sequence_listing", required=False, action="store", help="The drive sequence listing should have one line per drive image, and the following line being either the next image taken of that drive, or a blank line to indicate the drive's timeline is complete.  A sequence line should have two tab-delimited fields, first the image name, second the name of the image sequence.")
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output.")
     args = parser.parse_args()
     if os.path.exists(args.output_database_file):
         parser.print_help()
@@ -363,7 +364,9 @@ def main():
         else:
             raise Exception("Unexpected number of line components when reading hive-regxml mapping:\nrepr(line) = " + repr(line))
         successful_regxmls[hive_path] = xml_path
-    print successful_regxmls
+    if args.verbose:
+        print "Successful hive file-RegXML pairs:"
+        print "\n".join([(k,successful_regxmls[k]) for k in successful_regxmls])
 
     #Produce a list of the images to use
     work_list_unordered = []
@@ -384,7 +387,9 @@ def main():
     image_list_file.close()
     #Order by manifest listing.
     work_list = sorted(work_list_unordered, key=itemgetter("image_sequence_number"))
-    print work_list
+    if args.verbose:
+        print "In-order work list we are processing:"
+        print "\n".join(map(str, work_list))
 
     #Begin the SQL database
     conn = sqlite3.connect(args.output_database_file)
