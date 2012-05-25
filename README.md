@@ -31,7 +31,7 @@ If you don't want to install the scripts, you can run the above from the extract
 
 This program has been tested in the following environments:
 
-* Fedora Core 16 (TODO)
+* Fedora Core 16
 * Ubuntu 12.04
 
 ## Dependencies
@@ -52,7 +52,7 @@ Package summary: all of the following packages will need to be installed (softwa
 
 For development or building from Git, these packages are also necessary:
 
-* Fedora Core 16: TODO
+* Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
 
 ### Hivex
@@ -81,6 +81,11 @@ To build from Git source, also include these packages:
 Compilation from Git includes an extra command:
     ./autogen.sh && ./configure && make && sudo make install
 
+OPTIONAL: To use all the language bindings bundled with Hivex, install these packages:
+
+* Fedora Core 16: perl-devel perl-Test-Simple perl-Test-Pod perl-Test-Pod-Coverage perl-ExtUtils-MakeMaker perl-IO-stringy perl-libintl ruby-devel rubygem-rake ocaml-findlib-devel readline-devel
+* Ubuntu 12.04: (Not tested)
+
 ### Fiwalk and The Sleuth Kit
 
 To install Fiwalk, compile The Sleuth Kit provided [here](https://github.com/kfairbanks/sleuthkit/tree/FIwalk_dev) (note the branch `FIwalk_dev`).  The Github tag '[sleuthkit-fiwalk-v1.zip](https://github.com/kfairbanks/sleuthkit/zipball/sleuthkit-fiwalk-v1)' provides a zip archive which we describe building below.
@@ -103,7 +108,7 @@ To compile from the zip archive or Git, run:
 
 We use the version supplied by package manager:
 
-* Fedora Core 16: TODO
+* Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 
 ## References
