@@ -44,7 +44,7 @@ Also, in Ubuntu, compilation and installation from tarballs requires a path augm
 
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
-* Fedora Core 16: TODO
+* Fedora Core 16: gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
 
 For development or building from Git, these packages are also necessary:
