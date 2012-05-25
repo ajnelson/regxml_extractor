@@ -1,3 +1,5 @@
-Installation is a little strange right now with the shell script.  Either:
+- Installation feels a little strange right now with the shell script.  Either:
 1.) Make this a python distutils project
-2.) http://habilis.net/cronic/ see how this handles autotools installation
+2.) See how some other shell-only package handles autotool pathing
+
+- Python 3
