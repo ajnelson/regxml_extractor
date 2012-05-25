@@ -38,13 +38,16 @@ This program has been tested in the following environments:
 
 This program depends on The Sleuth Kit, Fiwalk, Python, Hivex and libxml2.
 
-Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.  Append this to your shell's .rc file (e.g. .bashrc for Bash):
+Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.  The Python in regxml_extractor require DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's .rc file (e.g. .bashrc for Bash):
 
     export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+    export PYTHONPATH="$SLEUTHKIT_SRC_DIR/tools/fiwalk/python:$PYTHONPATH"
+
+(Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
 
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
-* Fedora Core 16: gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Fedora Core 16: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
 
 For development or building from Git, these packages are also necessary:
@@ -95,10 +98,6 @@ This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in part
 
 To compile from the zip archive or Git, run:
     ./bootstrap && ./configure && make && sudo make install
-
-Last, for regxml_extractor to work, your environment's PYTHONPATH variable (which can also be set in .bashrc) must include the Fiwalk python directory, which would be under:
-    <sleuthkit source directory>/tools/fiwalk/python
-This is to include an updated dfxml.py.
 
 ## xmllint
 
