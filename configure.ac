@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT(regxml_extractor, 0.1.0, ajnelson@cs.ucsc.edu)
-AM_INIT_AUTOMAKE(regxml_extractor, 0.1.0)
+AC_INIT(regxml_extractor, 0.1.1, ajnelson@cs.ucsc.edu)
+AM_INIT_AUTOMAKE(regxml_extractor, 0.1.1)
 AC_OUTPUT(Makefile scripts/Makefile)
 
 # Checks for programs.
