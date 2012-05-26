@@ -4,15 +4,20 @@ Converts Windows Registry hives to a descriptive XML format.
 
 The collective software in this project takes a disk image and outputs a set of RegXML files, one per hive extracted from the image.  These hives' RegXML forms are also converted from RegXML to a SQLite database.
 
-## Building regxml_extractor
+## Building `regxml_extractor`
 
 To build from the tarball:
     ./configure && make install
-(As these are scripts, there isn't much need for `make`.)
+(As this package only contains scripts, there isn't much need for `make`.)
 
 To build from upstream (Git):
     ./bootstrap.sh
     ./configure && make install
+
+The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run from the `regxml_extractor` source directory:
+    git submodule init
+    git submodule update
+You can then find Hivex, TSK and Fiwalk in the deps/ directory.
 
 ## Running
 
@@ -20,11 +25,13 @@ To build from upstream (Git):
     regxml_extractor.sh image_file
 
 Output:
-* `*.hive` --- Hive files extracted from file system.
-* `*.hive.regxml` --- RegXML produced from the hive of matching number.
-* `*.hive.checked.regxml` --- RegXML, pretty-printed and validated by xmllint.
-* `out.sqlite` --- SQLite database representing all hives' contents that could be read by `dfxml.py` and `rx_make_database.py`.
-* `*.err.log` --- Standard error of the process generating the matching file name.  Be on the lookout for non-0-byte error logs.
+* `*.hive` -- Hive files extracted from file system, named in discovery order.
+* `manifest.txt` -- A map of the hive names to the disk image and file system path where they were found.
+* `*.hive.regxml` -- RegXML produced from the hive of matching number.
+* `*.hive.checked.regxml` -- RegXML, pretty-printed and validated by xmllint.
+* `out.sqlite` -- SQLite database representing all hives' contents that could be read by `dfxml.py` and `rx_make_database.py`.  Processing errors are captured in a table.  (Run `sqlite3 out.sqlite` and `.schema` to see the tables available.)
+* `*.err.log` -- Standard error of the process generating the matching file name.  Be on the lookout for non-0-byte error logs.
+
 If you don't want to install the scripts, you can run the above from the extracted source directory.
 
 ## Tested environments
