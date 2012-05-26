@@ -124,6 +124,8 @@ RegXML is described in the following publication, in which these analysis tools 
 
 Alex Nelson, "RegXML: XML conversion of the Windows Registry for forensic processing and distribution," in _Advances in Digital Forensics VIII, to appear Summer 2012_, ser. IFIP Advances in Information and Communication Technology, G. Peterson and S. Shenoi, Eds. Springer, 2012.
 
-The software here was formerly housed at:
+The M57-Patents scenario analyzed in the above paper can be found at [Digital Corpora](http://digitalcorpora.org/corpora/scenarios/m57-patents-scenario).  If you wish to use RegXML Extractor to analyze this scenario as in the IFIP publication, see the `etc/m57-sequences.txt` file.  Note that you will need to modify that file to supply full paths to where you have the M57 images stored.
+
+This software was formerly housed at:
 
 https://users.soe.ucsc.edu/~ajnelson/research/nelson_ifip12/
