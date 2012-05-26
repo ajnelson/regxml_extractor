@@ -1,0 +1,91 @@
+charlie-2009-11-12start.aff	charlie
+charlie-2009-11-12.aff	charlie
+charlie-2009-11-16.aff	charlie
+charlie-2009-11-17.aff	charlie
+charlie-2009-11-18.aff	charlie
+charlie-2009-11-19.aff	charlie
+charlie-2009-11-20.aff	charlie
+charlie-2009-11-23.aff	charlie
+charlie-2009-11-24.aff	charlie
+charlie-2009-11-30.aff	charlie
+charlie-2009-12-01.aff	charlie
+charlie-2009-12-02.aff	charlie
+charlie-2009-12-03.aff	charlie
+charlie-2009-12-04.aff	charlie
+charlie-2009-12-07.aff	charlie
+charlie-2009-12-08.aff	charlie
+charlie-2009-12-09.aff	charlie
+charlie-2009-12-10.aff	charlie
+charlie-2009-12-11.aff	charlie
+
+charlie-2009-12-11-work-usb.aff
+
+jo-2009-11-12start.aff	jo-oldComputer
+jo-2009-11-12.aff	jo-oldComputer
+jo-2009-11-16.aff	jo-oldComputer
+jo-2009-11-17.aff	jo-oldComputer
+jo-2009-11-18.aff	jo-oldComputer
+jo-2009-11-19.aff	jo-oldComputer
+jo-2009-11-20-oldComputer.aff	jo-oldComputer
+
+jo-2009-11-20-newComputer.aff	jo-newComputer
+jo-2009-11-23.aff	jo-newComputer
+jo-2009-11-24.aff	jo-newComputer
+jo-2009-11-30.aff	jo-newComputer
+jo-2009-12-01.aff	jo-newComputer
+jo-2009-12-02.aff	jo-newComputer
+jo-2009-12-03.aff	jo-newComputer
+jo-2009-12-04.aff	jo-newComputer
+jo-2009-12-07.aff	jo-newComputer
+jo-2009-12-08.aff	jo-newComputer
+jo-2009-12-09.aff	jo-newComputer
+jo-2009-12-10.aff	jo-newComputer
+jo-2009-12-11-001.aff	jo-newComputer
+jo-2009-12-11-002.aff	jo-newComputer
+
+jo-2009-12-11-favorites-usb.aff
+
+jo-2009-12-11-work-usb.aff
+
+pat-2009-11-12start.aff	pat
+pat-2009-11-12.aff	pat
+pat-2009-11-16.aff	pat
+pat-2009-11-17.aff	pat
+pat-2009-11-18.aff	pat
+pat-2009-11-19.aff	pat
+pat-2009-11-20.aff	pat
+pat-2009-11-23.aff	pat
+pat-2009-11-24.aff	pat
+pat-2009-11-30.aff	pat
+pat-2009-12-01.aff	pat
+pat-2009-12-02.aff	pat
+pat-2009-12-03.aff	pat
+pat-2009-12-04.aff	pat
+pat-2009-12-07.aff	pat
+pat-2009-12-08.aff	pat
+pat-2009-12-09.aff	pat
+pat-2009-12-10.aff	pat
+pat-2009-12-11.aff	pat
+
+terry-2009-11-12start.aff	terry
+terry-2009-11-12.aff	terry
+terry-2009-11-16.aff	terry
+terry-2009-11-17.aff	terry
+terry-2009-11-18.aff	terry
+terry-2009-11-19.aff	terry
+terry-2009-11-20.aff	terry
+terry-2009-11-23.aff	terry
+terry-2009-11-24.aff	terry
+terry-2009-11-30.aff	terry
+terry-2009-12-01.aff	terry
+terry-2009-12-02.aff	terry
+terry-2009-12-03.aff	terry
+terry-2009-12-04.aff	terry
+terry-2009-12-07.aff	terry
+terry-2009-12-08.aff	terry
+terry-2009-12-09.aff	terry
+terry-2009-12-10.aff	terry
+terry-2009-12-11-001.aff	terry
+terry-2009-12-11-002.aff	terry
+
+terry-2009-12-11-work-usb.aff

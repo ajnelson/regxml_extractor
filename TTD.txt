@@ -1,0 +1,5 @@
+- Installation feels a little strange right now with the shell script.  Either:
+1.) Make this a python distutils project
+2.) See how some other shell-only package handles autotool pathing (this should involve AC_CONFIG_FILES, per <http://stackoverflow.com/a/2211433/1207160>)
+
+- Python 3
