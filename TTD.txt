@@ -6,4 +6,6 @@
 
 - Add an input parameter to pass disk image sequence instructions to sqlite generator
 
+- Add a parent-key field, analogous to Fiwalk 0.6.18
+
 - Write a hive subset exporter; e.g. export(r"\*") would export as DFXML the whole hive's contents
