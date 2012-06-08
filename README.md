@@ -7,7 +7,9 @@ The collective software in this project takes a disk image and outputs a set of 
 ## Building `regxml_extractor`
 
 To build from the tarball:
+
     ./configure && make install
+
 (As this package only contains scripts, there isn't much need for `make`.)
 
 To build from upstream (Git):
