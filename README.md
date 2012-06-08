@@ -118,6 +118,10 @@ We use the version supplied by package manager:
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 
+## Maintenance
+
+Please report issues with Github's [tracker](https://github.com/ajnelson/regxml_extractor/issues).
+
 ## References
 
 RegXML is described in the following publication, in which these analysis tools were used:
