@@ -59,13 +59,13 @@ Also, in Ubuntu, compilation and installation from tarballs requires a path augm
 
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
-* Fedora Core 16: `automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel`
-* Ubuntu 12:04: `automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils`
+* Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
 
 For development or building from Git, these packages are also necessary:
 
-* Fedora Core 16: `git libtool gettext-devel autopoint ocaml automake`
-* Ubuntu 12:04: `git libtool autopoint ocaml autoconf python-dateutil gettext`
+* Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
+* Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
 
 ### Hivex
 
@@ -79,8 +79,8 @@ Git source can be retrieved with:
 
 To build hivex, you must have the following packages installed (assuming a default environment for the named distros):
 
-* Fedora Core 16: `gcc libxml2-devel python-devel`
-* Ubuntu 12.04: `libxml2-dev python-dev`
+* Fedora Core 16: gcc libxml2-devel python-devel
+* Ubuntu 12.04: libxml2-dev python-dev
 
 To build from tarballs, run from the extracted source directory:
 
@@ -90,8 +90,8 @@ To build from tarballs, run from the extracted source directory:
 
 To build from Git source, also include these packages:
 
-* Fedora Core 16: `git libtool gettext-devel autopoint ocaml automake`
-* Ubuntu 12.04: `git libtool autopoint ocaml autoconf python-dateutil gettext`
+* Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
+* Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
 
 Compilation from Git includes an extra command:
 
@@ -99,7 +99,7 @@ Compilation from Git includes an extra command:
 
 OPTIONAL: To use all the language bindings bundled with Hivex, install these packages:
 
-* Fedora Core 16: `perl-devel perl-Test-Simple perl-Test-Pod perl-Test-Pod-Coverage perl-ExtUtils-MakeMaker perl-IO-stringy perl-libintl ruby-devel rubygem-rake ocaml-findlib-devel readline-devel`
+* Fedora Core 16: perl-devel perl-Test-Simple perl-Test-Pod perl-Test-Pod-Coverage perl-ExtUtils-MakeMaker perl-IO-stringy perl-libintl ruby-devel rubygem-rake ocaml-findlib-devel readline-devel
 * Ubuntu 12.04: (Not tested)
 
 ### Fiwalk and The Sleuth Kit
@@ -116,8 +116,8 @@ RegXML Extractor is tested with tag `sleuthkit-fiwalk-v1`; the `FIwalk-dev` bran
 
 This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in particular), which can be satisfied with the Oracle Java Development Kit (JDK) RPM, or the openjdk package noted below.
 
-* Fedora Core 16: `gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel`
-* Ubuntu 12.04: `g++ libtool openjdk-7-jdk`
+* Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Ubuntu 12.04: g++ libtool openjdk-7-jdk
 
 To compile from the zip archive or Git, run:
 
@@ -128,7 +128,7 @@ To compile from the zip archive or Git, run:
 We use the version supplied by package manager:
 
 * Fedora Core 16: (already installed)
-* Ubuntu 12.04: `libxml2-utils`
+* Ubuntu 12.04: libxml2-utils
 
 ## Maintenance
 
