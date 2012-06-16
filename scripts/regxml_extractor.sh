@@ -36,7 +36,7 @@ fi
 #If not installed, just run local scripts
 SCRIPT_PREFIX=""
 if test "x$(which rx_extract_hives.py)" = "x" ; then
-  SCRIPT_PREFIX="./"
+  SCRIPT_PREFIX="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/"
 fi
 
 #Does it look like we ran before?
