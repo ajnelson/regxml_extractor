@@ -4,6 +4,13 @@ Converts Windows Registry hives to a descriptive XML format.
 
 The collective software in this project takes a disk image and outputs a set of RegXML files, one per hive extracted from the image.  These hives' RegXML forms are also converted from RegXML to a SQLite database.
 
+## Tested environments
+
+This program has been tested in the following environments:
+
+* Fedora Core 16
+* Ubuntu 12.04
+
 ## Building `regxml_extractor`
 
 To build from the tarball:
@@ -38,13 +45,6 @@ Output:
 * `*.err.log` -- Standard error of the process generating the matching file name.  Be on the lookout for non-0-byte error logs.
 
 If you don't want to install the scripts, you can run the above from the extracted source directory.
-
-## Tested environments
-
-This program has been tested in the following environments:
-
-* Fedora Core 16
-* Ubuntu 12.04
 
 ## Dependencies
 
