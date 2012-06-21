@@ -118,6 +118,7 @@ This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in part
 
 * Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
+* OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
 
 To compile from the zip archive or Git, run:
 
