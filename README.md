@@ -81,12 +81,15 @@ To build hivex, you must have the following packages installed (assuming a defau
 
 * Fedora Core 16: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
+* OS X 10.7 Desktop MacPorts: (none needed)
 
 To build from tarballs, run from the extracted source directory:
 
     ./configure && make && sudo make install
 
 (`./configure --prefix=foo` does not work, unfortunately; but if you do not have sudo rights, the hivexml program can be executed in-place from xml/hivexml.)
+
+(If building in OS X, there is an error compiling the Ruby binaries, included at least Hivex versions 1.3.1 and 1.3.6.  Also pass `--disable-ruby` to `./configure`.)
 
 To build from Git source, also include these packages:
 
@@ -130,6 +133,7 @@ We use the version supplied by package manager:
 
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
+* OS X 10.7: (already installed)
 
 ## Maintenance
 
