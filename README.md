@@ -81,7 +81,7 @@ To build hivex, you must have the following packages installed (assuming a defau
 
 * Fedora Core 16: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
-* OS X 10.7 Desktop MacPorts: (none needed)
+* OS X 10.7 Desktop MacPorts: (none needed for Hivex 1.3.6)
 
 To build from tarballs, run from the extracted source directory:
 
@@ -89,12 +89,13 @@ To build from tarballs, run from the extracted source directory:
 
 (`./configure --prefix=foo` does not work, unfortunately; but if you do not have sudo rights, the hivexml program can be executed in-place from xml/hivexml.)
 
-(If building in OS X, there is an error compiling the Ruby binaries, included at least Hivex versions 1.3.1 and 1.3.6.  Also pass `--disable-ruby` to `./configure`.)
+(If building in OS X, there is an error compiling the Ruby binaries, including at least Hivex versions 1.3.1 and 1.3.6.  Also pass `--disable-ruby` to `./configure`.)
 
 To build from Git source, also include these packages:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
+* OS X 10.7 Desktop MacPorts: ocaml # git comes with Xcode 
 
 Compilation from Git includes an extra command:
 
@@ -104,6 +105,7 @@ OPTIONAL: To use all the language bindings bundled with Hivex, install these pac
 
 * Fedora Core 16: perl-devel perl-Test-Simple perl-Test-Pod perl-Test-Pod-Coverage perl-ExtUtils-MakeMaker perl-IO-stringy perl-libintl ruby-devel rubygem-rake ocaml-findlib-devel readline-devel
 * Ubuntu 12.04: (Not tested)
+* OS X 10.7 Desktop MacPorts: (Not tested)
 
 ### Fiwalk and The Sleuth Kit
 
