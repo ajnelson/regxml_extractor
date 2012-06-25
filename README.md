@@ -31,6 +31,21 @@ The Git repository includes the expected versions of Hivex, The Sleuth Kit and F
 
 You can then find Hivex, TSK and Fiwalk in the deps/ directory.
 
+### OS X
+
+We have built RegXML Extractor on a fresh instance of OS X Lion (10.7.4) by installing from the source websites:
+XCode (AppStore)
+MacPorts (macports.org)
+
+XCode 4.3.3 requires the command line tools (which include gcc and git) be installed through XCode's Preferences -> Downloads -> Components -> Command Line Tools.
+
+For a dependency of The SleuthKit, we installed Java by invoking an auto-installer.  On a command line, just type `java -version` and an installer prompt appears.
+
+Then with ports, we installed these packages to build the dependencies from Git source:
+
+INSTALLED: automake autoconf ocaml pkgconfig libtool
+NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
+
 ## Running
 
     cd results_directory
@@ -50,9 +65,12 @@ If you don't want to install the scripts, you can run the above from the extract
 
 This program depends on The Sleuth Kit, Fiwalk, Python, Hivex and libxml2.
 
-Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.  The Python in regxml_extractor require DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
+Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.
 
     export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
+The Python in regxml_extractor require DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
+
     export PYTHONPATH="$SLEUTHKIT_SRC_DIR/tools/fiwalk/python:$PYTHONPATH"
 
 (Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
