@@ -1,6 +1,6 @@
 [submodule "deps/hivex"]
 	path = deps/hivex
-	url = https://github.com/ajnelson/hivex.git
+	url = ssh://git@www.ssrc.ucsc.edu/user/ajnelson/hivex.git
 [submodule "deps/sleuthkit"]
 	path = deps/sleuthkit
 	url = https://github.com/kfairbanks/sleuthkit.git
