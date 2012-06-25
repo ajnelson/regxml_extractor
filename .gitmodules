@@ -4,3 +4,6 @@
 [submodule "deps/sleuthkit"]
 	path = deps/sleuthkit
 	url = https://github.com/kfairbanks/sleuthkit.git
+[submodule "deps/dfxml"]
+	path = deps/dfxml
+	url = git://github.com/simsong/dfxml.git
