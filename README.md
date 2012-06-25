@@ -52,6 +52,8 @@ NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
 * MacPorts (macports.org)
 * git (git-scm.com)
 
+* easy_install argparse
+
 ## Running
 
     cd results_directory
@@ -80,6 +82,13 @@ The Python in regxml_extractor require DFXML, which is easiest to satisfy with a
     export PYTHONPATH="$SLEUTHKIT_SRC_DIR/tools/fiwalk/python:$PYTHONPATH"
 
 (Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
+
+The SleuthKit can link against libewf.  For example, in OS X, adding these paths let a locally-built TSK link against the MacPorts-installed libewf:
+
+    export LIBRARY_PATH="/opt/local/lib:$LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/opt/local/lib:$LD_LIBRARY_PATH"
+    export C_INCLUDE_PATH="/opt/local/include:$C_INCLUDE_PATH"
+    export CPLUS_INCLUDE_PATH="/opt/local/include:$CPLUS_INCLUDE_PATH"
 
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
@@ -159,6 +168,7 @@ This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in part
 * Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
 * OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
+* OS X 10.6.8: (TODO build sleuthkit before hivex, something installed for hivex picked up all the dependencies)
 
 To compile from the zip archive or Git, run:
 
@@ -171,6 +181,7 @@ We use the version supplied by package manager:
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 * OS X 10.7: (already installed)
+* OS X 10.6.8: (TODO something has to install this, not sure what)
 
 ## Maintenance
 
