@@ -28,6 +28,14 @@ if test "$HAVE_XMLLINT" != "yes"; then
   AC_MSG_ERROR([xmllint not found; this may be in libxml2 or the associated utilities package.  Install the package with 'apt-get install libxml2-utils' or 'yum install TODO'.])
 fi
 
-AX_PYTHON_MODULE(dfxml, [fatal])
+AX_PYTHON_MODULE(dfxml)
+if test "$HAVE_PYMOD_DFXML" != "yes"; then
+  AC_MSG_ERROR([DFXML Python module not found; refer to the README's notes on PYTHONPATH.])
+fi
+
+AX_PYTHON_MODULE(fiwalk)
+if test "$HAVE_PYMOD_FIWALK" != "yes"; then
+  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README's notes on PYTHONPATH.])
+fi
 
 AC_OUTPUT
