@@ -28,6 +28,8 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
 
+PYTHON=@PYTHON@
+
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <disk image>" >&2
   echo "Note that the results are written to the current working directory." >&2
@@ -63,7 +65,7 @@ else
     maybe_dfxml_flag=-x"$fiout"
   fi
   #Invoke extraction script
-  "${SCRIPT_PREFIX}rx_extract_hives.py" $maybe_dfxml_flag --hivexml "$1" >manifest.txt
+  "$PYTHON" "${SCRIPT_PREFIX}rx_extract_hives.py" $maybe_dfxml_flag --hivexml "$1" >manifest.txt
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
@@ -79,6 +81,6 @@ else
   done
   # When all regxml is pretty-printed, generate a database
   if [ -f linted.txt ]; then
-    "${SCRIPT_PREFIX}rx_make_database.py" linted.txt manifest.txt out.sqlite
+    "$PYTHON" "${SCRIPT_PREFIX}rx_make_database.py" linted.txt manifest.txt out.sqlite
   fi
 fi
