@@ -29,7 +29,9 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
 
 PYTHON=@PYTHON@
-bindir=@bindir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=$exec_prefix/bin
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <disk image>" >&2
