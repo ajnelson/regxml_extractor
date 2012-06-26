@@ -1,2 +1,5 @@
 #!/bin/bash
-autoreconf
+
+aclocal
+automake --add-missing
+autoconf
