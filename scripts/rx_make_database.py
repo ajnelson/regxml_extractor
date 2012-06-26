@@ -236,7 +236,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     record_dict["full_path"] = co.full_path()
 
     #Shutdown time?
-    if co.full_path.endswith("\\Control\\Windows\\ShutdownTime"):
+    if co.full_path().endswith("\\Control\\Windows\\ShutdownTime"):
         #Shutdown time should only come from the system hive.
         is_system_hive = False
         for row in cursor.execute("SELECT hive_type FROM hive_analysis WHERE hive_id = ?;", (current_hive_id,)):
