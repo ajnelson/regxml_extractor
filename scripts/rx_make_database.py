@@ -40,6 +40,7 @@ import hashlib
 import base64
 from operator import itemgetter
 import argparse
+import traceback
 
 #For endian conversions
 import struct
@@ -235,7 +236,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     record_dict["full_path"] = co.full_path()
 
     #Shutdown time?
-    if co.full_path.endswith("\\Control\\Windows\\ShutdownTime"):
+    if co.full_path().endswith("\\Control\\Windows\\ShutdownTime"):
         #Shutdown time should only come from the system hive.
         is_system_hive = False
         for row in cursor.execute("SELECT hive_type FROM hive_analysis WHERE hive_id = ?;", (current_hive_id,)):
@@ -499,9 +500,9 @@ def main():
         reader = None
         try:
             reader = dfxml.read_regxml(xmlfile=open(work_order["regxml_path"], "r"), callback=lambda co: process_regxml_callback_object(co, current_hive_id, previous_hive_id, cursor))
-        except Exception as ex:
+        except:
             sql_insert_failure = "INSERT INTO hives_failed(hive_id, error_text) VALUES (?, ?);"
-            cursor.execute(sql_insert_failure, (current_hive_id, str(ex)))
+            cursor.execute(sql_insert_failure, (current_hive_id, traceback.format_exc()))
         conn.commit() #Ensure the last updates made it in
 
         #Update the hive and image records with the necessarily-computed times

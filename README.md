@@ -34,8 +34,8 @@ You can then find Hivex, TSK and Fiwalk in the deps/ directory.
 ### OS X
 
 We have built RegXML Extractor on a fresh instance of OS X Lion (10.7.4) by installing from the source websites:
-XCode (AppStore)
-MacPorts (macports.org)
+* XCode (AppStore)
+* MacPorts (macports.org)
 
 XCode 4.3.3 requires the command line tools (which include gcc and git) be installed through XCode's Preferences -> Downloads -> Components -> Command Line Tools.
 
@@ -45,6 +45,14 @@ Then with ports, we installed these packages to build the dependencies from Git 
 
 INSTALLED: automake autoconf ocaml pkgconfig libtool
 NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
+
+#### OS X Snow Leopard
+
+* XCode (Apple Developer site)
+* MacPorts (macports.org)
+* git (git-scm.com)
+
+* easy_install argparse
 
 ## Running
 
@@ -75,6 +83,13 @@ The Python in regxml_extractor require DFXML, which is easiest to satisfy with a
 
 (Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
 
+The SleuthKit can link against libewf.  For example, in OS X, adding these paths let a locally-built TSK link against the MacPorts-installed libewf:
+
+    export LIBRARY_PATH="/opt/local/lib:$LIBRARY_PATH"
+    export LD_LIBRARY_PATH="/opt/local/lib:$LD_LIBRARY_PATH"
+    export C_INCLUDE_PATH="/opt/local/include:$C_INCLUDE_PATH"
+    export CPLUS_INCLUDE_PATH="/opt/local/include:$CPLUS_INCLUDE_PATH"
+
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
 * Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
@@ -99,31 +114,42 @@ To build hivex, you must have the following packages installed (assuming a defau
 
 * Fedora Core 16: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
-* OS X 10.7 Desktop MacPorts: (none needed for Hivex 1.3.6)
+* OS X 10.7.4 Desktop MacPorts: (none needed for Hivex 1.3.6)
+* OS X 10.6.8 Server MacPorts: (TODO Test WITHOUT installing ocaml)
 
 To build from tarballs, run from the extracted source directory:
 
     ./configure && make && sudo make install
 
-(`./configure --prefix=foo` does not work, unfortunately; but if you do not have sudo rights, the hivexml program can be executed in-place from xml/hivexml.)
+(`./configure --prefix=foo` does not work, unfortunately; but if you do not have sudo rights, the hivexml program can be executed in-place from `xml/hivexml`.)
 
-(If building in OS X, there is an error compiling the Ruby binaries, including at least Hivex versions 1.3.1 and 1.3.6.  Also pass `--disable-ruby` to `./configure`.)
+(If building in OS X, there is an error compiling the Ruby binaries, including at least Hivex versions 1.3.1 and 1.3.6.  To bypass the error, pass `--disable-ruby` to `./configure`.)
 
 To build from Git source, also include these packages:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
-* OS X 10.7 Desktop MacPorts: ocaml # git comes with Xcode 
+* OS X 10.7.4 Desktop MacPorts: ocaml
+* OS X 10.6.8 Server MacPorts: ocaml pkgconfig (see section on Snow Leopard and pkgconfig)
 
 Compilation from Git includes an extra command:
 
     ./autogen.sh && ./configure && make && sudo make install
 
-OPTIONAL: To use all the language bindings bundled with Hivex, install these packages:
+#### Snow Leopard and pkgconfig
+
+The Snow Leopard MacPort of `pkg-config` does not integrate automatically with GNU Autotools on installation with `port`; the `pkg.m4` macro file is stored outside the `ACLOCAL_PATH`.  One solution to this issue is running the following command (thanks to Jim Meyering for the tip) after installing pkgconfig:
+
+    sudo bash -c "printf '%s/share/aclocal\n' /opt/local /usr >>$(aclocal --print-ac-dir)/dirlist"
+
+#### Hivex language bindings (optional)
+
+To use all the language bindings bundled with Hivex, install these packages:
 
 * Fedora Core 16: perl-devel perl-Test-Simple perl-Test-Pod perl-Test-Pod-Coverage perl-ExtUtils-MakeMaker perl-IO-stringy perl-libintl ruby-devel rubygem-rake ocaml-findlib-devel readline-devel
 * Ubuntu 12.04: (Not tested)
 * OS X 10.7 Desktop MacPorts: (Not tested)
+* OS X 10.6.8 Server MacPorts: (Not tested)
 
 ### Fiwalk and The Sleuth Kit
 
@@ -142,6 +168,7 @@ This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in part
 * Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
 * OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
+* OS X 10.6.8: (TODO build sleuthkit before hivex, something installed for hivex picked up all the dependencies)
 
 To compile from the zip archive or Git, run:
 
@@ -154,6 +181,7 @@ We use the version supplied by package manager:
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 * OS X 10.7: (already installed)
+* OS X 10.6.8: (TODO something has to install this, not sure what)
 
 ## Maintenance
 
