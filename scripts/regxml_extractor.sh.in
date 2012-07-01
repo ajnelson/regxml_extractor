@@ -42,11 +42,11 @@ fi
 fiout=fiout.dfxml
 #Do we have Fiwalk output?
 if [ ! -f "$fiout" ]; then
-  echo "Did not detect Fiwalk output.  Generating fiout.dfxml."
+  echo "Note: Did not detect Fiwalk output.  Generating fiout.dfxml."
   fiwalk -Xfiout.dfxml -f "$1" >fiout.dfxml.1.log 2>fiout.dfxml.2.log
   status=$?
   if [ $status -ne 0 ]; then
-    echo "Error in Fiwalk; see fiout.dfxml.2.log.  Resuming, but this may fail." >&2
+    echo "Error: fiwalk: see fiout.dfxml.2.log.  Resuming, but this may fail." >&2
     fiout=
   else
     fiout=fiout.dfxml
@@ -55,7 +55,7 @@ fi
 
 #Does it look like we ran before?
 if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
-  echo "Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive."
+  echo "Note: Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive."
 else
   maybe_dfxml_flag=
   if [ ! "$fiout" == "" ]; then
@@ -68,7 +68,7 @@ fi
 # For each regxml file generated, run xmllint to validate and pretty-print
 rm -f linted.txt out.sqlite
 if [ $(ls *hive | wc -l) -eq 0 ]; then
-  echo "No hives extracted."
+  echo "Note: No hives extracted."
 else
   for x in $(ls *hive);
   do
