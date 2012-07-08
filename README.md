@@ -102,7 +102,9 @@ For development or building from Git, these packages are also necessary:
 
 ### Hivex
 
-A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex.git), in the branch 'nelson_ifip12'.  Package dependencies are equivalent to the [upstream hivex](https://github.com/libguestfs/hivex.git).
+A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex.git), in the branch '`regxml`'.  Package dependencies are equivalent to the [upstream hivex](https://github.com/libguestfs/hivex.git).
+
+Building in OS X is a slight bit trickier.  Please read this section and the following subsections on OS X before proceeding.
 
 Git source can be retrieved with:
 
@@ -114,29 +116,42 @@ To build hivex, you must have the following packages installed (assuming a defau
 
 * Fedora Core 16: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
+* OS X 10.6.8 Server MacPorts: (TODO test before port'ing pkgconfig)
 * OS X 10.7.4 Desktop MacPorts: (none needed for Hivex 1.3.6)
-* OS X 10.6.8 Server MacPorts: (TODO Test WITHOUT installing ocaml)
 
 To build from tarballs, run from the extracted source directory:
 
     ./configure && make && sudo make install
 
-(`./configure --prefix=foo` does not work, unfortunately; but if you do not have sudo rights, the hivexml program can be executed in-place from `xml/hivexml`.)
-
-(If building in OS X, there is an error compiling the Ruby binaries, including at least Hivex versions 1.3.1 and 1.3.6.  To bypass the error, pass `--disable-ruby` to `./configure`.)
+(`./configure --prefix=foo` does not work, unfortunately; but if you do not have `sudo` rights, the `hivexml` program can be executed in-place from `xml/hivexml`.)
 
 To build from Git source, also include these packages:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
-* OS X 10.7.4 Desktop MacPorts: ocaml
-* OS X 10.6.8 Server MacPorts: ocaml pkgconfig (see section on Snow Leopard and pkgconfig)
 
 Compilation from Git includes an extra command:
 
     ./autogen.sh && ./configure && make && sudo make install
 
-#### Snow Leopard and pkgconfig
+#### OS X and Hivex
+
+If building in Snow Leopard or Lion, you must build from Git, in a particular version that works around an issue specific to OS X.  Retrieve the source with:
+
+    git clone https://github.com/ajnelson/hivex.git
+    cd hivex
+    git checkout regxml_osx
+
+These ports are needed in OS X:
+
+* OS X 10.6.8 Server MacPorts: ocaml pkgconfig (see section on Snow Leopard and pkgconfig)
+* OS X 10.7.4 Desktop MacPorts: ocaml
+
+In OS X, there is an error compiling the Ruby binaries, including at least Hivex versions 1.3.1 and 1.3.6.  To bypass the error, pass `--disable-ruby` to `./configure`:
+
+    ./autogen.sh && ./configure --disable-ruby && make && sudo make install
+
+#### Snow Leopard, hivex and pkgconfig
 
 The Snow Leopard MacPort of `pkg-config` does not integrate automatically with GNU Autotools on installation with `port`; the `pkg.m4` macro file is stored outside the `ACLOCAL_PATH`.  One solution to this issue is running the following command (thanks to Jim Meyering for the tip) after installing pkgconfig:
 
