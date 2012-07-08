@@ -32,13 +32,9 @@
 For usage, run without arguments.
 """
 
-__version__ = "0.2.3"
+__version__ = "0.2.2"
 
 import sys
-
-#Prepend the installed RegXML Extractor Python library to PYTHONPATH.
-pylibdir = "@pylibdir@"
-sys.path = [pylibdir] + sys.path
 
 import dfxml
 

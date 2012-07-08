@@ -4,7 +4,6 @@
 AC_PREREQ(2.61)
 AC_INIT(regxml_extractor, 0.2.0, ajnelson@cs.ucsc.edu)
 AM_INIT_AUTOMAKE(regxml_extractor, 0.2.0)
-AC_SUBST(pylibdir)
 AC_OUTPUT(Makefile lib/Makefile scripts/Makefile)
 
 # Checks for programs.
@@ -31,10 +30,18 @@ fi
 
 AM_PATH_PYTHON(2.7)
 
+AX_PYTHON_MODULE(dfxml)
+if test "$HAVE_PYMOD_DFXML" != "yes"; then
+  AC_MSG_ERROR([DFXML Python module not found; refer to the README's notes on PYTHONPATH.])
+fi
+
+AX_PYTHON_MODULE(fiwalk)
+if test "$HAVE_PYMOD_FIWALK" != "yes"; then
+  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README's notes on PYTHONPATH.])
+fi
+
 AC_CONFIG_FILES([
   scripts/regxml_extractor.sh
-  scripts/rx_extract_hives.py
-  scripts/rx_make_database.py
 ])
 
 AC_OUTPUT

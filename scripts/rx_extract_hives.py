@@ -32,13 +32,9 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.2.1"
+__version__ = "0.2.0"
 
 import sys
-
-#Prepend the installed RegXML Extractor Python library to PYTHONPATH.
-pylibdir = "@pylibdir@"
-sys.path = [pylibdir] + sys.path
 
 import dfxml,fiwalk
 
