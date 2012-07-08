@@ -37,4 +37,7 @@ config.status
 configure
 install-sh
 missing
+py-compile
 scripts/regxml_extractor.sh
+scripts/rx_extract_hives.py
+scripts/rx_make_database.py
