@@ -77,7 +77,7 @@ Also, in Ubuntu, compilation and installation from tarballs requires a path augm
 
     export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 
-The Python in regxml_extractor require DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
+The Python in `regxml_extractor` requires DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
 
     export PYTHONPATH="$SLEUTHKIT_SRC_DIR/tools/fiwalk/python:$PYTHONPATH"
 
@@ -168,7 +168,7 @@ This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in part
 * Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
 * OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
-* OS X 10.6.8: (TODO build sleuthkit before hivex, something installed for hivex picked up all the dependencies)
+* OS X 10.6.8: (Nothing in addition to XCode needed)
 
 To compile from the zip archive or Git, run:
 
