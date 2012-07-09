@@ -11,6 +11,7 @@ This program has been tested in the following environments:
 * Fedora Core 16
 * Ubuntu 12.04
 * OS X 10.6.8 Server
+* OS X 10.7.4 Desktop
 
 ## Building `regxml_extractor`
 
@@ -86,7 +87,7 @@ In Linux, `/usr` replaces `/opt`.
 
 All of the following packages will need to be installed (software that require these are noted below):
 
-* Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Fedora Core 16: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
 * OS X 10.6.8 Server MacPorts: ocaml pkgconfig
 * OS X 10.7.4 Desktop MacPorts: automake autoconf libtool ocaml pkgconfig
@@ -96,8 +97,7 @@ For development or building from Git, these packages are also necessary:
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
 * OS X 10.6.8 Server MacPorts: (Nothing more needed)
-* OS X 10.7.4 Desktop MacPorts: TODO
-LION TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
+* OS X 10.7.4 Desktop MacPorts: (Nothing more needed)
 
 ### Hivex
 
