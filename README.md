@@ -24,7 +24,7 @@ To build from upstream (Git):
     ./bootstrap.sh
     ./configure && make install
 
-The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run from the `regxml_extractor` cloned source directory:
+The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` cloned source directory:
 
     git submodule init
     git submodule update
@@ -66,9 +66,9 @@ Also, in Ubuntu, compilation and installation from tarballs requires a path augm
 
 The Python in `regxml_extractor` requires DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
 
-    export PYTHONPATH="$SLEUTHKIT_SRC_DIR/tools/fiwalk/python:$PYTHONPATH"
+    export PYTHONPATH="$REGXML_EXTRACTOR_SRC_DIR/lib:$PYTHONPATH"
 
-(Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
+(Where `$REGXML_EXTRACTOR_SRC_DIR` is the directory with this README.)
 
 The Sleuth Kit can link against libewf.  For example, in OS X, adding these paths let a locally-built TSK link against the MacPorts-installed libewf:
 
@@ -92,10 +92,10 @@ For development or building from Git, these packages are also necessary:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
-* OS X 10.6.8 Server MacPorts: TODO
-* OS X 10.7.4 Server MacPorts: TODO
-MAC TODO INSTALLED: automake autoconf ocaml pkgconfig libtool
-MAC TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
+* OS X 10.6.8 Server MacPorts: ocaml pkgconfig
+* OS X 10.7.4 Desktop MacPorts: TODO
+LION TODO INSTALLED: automake autoconf ocaml pkgconfig libtool
+LION TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
 
 ### Hivex
 
@@ -113,8 +113,7 @@ To build hivex, you must have the following packages installed (assuming a defau
 
 * Fedora Core 16: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
-* OS X 10.6.8 Server MacPorts: (TODO test before port'ing pkgconfig)
-* OS X 10.7.4 Desktop MacPorts: (none needed for Hivex 1.3.6)
+* OS X: (see OS X section)
 
 To build from tarballs, run from the extracted source directory:
 
@@ -126,6 +125,7 @@ To build from Git source, also include these packages:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
+* OS X: (see OS X section)
 
 Compilation from Git includes an extra command:
 
@@ -175,12 +175,12 @@ Git source can be retrieved with:
 
 RegXML Extractor is tested with tag `sleuthkit-fiwalk-v1`; the `FIwalk-dev` branch can be used if more recent (`git checkout FIwalk_dev`).
 
-This Fiwalk, embedded in The Sleuth Kit, has a dependency on Java (javac in particular), which can be satisfied with the Oracle Java Development Kit (JDK) RPM, or the openjdk package noted below.
+This Sleuth Kit has a dependency on Java (javac in particular), which can be satisfied with the Oracle Java Development Kit (JDK) RPM, or the openjdk package noted below.
 
 * Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
-* OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
 * OS X 10.6.8: (Nothing in addition to XCode needed)
+* OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
 
 To compile from the zip archive or Git, run:
 
@@ -193,7 +193,7 @@ We use the version supplied by package managers:
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 * OS X 10.7: (already installed)
-* OS X 10.6.8: (already installed)
+* OS X 10.6.8: TODO libxml2? (seems to be installed as ocaml dependency)
 
 ## Maintenance
 
