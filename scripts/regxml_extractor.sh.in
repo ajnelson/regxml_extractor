@@ -53,6 +53,15 @@ if [ ! -f "$fiout" ]; then
   fi
 fi
 
+#Check Fiwalk output
+fiout_xmllint_errlog=fiout.dfxml.xmllint.err.log
+xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
+status=$?
+if [ $status -ne 0]; then
+  echo "Error validating DFXML file '$fiout' (error code $status): see $fiout_xmllint_errlog." >&2
+  exit 1
+fi
+
 #Does it look like we ran before?
 if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
   echo "Note: Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive."
