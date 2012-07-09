@@ -24,35 +24,22 @@ To build from upstream (Git):
     ./bootstrap.sh
     ./configure && make install
 
-The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run from the `regxml_extractor` source directory:
+The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run from the `regxml_extractor` cloned source directory:
 
     git submodule init
     git submodule update
 
-You can then find Hivex, TSK and Fiwalk in the deps/ directory.
+You can then find Hivex, TSK with Fiwalk, and DFXML in the `deps/` directory.
 
 ### OS X
 
-We have built RegXML Extractor on a fresh instance of OS X Lion (10.7.4) by installing from the source websites:
-* XCode (AppStore)
+We have built RegXML Extractor on fresh instances of OS X Lion (10.7.4) and Snow Leopard Server (10.6.8) by installing from the source websites:
+
+* XCode (AppStore in Lion, Apple Developer Site for Snow Leopard)
 * MacPorts (macports.org)
+* Git (git-scm.com) (just needed for Snow Leopard)
 
-XCode 4.3.3 requires the command line tools (which include gcc and git) be installed through XCode's Preferences -> Downloads -> Components -> Command Line Tools.
-
-For a dependency of The SleuthKit, we installed Java by invoking an auto-installer.  On a command line, just type `java -version` and an installer prompt appears.
-
-Then with ports, we installed these packages to build the dependencies from Git source:
-
-INSTALLED: automake autoconf ocaml pkgconfig libtool
-NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
-
-#### OS X Snow Leopard
-
-* XCode (Apple Developer site)
-* MacPorts (macports.org)
-* git (git-scm.com)
-
-* easy_install argparse
+In Lion, XCode 4.3.3 requires the command line tools (which include `gcc` and `git`) be installed through XCode's Preferences -> Downloads -> Components -> Command Line Tools.
 
 ## Running
 
@@ -83,22 +70,32 @@ The Python in `regxml_extractor` requires DFXML, which is easiest to satisfy wit
 
 (Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
 
-The SleuthKit can link against libewf.  For example, in OS X, adding these paths let a locally-built TSK link against the MacPorts-installed libewf:
+The Sleuth Kit can link against libewf.  For example, in OS X, adding these paths let a locally-built TSK link against the MacPorts-installed libewf:
 
     export LIBRARY_PATH="/opt/local/lib:$LIBRARY_PATH"
     export LD_LIBRARY_PATH="/opt/local/lib:$LD_LIBRARY_PATH"
     export C_INCLUDE_PATH="/opt/local/include:$C_INCLUDE_PATH"
     export CPLUS_INCLUDE_PATH="/opt/local/include:$CPLUS_INCLUDE_PATH"
 
-Package summary: all of the following packages will need to be installed (software that require these are noted below):
+In Linux, `/usr` replaces `/opt`.
+
+### Package summary
+
+All of the following packages will need to be installed (software that require these are noted below):
 
 * Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
+* OS X 10.6.8 Server MacPorts: TODO
+* OS X 10.7.4 Server MacPorts: TODO
 
 For development or building from Git, these packages are also necessary:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
+* OS X 10.6.8 Server MacPorts: TODO
+* OS X 10.7.4 Server MacPorts: TODO
+MAC TODO INSTALLED: automake autoconf ocaml pkgconfig libtool
+MAC TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
 
 ### Hivex
 
@@ -196,7 +193,7 @@ We use the version supplied by package manager:
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 * OS X 10.7: (already installed)
-* OS X 10.6.8: (TODO something has to install this, not sure what)
+* OS X 10.6.8: (already installed)
 
 ## Maintenance
 
