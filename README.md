@@ -15,7 +15,7 @@ This program has been tested in the following environments:
 
 To build from the tarball:
 
-    ./configure && make install
+    ./configure && sudo make install
 
 (As this package only contains scripts, there isn't much need for `make`.)
 
@@ -23,6 +23,8 @@ To build from upstream (Git):
 
     ./bootstrap.sh
     ./configure && make install
+
+If `./configure` does not work for lack of dependencies, refer to the detailed idependency building section.
 
 The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` cloned source directory:
 
@@ -56,7 +58,7 @@ Output:
 
 If you don't want to install the scripts, you can run the above from the extracted source directory.
 
-## Dependencies
+## Building and installing dependencies
 
 This program depends on The Sleuth Kit, Fiwalk, Python, Hivex and libxml2.
 
@@ -85,14 +87,14 @@ All of the following packages will need to be installed (software that require t
 
 * Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
-* OS X 10.6.8 Server MacPorts: TODO
-* OS X 10.7.4 Server MacPorts: TODO
+* OS X 10.6.8 Server MacPorts: ocaml pkgconfig
+* OS X 10.7.4 Desktop MacPorts: TODO
 
 For development or building from Git, these packages are also necessary:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
-* OS X 10.6.8 Server MacPorts: ocaml pkgconfig
+* OS X 10.6.8 Server MacPorts: (Nothing more needed)
 * OS X 10.7.4 Desktop MacPorts: TODO
 LION TODO INSTALLED: automake autoconf ocaml pkgconfig libtool
 LION TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
@@ -101,7 +103,7 @@ LION TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
 
 A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex.git), in the branch '`regxml`'.  Package dependencies are equivalent to the [upstream hivex](https://github.com/libguestfs/hivex.git).
 
-Building in OS X is a slight bit trickier.  Please read this section and the following subsections on OS X before proceeding.
+Building in OS X is a slight bit trickier.  You can skip to the OS X subsection and ignore this section.
 
 Git source can be retrieved with:
 
@@ -193,7 +195,7 @@ We use the version supplied by package managers:
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
 * OS X 10.7: (already installed)
-* OS X 10.6.8: TODO libxml2? (seems to be installed as ocaml dependency)
+* OS X 10.6.8: (already installed)
 
 ## Maintenance
 
