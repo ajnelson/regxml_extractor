@@ -148,7 +148,7 @@ In OS X, there is an error compiling the Ruby binaries, including at least Hivex
 
     ./autogen.sh && ./configure --disable-ruby && make && sudo make install
 
-#### Snow Leopard, hivex and pkgconfig
+#### OS X Snow Leopard, Hivex and pkgconfig
 
 The Snow Leopard MacPort of `pkg-config` does not integrate automatically with GNU Autotools on installation with `port`; the `pkg.m4` macro file is stored outside the `ACLOCAL_PATH`.  One solution to this issue is running the following command (thanks to Jim Meyering for the tip) after installing pkgconfig:
 
@@ -186,9 +186,9 @@ To compile from the zip archive or Git, run:
 
     ./bootstrap && ./configure && make && sudo make install
 
-## xmllint
+### xmllint
 
-We use the version supplied by package manager:
+We use the version supplied by package managers:
 
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
