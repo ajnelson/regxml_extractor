@@ -10,6 +10,7 @@ This program has been tested in the following environments:
 
 * Fedora Core 16
 * Ubuntu 12.04
+* OS X 10.6.8 Server
 
 ## Building `regxml_extractor`
 
@@ -24,7 +25,7 @@ To build from upstream (Git):
     ./bootstrap.sh
     ./configure && make install
 
-If `./configure` does not work for lack of dependencies, refer to the detailed idependency building section.
+If `./bootstrap` or `./configure` do not work for lack of dependencies, refer to the detailed idependency building section.
 
 The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` cloned source directory:
 
@@ -88,7 +89,7 @@ All of the following packages will need to be installed (software that require t
 * Fedora Core 16: automake python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
 * OS X 10.6.8 Server MacPorts: ocaml pkgconfig
-* OS X 10.7.4 Desktop MacPorts: TODO
+* OS X 10.7.4 Desktop MacPorts: automake autoconf libtool ocaml pkgconfig
 
 For development or building from Git, these packages are also necessary:
 
@@ -96,7 +97,6 @@ For development or building from Git, these packages are also necessary:
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
 * OS X 10.6.8 Server MacPorts: (Nothing more needed)
 * OS X 10.7.4 Desktop MacPorts: TODO
-LION TODO INSTALLED: automake autoconf ocaml pkgconfig libtool
 LION TODO NOT YET INSTALLED: libxml2-devel python-devel openssl-devel
 
 ### Hivex
@@ -144,7 +144,7 @@ If building in Snow Leopard or Lion, you must build from Git, in a particular ve
 These ports are needed in OS X:
 
 * OS X 10.6.8 Server MacPorts: ocaml pkgconfig (see section on Snow Leopard and pkgconfig)
-* OS X 10.7.4 Desktop MacPorts: ocaml
+* OS X 10.7.4 Desktop MacPorts: autoconf automake libtool ocaml pkgconfig
 
 In OS X, there is an error compiling the Ruby binaries, including at least Hivex versions 1.3.1 and 1.3.6.  To bypass the error, pass `--disable-ruby` to `./configure`:
 
@@ -155,6 +155,8 @@ In OS X, there is an error compiling the Ruby binaries, including at least Hivex
 The Snow Leopard MacPort of `pkg-config` does not integrate automatically with GNU Autotools on installation with `port`; the `pkg.m4` macro file is stored outside the `ACLOCAL_PATH`.  One solution to this issue is running the following command (thanks to Jim Meyering for the tip) after installing pkgconfig:
 
     sudo bash -c "printf '%s/share/aclocal\n' /opt/local /usr >>$(aclocal --print-ac-dir)/dirlist"
+
+Note that if you installed `pkg-config` in Snow Leopard and upgraded to Lion, this issue persists through the upgrade.
 
 #### Hivex language bindings (optional)
 
@@ -181,8 +183,8 @@ This Sleuth Kit has a dependency on Java (javac in particular), which can be sat
 
 * Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12.04: g++ libtool openjdk-7-jdk
-* OS X 10.6.8: (Nothing in addition to XCode needed)
-* OS X 10.7 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
+* OS X 10.6.8 Server MacPorts: (Nothing in addition to XCode needed)
+* OS X 10.7.4 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
 
 To compile from the zip archive or Git, run:
 
@@ -194,8 +196,8 @@ We use the version supplied by package managers:
 
 * Fedora Core 16: (already installed)
 * Ubuntu 12.04: libxml2-utils
-* OS X 10.7: (already installed)
 * OS X 10.6.8: (already installed)
+* OS X 10.7.4: (already installed)
 
 ## Maintenance
 
