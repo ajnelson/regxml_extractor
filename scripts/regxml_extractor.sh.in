@@ -43,10 +43,10 @@ fiout=fiout.dfxml
 #Do we have Fiwalk output?
 if [ ! -f "$fiout" ]; then
   echo "Note: Did not detect Fiwalk output.  Generating fiout.dfxml."
-  fiwalk -Xfiout.dfxml -f "$1" >fiout.dfxml.1.log 2>fiout.dfxml.2.log
+  fiwalk -Xfiout.dfxml -f "$1" >fiout.dfxml.out.log 2>fiout.dfxml.err.log
   status=$?
   if [ $status -ne 0 ]; then
-    echo "Error: fiwalk: see fiout.dfxml.2.log.  Resuming, but this may fail." >&2
+    echo "Error: fiwalk: see fiout.dfxml.err.log.  Resuming, but this may fail." >&2
     fiout=
   else
     fiout=fiout.dfxml
