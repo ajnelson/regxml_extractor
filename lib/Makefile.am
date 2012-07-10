@@ -1,1 +1,1 @@
-pkgpyexec_PYTHON = dfxml.py fiwalk.py
+noinst_PYTHON = dfxml.py fiwalk.py
