@@ -8,7 +8,7 @@ The collective software in this project takes a disk image and outputs a set of 
 
 This program has been tested in the following environments:
 
-* Fedora Core 16
+* Fedora Core 16, 17
 * Ubuntu 12.04
 * OS X 10.6.8 Server
 * OS X 10.7.4 Desktop
@@ -87,14 +87,15 @@ In Linux, `/usr` replaces `/opt`.
 
 All of the following packages will need to be installed (software that require these are noted below):
 
-* Fedora Core 16: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
-* Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils
+* Fedora Core 16, 17: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils libssl-dev
 * OS X 10.6.8 Server MacPorts: ocaml pkgconfig
 * OS X 10.7.4 Desktop MacPorts: automake autoconf libtool ocaml pkgconfig
 
 For development or building from Git, these packages are also necessary:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
+* Fedora Core 17: git libtool gettext-devel ocaml automake
 * Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
 * OS X 10.6.8 Server MacPorts: (Nothing more needed)
 * OS X 10.7.4 Desktop MacPorts: (Nothing more needed)
@@ -107,13 +108,13 @@ Building in OS X is a slight bit trickier.  You can skip to the OS X subsection 
 
 Git source can be retrieved with:
 
-    git clone https://github.com/ajnelson/hivex.git
+    git clone --branch=nelson_ifip12 https://github.com/ajnelson/hivex.git
     cd hivex
     git checkout nelson_ifip12
 
 To build hivex, you must have the following packages installed (assuming a default environment for the named distros):
 
-* Fedora Core 16: gcc libxml2-devel python-devel
+* Fedora Core 16, 17: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
 * OS X: (see OS X section)
 
@@ -126,6 +127,7 @@ To build from tarballs, run from the extracted source directory:
 To build from Git source, also include these packages:
 
 * Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
+* Fedora Core 17: git libtool gettext-devel ocaml automake
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
 * OS X: (see OS X section)
 
@@ -181,8 +183,8 @@ RegXML Extractor is tested with tag `sleuthkit-fiwalk-v1`; the `FIwalk-dev` bran
 
 This Sleuth Kit has a dependency on Java (javac in particular), which can be satisfied with the Oracle Java Development Kit (JDK) RPM, or the openjdk package noted below.
 
-* Fedora Core 16: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
-* Ubuntu 12.04: g++ libtool openjdk-7-jdk
+* Fedora Core 16, 17: gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
+* Ubuntu 12.04: g++ libtool openjdk-7-jdk autoconf automake libssl-dev
 * OS X 10.6.8 Server MacPorts: (Nothing in addition to XCode needed)
 * OS X 10.7.4 Desktop MacPorts: autoconf automake libtool; and java: To install Java, invoking `java` launches an installer if the runtime environment's absent
 
