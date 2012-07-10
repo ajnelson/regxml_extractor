@@ -25,25 +25,24 @@ fi
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
 if test "$HAVE_XMLLINT" != "yes"; then
-  AC_MSG_ERROR([xmllint not found; this may be in libxml2 or the associated utilities package.  Install the package with 'apt-get install libxml2-utils' or 'yum install TODO'.])
+  AC_MSG_ERROR([xmllint not found; refer to the README notes on xmllint.])
 fi
 
 AM_PATH_PYTHON(2.7)
 
 AX_PYTHON_MODULE(argparse)
-
 if test "$HAVE_PYMOD_ARGPARSE" != "yes"; then
   AC_MSG_ERROR([Argparse Python module not found; this can be installed with 'easy_install argparse'.])
 fi
 
 AX_PYTHON_MODULE(dfxml)
 if test "$HAVE_PYMOD_DFXML" != "yes"; then
-  AC_MSG_ERROR([DFXML Python module not found; refer to the README's notes on PYTHONPATH.])
+  AC_MSG_ERROR([DFXML Python module not found; refer to the README notes on PYTHONPATH.])
 fi
 
 AX_PYTHON_MODULE(fiwalk)
 if test "$HAVE_PYMOD_FIWALK" != "yes"; then
-  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README's notes on PYTHONPATH.])
+  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README notes on PYTHONPATH.])
 fi
 
 AC_CONFIG_FILES([
