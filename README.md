@@ -104,25 +104,21 @@ For development or building from Git, these packages are also necessary:
 
 A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex.git), in the branch '`regxml`'.  Package dependencies are equivalent to the [upstream hivex](https://github.com/libguestfs/hivex.git).
 
-Building in OS X is a slight bit trickier.  You can skip to the OS X subsection and ignore this section.
+Building in OS X is a slight bit trickier.  You can skip to the OS X subsection and ignore the Linux instructions.
 
-Git source can be retrieved with:
-
-    git clone --branch=nelson_ifip12 https://github.com/ajnelson/hivex.git
-    cd hivex
-    git checkout nelson_ifip12
-
-To build hivex, you must have the following packages installed (assuming a default environment for the named distros):
+To build hivex from a tarball, you must have the following packages installed (assuming a default environment for the named distros):
 
 * Fedora Core 16, 17: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
 * OS X: (see OS X section)
 
-To build from tarballs, run from the extracted source directory:
+With those prerequisites installed, run the normal building commands from the extracted source directory:
 
     ./configure && make && sudo make install
 
 (`./configure --prefix=foo` does not work, unfortunately; but if you do not have `sudo` rights, the `hivexml` program can be executed in-place from `xml/hivexml`.)
+
+#### Hivex from Git
 
 To build from Git source, also include these packages:
 
@@ -131,7 +127,11 @@ To build from Git source, also include these packages:
 * Ubuntu 12.04: git libtool autopoint ocaml autoconf python-dateutil gettext
 * OS X: (see OS X section)
 
-Compilation from Git includes an extra command:
+Git source can be retrieved with:
+
+    git clone --branch=nelson_ifip12 https://github.com/ajnelson/hivex.git
+
+Compilation from Git starts with an extra command:
 
     ./autogen.sh && ./configure && make && sudo make install
 
