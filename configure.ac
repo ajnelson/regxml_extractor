@@ -37,12 +37,12 @@ fi
 
 AX_PYTHON_MODULE(dfxml)
 if test "$HAVE_PYMOD_DFXML" != "yes"; then
-  AC_MSG_ERROR([DFXML Python module not found; refer to the README notes on PYTHONPATH.])
+  AC_MSG_WARN([DFXML Python module not found; refer to the README notes on PYTHONPATH.])
 fi
 
 AX_PYTHON_MODULE(fiwalk)
 if test "$HAVE_PYMOD_FIWALK" != "yes"; then
-  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README notes on PYTHONPATH.])
+  AC_MSG_WARN([Fiwalk Python module not found; refer to the README notes on PYTHONPATH.])
 fi
 
 AC_CONFIG_FILES([

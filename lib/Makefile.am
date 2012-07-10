@@ -1,2 +1,1 @@
-pylibdir = $(pkglibdir)/python
-pylib_PYTHON = dfxml.py fiwalk.py
+pkgpython_PYTHON = dfxml.py fiwalk.py
