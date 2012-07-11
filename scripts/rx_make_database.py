@@ -233,7 +233,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
         #    sys.stderr.write(".\n")
 
     #name
-    record_dict["name"] = co.name() #AJN TODO This requires DFXML >= 1.0.1, from https://github.com/simsong/dfxml
+    record_dict["name"] = co.name()
 
     #full_path
     record_dict["full_path"] = co.full_path()
