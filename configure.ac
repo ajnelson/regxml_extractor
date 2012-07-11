@@ -45,4 +45,8 @@ if test "$HAVE_PYMOD_FIWALK" != "yes"; then
   AC_MSG_ERROR([Fiwalk Python module not found; refer to the README notes on PYTHONPATH.])
 fi
 
+AC_CONFIG_FILES([
+  scripts/regxml_extractor.sh
+])
+
 AC_OUTPUT

@@ -28,8 +28,14 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
 
+PYTHON=@PYTHON@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=$exec_prefix/bin
+
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <disk image>" >&2
+  echo "Note that the results are written to the current working directory." >&2
   exit 1
 fi
 
@@ -56,28 +62,22 @@ if [ $status -ne 0 ]; then
   exit 1
 fi
 
-#If not installed, just run local scripts
-SCRIPT_PREFIX=""
-if test "x$(which rx_extract_hives.py)" = "x" ; then
-  SCRIPT_PREFIX="./"
-fi
-
 #Does it look like we ran before?
 if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
-  echo "Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive"
+  echo "Note: Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive."
 else
   maybe_dfxml_flag=
   if [ ! "$fiout" == "" ]; then
     maybe_dfxml_flag=-x"$fiout"
   fi
   #Invoke extraction script
-  "${SCRIPT_PREFIX}rx_extract_hives.py" $maybe_dfxml_flag --hivexml "$1" >manifest.txt
+  "$PYTHON" "$bindir/rx_extract_hives.py" $maybe_dfxml_flag --hivexml "$1" >manifest.txt
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
 rm -f linted.txt out.sqlite
 if [ $(ls *hive | wc -l) -eq 0 ]; then
-  echo "No hives extracted."
+  echo "Note: No hives extracted."
 else
   for x in $(ls *hive);
   do
@@ -87,6 +87,6 @@ else
   done
   # When all regxml is pretty-printed, generate a database
   if [ -f linted.txt ]; then
-    "${SCRIPT_PREFIX}rx_make_database.py" linted.txt manifest.txt out.sqlite
+    "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
   fi
 fi
