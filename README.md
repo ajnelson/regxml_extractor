@@ -26,7 +26,7 @@ To build from upstream (Git):
     ./bootstrap.sh
     ./configure && make install
 
-If `./bootstrap` or `./configure` do not work for lack of dependencies, refer to the detailed idependency building section.
+If `./bootstrap` or `./configure` do not work for lack of dependencies, refer to the detailed dependency building section.
 
 The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` cloned source directory:
 
