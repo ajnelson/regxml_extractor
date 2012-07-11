@@ -28,4 +28,11 @@ if test "$HAVE_XMLLINT" != "yes"; then
   AC_MSG_ERROR([xmllint not found; this may be in libxml2 or the associated utilities package.  Install the package with 'apt-get install libxml2-utils' or 'yum install TODO'.])
 fi
 
+AM_PATH_PYTHON(2.7)
+
+AX_PYTHON_MODULE(argparse)
+if test "$HAVE_PYMOD_ARGPARSE" != "yes"; then
+  AC_MSG_ERROR([Argparse Python module not found; this can be installed with 'easy_install argparse'.])
+fi
+
 AC_OUTPUT
