@@ -33,6 +33,29 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
+fiout=fiout.dfxml
+#Do we have Fiwalk output?
+if [ ! -f "$fiout" ]; then
+  echo "Note: Did not detect Fiwalk output.  Generating fiout.dfxml."
+  fiwalk -Xfiout.dfxml -f "$1" >fiout.dfxml.out.log 2>fiout.dfxml.err.log
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "Error: fiwalk: see fiout.dfxml.err.log.  Resuming, but this may fail." >&2
+    fiout=
+  else
+    fiout=fiout.dfxml
+  fi
+fi
+
+#Check Fiwalk output
+fiout_xmllint_errlog=fiout.dfxml.xmllint.err.log
+xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
+status=$?
+if [ $status -ne 0 ]; then
+  echo "Error validating DFXML file '$fiout' (error code $status): see $fiout_xmllint_errlog." >&2
+  exit 1
+fi
+
 #If not installed, just run local scripts
 SCRIPT_PREFIX=""
 if test "x$(which rx_extract_hives.py)" = "x" ; then
@@ -43,8 +66,12 @@ fi
 if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
   echo "Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive"
 else
+  maybe_dfxml_flag=
+  if [ ! "$fiout" == "" ]; then
+    maybe_dfxml_flag=-x"$fiout"
+  fi
   #Invoke extraction script
-  "${SCRIPT_PREFIX}rx_extract_hives.py" --hivexml "$1" >manifest.txt
+  "${SCRIPT_PREFIX}rx_extract_hives.py" $maybe_dfxml_flag --hivexml "$1" >manifest.txt
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
