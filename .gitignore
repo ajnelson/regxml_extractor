@@ -26,4 +26,16 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
+#Autotools
+INSTALL
 Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+configure
+install-sh
+missing
+py-compile
+scripts/regxml_extractor.sh
