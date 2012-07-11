@@ -34,8 +34,11 @@ For usage instructions, see the argument parser description below, or run this s
 
 __version__ = "0.2.0"
 
+import sys
+
 import dfxml,fiwalk
-import sys,os,datetime
+
+import os,datetime
 import argparse
 
 tally = 0

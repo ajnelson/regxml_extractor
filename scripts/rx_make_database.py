@@ -34,8 +34,11 @@ For usage, run without arguments.
 
 __version__ = "0.2.2"
 
-import dfxml, os, sys, sqlite3
+import sys
 
+import dfxml
+
+import os, sqlite3
 import hashlib
 import base64
 from operator import itemgetter
@@ -230,7 +233,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
         #    sys.stderr.write(".\n")
 
     #name
-    record_dict["name"] = co.name() #AJN TODO This requires DFXML >= 1.0.1, from https://github.com/simsong/dfxml
+    record_dict["name"] = co.name()
 
     #full_path
     record_dict["full_path"] = co.full_path()
