@@ -8,24 +8,24 @@ AC_OUTPUT(Makefile lib/Makefile scripts/Makefile)
 
 # Checks for programs.
 
+AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
+if test "$HAVE_HIVEXML" != "yes"; then
+  AC_MSG_ERROR([hivexml not found; refer to the README for Hivex compilation notes.])
+fi
+
 AC_CHECK_PROG(HAVE_ICAT,icat,yes)
 if test "$HAVE_ICAT" != "yes"; then
-  AC_MSG_ERROR([icat not found; refer to README for SleuthKit compilation notes.])
+  AC_MSG_ERROR([icat not found; refer to the README for Sleuth Kit compilation notes.])
 fi
 
 AC_CHECK_PROG(HAVE_FIWALK,fiwalk,yes)
 if test "$HAVE_FIWALK" != "yes"; then
-  AC_MSG_ERROR([fiwalk not found; refer to README for SleuthKit compilation notes.])
-fi
-
-AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
-if test "$HAVE_HIVEXML" != "yes"; then
-  AC_MSG_ERROR([hivexml not found; refer to README for Hivex compilation notes.])
+  AC_MSG_ERROR([fiwalk not found; refer to the README for Sleuth Kit compilation notes.])
 fi
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
 if test "$HAVE_XMLLINT" != "yes"; then
-  AC_MSG_ERROR([xmllint not found; this may be in libxml2 or the associated utilities package.  Install the package with 'apt-get install libxml2-utils' or 'yum install TODO'.])
+  AC_MSG_ERROR([xmllint not found; refer to the README notes on xmllint.])
 fi
 
 AM_PATH_PYTHON(2.7)
