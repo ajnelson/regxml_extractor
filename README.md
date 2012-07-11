@@ -19,10 +19,12 @@ To build from upstream (Git):
 
 The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run from the `regxml_extractor` source directory:
 
+The Git repository includes the expected versions of Hivex, The Sleuth Kit and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` cloned source directory:
+
     git submodule init
     git submodule update
 
-You can then find Hivex, TSK and Fiwalk in the deps/ directory.
+You can then find Hivex, TSK with Fiwalk, and DFXML in the `deps/` directory.
 
 ## Running
 
@@ -50,12 +52,15 @@ This program has been tested in the following environments:
 
 This program depends on The Sleuth Kit, Fiwalk, Python, Hivex and libxml2.
 
-Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.  The Python in regxml_extractor require DFXML, which is easiest to satisfy with a path augmentation.  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
+Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.
 
     export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
-    export PYTHONPATH="$SLEUTHKIT_SRC_DIR/tools/fiwalk/python:$PYTHONPATH"
 
-(Where `$SLEUTHKIT_SRC_DIR` is where you choose to extract the zip or Git source for The Sleuth Kit, noted below.)
+The Python in `regxml_extractor` requires DFXML, which is easiest to satisfy with a path augmentation.  (This is, unfortunately, a kludge until DFXML's Python libraries are deployable with, say, distutils.)  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
+
+    export PYTHONPATH="$REGXML_EXTRACTOR_SRC_DIR/lib:$PYTHONPATH"
+
+(Where `$REGXML_EXTRACTOR_SRC_DIR` is the directory with this README, aka `$(abs_srcdir)`.)
 
 Package summary: all of the following packages will need to be installed (software that require these are noted below):
 
