@@ -364,9 +364,7 @@ def main():
         image_sequences = [[]]
 
         sequence_file = open(args.drive_sequence_listing, "r")
-        line_no = 0
-        for line in sequence_file:
-            line_no += 1
+        for (line_no, line) in enumerate(sequence_file):
             line_cleaned = line.strip()
             if line_cleaned == "":
                 image_sequences.append([])
