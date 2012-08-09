@@ -41,16 +41,13 @@ import dfxml,fiwalk
 import os,datetime
 import argparse
 
-tally = 0
-
 def proc_dfxml(fi):
-    global tally
     global hivexml_command
     global imageabspath
     basename = os.path.basename(fi.filename()).lower()
     #Names noted in Carvey, 2011 (_Windows Registry Forensics_), page 18
     if fi.filename().lower().endswith(("ntuser.dat", "system32/config/sam", "system32/config/security", "system32/config/software", "system32/config/system", "system32/config/components", "local settings/application data/microsoft/windows/usrclass.dat")):
-        outfilename = os.path.abspath(str(tally) + ".hive")
+        outfilename = os.path.abspath(str(fi.tag("id")) + ".hive")
         print("\t".join(map(str, [
           outfilename,
           imageabspath,
@@ -65,7 +62,6 @@ def proc_dfxml(fi):
             sysrc = os.system(command_string)
             if sysrc:
                 sys.stderr.write("Error, see err.log: " + command_string + "\n")
-        tally += 1
 
 if __name__=="__main__":
     global hivexml_command
