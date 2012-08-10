@@ -77,7 +77,7 @@ if __name__=="__main__":
 
     xmlfh = None
     if args.dfxml_file_name != None:
-        xmlfh = open(args.dfxml_file_name, "r")
+        xmlfh = open(args.dfxml_file_name, "rb")
     imageabspath = os.path.abspath(args.imagefilename)
 
     fiwalk.fiwalk_using_sax(imagefile=open(imageabspath, "r"), xmlfile=xmlfh, callback=proc_dfxml)
