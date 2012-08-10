@@ -64,11 +64,16 @@ fi
 
 tskout=tskout.db
 #Generate TSK database output
-tsk_loaddb -d tskout.db "$1" >tskout.db.out.log 2>tskout.db.err.log
-status=$?
-if [ $status -ne 0 ]; then
-  echo "Error: tsk_loaddb: see tskout.db.err.log.  Continuing without TSK output."
-  tskout=
+if [ ! -f "$tskout" ]; then
+  echo "Note: Did not detect TSK output. Generating tskout.db."
+  tsk_loaddb -d tskout.db "$1" >tskout.db.out.log 2>tskout.db.err.log
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "Error: tsk_loaddb: see tskout.db.err.log.  Continuing without TSK output."
+    tskout=
+  else
+    tskout=tskout.db
+  fi
 fi
 
 #Make Fiwalk lookup database
