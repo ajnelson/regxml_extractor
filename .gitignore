@@ -38,4 +38,6 @@ configure
 install-sh
 missing
 py-compile
+
+.DS_Store
 scripts/regxml_extractor.sh
