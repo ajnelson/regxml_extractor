@@ -118,7 +118,7 @@ CREATE TABLE hives_failed (
 
 def filetime_to_timestamp(ft):
     WINDOWS_TICK = 10000000
-    SEC_TO_UNIX_EPOCH = 11644473600L
+    SEC_TO_UNIX_EPOCH = 11644473600
     return int(ft / WINDOWS_TICK - SEC_TO_UNIX_EPOCH)
 
 def dftime_from_filetime(ft):
@@ -157,9 +157,9 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     if isinstance(co, dfxml.registry_key_object):
         mtime = co.mtime()
         record_dict["mtime"] = str(mtime)
-        if mtime < rh.mtime_earliest_key or rh.mtime_earliest_key == None:
+        if rh.mtime_earliest_key is None or mtime < rh.mtime_earliest_key:
             rh.mtime_earliest_key = mtime
-        if mtime > rh.mtime_latest_key or rh.mtime_latest_key == None:
+        if rh.mtime_latest_key is None or mtime > rh.mtime_latest_key:
             rh.mtime_latest_key = mtime
     else:
         record_dict["mtime"] = None
@@ -194,11 +194,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     record_dict["value_checksum"] = None
     value_data = None
     if isinstance(co, dfxml.registry_value_object):
-        value_data = co.value_data
-        if value_data:
-            h = hashlib.md5()
-            h.update(co.value_data)
-            record_dict["value_checksum"] = h.hexdigest()
+        record_dict["value_checksum"] = co.md5()
 
     #metadata_length
     #	This won't make any difference until list space is added to the processing
@@ -396,8 +392,8 @@ def main():
             raise Exception("Unexpected number of line components when reading hive-regxml mapping:\nrepr(line) = " + repr(line))
         successful_regxmls[hive_path] = xml_path
     if args.verbose:
-        print "Successful hive file-RegXML pairs:"
-        print "\n".join([(k,successful_regxmls[k]) for k in successful_regxmls])
+        print("Successful hive file-RegXML pairs:")
+        print("\n".join([(k,successful_regxmls[k]) for k in successful_regxmls]))
 
     #Produce a list of the images to use
     work_list_unordered = []
@@ -417,10 +413,14 @@ def main():
                 work_list_unordered.append({"regxml_path":regxml_path, "dfxml_hive_path":dfxml_hive_path, "image_file":image_file, "prior_image":prior_image, "mtime":hive_mtime, "atime":hive_atime, "ctime":hive_ctime, "crtime":hive_crtime, "image_sequence_number":image_sequence_numbers.get(image_file)})
     image_list_file.close()
     #Order by manifest listing.
-    work_list = sorted(work_list_unordered, key=itemgetter("image_sequence_number"))
+    if working_with_priors:
+        work_list = sorted(work_list_unordered, key=itemgetter("image_sequence_number"))
+    else:
+        #Ingest order will do fine in the single-image case.
+        work_list = work_list_unordered
     if args.verbose:
-        print "In-order work list we are processing:"
-        print "\n".join(map(str, work_list))
+        print("In-order work list we are processing:")
+        print("\n".join(map(str, work_list)))
 
     #Begin the SQL database
     conn = sqlite3.connect(args.output_database_file)
@@ -500,7 +500,7 @@ def main():
         #Process the RegXML into cell records, capturing notes on failure
         reader = None
         try:
-            reader = dfxml.read_regxml(xmlfile=open(work_order["regxml_path"], "r"), callback=lambda co: process_regxml_callback_object(co, current_hive_id, previous_hive_id, cursor))
+            reader = dfxml.read_regxml(xmlfile=open(work_order["regxml_path"], "rb"), callback=lambda co: process_regxml_callback_object(co, current_hive_id, previous_hive_id, cursor))
         except:
             sql_insert_failure = "INSERT INTO hives_failed(hive_id, error_text) VALUES (?, ?);"
             cursor.execute(sql_insert_failure, (current_hive_id, traceback.format_exc()))
