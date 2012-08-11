@@ -77,7 +77,9 @@ if [ ! -f "$tskout" ]; then
 fi
 
 #Make Fiwalk lookup database
-$PYTHON /Users/ajnelson/local/src/regxml_extractor/deps/dfxml/python/verify_fiwalk_versus_tsk_db.py $fiout $tskout fiwalk_lookup.db >fiwalk_lookup.db.out.log 2>fiwalk_lookup.db.err.log
+if [ ! -f fiwalk_lookup.db ]; then
+  $PYTHON /Users/ajnelson/local/src/regxml_extractor/deps/dfxml/python/verify_fiwalk_versus_tsk_db.py $fiout $tskout fiwalk_lookup.db >fiwalk_lookup.db.out.log 2>fiwalk_lookup.db.err.log
+fi
 
 #Does it look like we ran before?
 if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
@@ -88,7 +90,7 @@ else
     maybe_dfxml_flag=-x"$fiout"
   fi
   #Invoke extraction script
-  "$PYTHON" "$bindir/rx_extract_hives.py" $maybe_dfxml_flag --hivexml "$1" >manifest.txt
+  "$PYTHON" "$bindir/rx_extract_hives.py" $maybe_dfxml_flag "$1" >manifest.txt
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
