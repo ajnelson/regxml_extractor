@@ -74,10 +74,10 @@ while [ $# -ge 1 ]; do
       ;;
     -x | --xml )
       fiout_import=$2
-      if [ ! -f "$fiout_import" ]; then
-        echo "Error: Fiwalk output (supplied to $1) is not a file." >&2
+      if [ ! -r "$fiout_import" ]; then
+        echo "Error: Fiwalk output (supplied to $1) is not a readable file." >&2
+        exit 1
       fi
-      exit 1
       shift
       ;;
     -- )
