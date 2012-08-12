@@ -38,8 +38,10 @@ bindir=$exec_prefix/bin
 #Set up usage string
 usage="Usage: $0 [option]... <disk image>\n"
 usage=$usage"Options:\n"
+usage=$usage"\t-d, --debug\n"
+usage=$usage"\t  Enable debug output (writes to stderr).\n"
 usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
-usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. DFXML is created if this option is absent."
+usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. DFXML is created afresh if this option is absent."
 usage=$usage"\n"
 usage=$usage"Note that the results are written to the current working directory.\n"
 
@@ -53,10 +55,59 @@ fiout=fiout.dfxml
 fiout_import=""
 tskout=tskout.db
 tskout_import=""
+debug=0
+
+#Canonicalize command-line options with GNU getopt
+#  BSD getopt (default on OS X) does not behave correctly <http://stackoverflow.com/a/7948533/1207160>.
+#  Another example of getopt usage, quicker to read but needs 'eval', is earlier in the same thread <http://stackoverflow.com/a/5230306/1207160>.
+if ! options=$(${GNU_GETOPT} -o dx: -l debug,xml: -- "$@"); then
+  # Something went wrong; getopt should report what.
+  exit 1
+fi
+eval set -- "$options"
 
 #Handle command-line arguments and options
+while [ $# -ge 1 ]; do
+  case $1 in
+    -d | --debug )
+      debug=1
+      ;;
+    -x | --xml )
+      fiout_import=$2
+      if [ ! -f "$fiout_import" ]; then
+        echo "Error: Fiwalk output (supplied to $1) is not a file." >&2
+      fi
+      exit 1
+      shift
+      ;;
+    -- )
+      shift
+      break
+      ;;
+    * )
+      usage_exit
+  esac
+  shift
+done
+
 if [ $# -lt 1 ]; then
   usage_exit
+fi
+
+if [ ! -r "$1" ]; then
+  echo "Diskimage ($1) does not appear to be a readable file." >&2
+  echo >&2
+  usage_exit
+fi
+
+if [ $debug -eq 1 ]; then
+  echo "Debug enabled." >&2
+  echo "After parsing arguments, settings are:" >&2
+  if [ -z "$fiout_import" ]; then
+    echo "- Will not import previous Fiwalk output." >&2
+  else
+    echo "- Importing Fiwalk output from: $fiout_import" >&2
+  fi
 fi
 
 #Do we have Fiwalk output?
