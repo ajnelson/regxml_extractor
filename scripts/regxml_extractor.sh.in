@@ -28,18 +28,41 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
 
+#Set autotool variables
+GNU_GETOPT=@GNU_GETOPT@
+GETOPT=@GETOPT@
 PYTHON=@PYTHON@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 bindir=$exec_prefix/bin
 
-if [ $# -lt 1 ]; then
-  echo "Usage: $0 <disk image>" >&2
-  echo "Note that the results are written to the current working directory." >&2
+echo GNU_GETOPT=$GNU_GETOPT
+echo GETOPT=$GETOPT
+
+#Set up usage string
+usage="Usage: $0 [option]... <disk image>\n"
+usage=$usage"Options:\n"
+usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
+usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. DFXML is created if this option is absent."
+usage=$usage"\n"
+usage=$usage"Note that the results are written to the current working directory.\n"
+
+usage_exit() {
+  printf "$usage" >&2
   exit 1
+}
+
+#Set command-line defaults
+fiout=fiout.dfxml
+fiout_import=""
+tskout=tskout.db
+tskout_import=""
+
+#Handle command-line arguments and options
+if [ $# -lt 1 ]; then
+  usage_exit
 fi
 
-fiout=fiout.dfxml
 #Do we have Fiwalk output?
 if [ ! -f "$fiout" ]; then
   echo "Note: Did not detect Fiwalk output.  Generating fiout.dfxml."
