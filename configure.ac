@@ -9,7 +9,7 @@ AC_OUTPUT(Makefile lib/Makefile scripts/Makefile)
 # Checks for programs.
 
 if test "$(uname -s)" = "Darwin"; then
-  AC_CHECK_PROG(HAVE_GETOPT,getopt,yes,,/opt/local/bin/getopt)
+  AC_CHECK_PROG(HAVE_GETOPT,getopt,yes,,/opt/local/bin)
   if test "$HAVE_GETOPT" = "yes"; then
     AC_SUBST(GNU_GETOPT,/opt/local/bin/getopt)
   else
