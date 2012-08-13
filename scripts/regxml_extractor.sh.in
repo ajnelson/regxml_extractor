@@ -103,7 +103,7 @@ while [ $# -ge 1 ]; do
       fi
       shift
       ;;
-    -t | --tsktdb )
+    -t | --tskdb )
       tskout_import=$2
       if [ ! -r "$tskout_import" ]; then
         echo "Error: TSK output (supplied to $1) is not a readable file." >&2
@@ -128,12 +128,16 @@ while [ $# -ge 1 ]; do
       break
       ;;
     * )
+      echo "Error: Unexpected command-line argument ($1)." >&2
+      echo >&2
       usage_exit
   esac
   shift
 done
 
 if [ $# -lt 1 ]; then
+  echo "Error: More arguments required." >&2
+  echo >&2
   usage_exit
 fi
 
