@@ -40,8 +40,16 @@ usage="Usage: $0 [option]... <disk image>\n"
 usage=$usage"Options:\n"
 usage=$usage"\t-d, --debug\n"
 usage=$usage"\t  Enable debug output (writes to stderr).\n"
+usage=$usage"\t-o outdir, --output=outdir\n"
+usage=$usage"\t  Output files into target directory.  Does not need to be empty.  Defaults tp present working directory.\n"
 usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
-usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. DFXML is created afresh if this option is absent."
+usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. The DFXML is soft-linked in the output directory to its absolute path.\n"
+usage=$usage"\t  DFXML is created afresh if this option is absent.\n"
+usage=$usage"\t-t tskout.db, --tskdb=tskout.db\n"
+usage=$usage"\t  Import tsk_loaddb output SQLite. The SQLite file is soft-linked in the output directory to its absolute path.\n"
+usage=$usage"\t  A TSK database is created afresh if this option is absent.\n"
+usage=$usage"\t-a anno.db, --anno=anno.db\n"
+usage=$usage"\t  Import annotation database of Fiwalk and TSK records. The .db file is soft-linked in the output directory to its absolute path.\n"
 usage=$usage"\n"
 usage=$usage"Note that the results are written to the current working directory.\n"
 
@@ -51,16 +59,19 @@ usage_exit() {
 }
 
 #Set command-line defaults
+outdir=$PWD
 fiout=fiout.dfxml
 fiout_import=""
 tskout=tskout.db
 tskout_import=""
+annodb=fiwalk_lookup.db
+annodb_import="" #TODO
 debug=0
 
 #Canonicalize command-line options with GNU getopt
 #  BSD getopt (default on OS X) does not behave correctly <http://stackoverflow.com/a/7948533/1207160>.
 #  Another example of getopt usage, quicker to read but needs 'eval', is earlier in the same thread <http://stackoverflow.com/a/5230306/1207160>.
-if ! options=$(${GNU_GETOPT} -o dx: -l debug,xml: -- "$@"); then
+if ! options=$(${GNU_GETOPT} -o do:x:t:a: -l debug,output:,xml:,tskdb:,anno: -- "$@"); then
   # Something went wrong; getopt should report what.
   exit 1
 fi
@@ -72,10 +83,42 @@ while [ $# -ge 1 ]; do
     -d | --debug )
       debug=1
       ;;
+    -o | --output )
+      outdir=$2
+      if [ -e "$outdir" -a ! -d "$outdir" ]; then
+        echo "Error: Specified output directory (supplied to $1) is not a directory." >&2
+        exit 1
+      fi
+      shift
+      ;;
     -x | --xml )
       fiout_import=$2
       if [ ! -r "$fiout_import" ]; then
         echo "Error: Fiwalk output (supplied to $1) is not a readable file." >&2
+        exit 1
+      fi
+      if [ -r "$fiout" ]; then
+        echo "Warning: $fiout already present. Ignoring $1 parameter." >&2
+        fiout_import=
+      fi
+      shift
+      ;;
+    -t | --tsktdb )
+      tskout_import=$2
+      if [ ! -r "$tskout_import" ]; then
+        echo "Error: TSK output (supplied to $1) is not a readable file." >&2
+        exit 1
+      fi
+      if [ -r "$tskout" ]; then
+        echo "Warning: $tskout already present. Ignoring $1 parameter." >&2
+        tskout_import=
+      fi
+      shift
+      ;;
+    -a | --anno )
+      annodb_import=$2
+      if [  ! -r "$annodb_import" ]; then
+        echo "Error: AnnoDB output (supplied to $1) is not a readable file." >&2
         exit 1
       fi
       shift
@@ -95,7 +138,7 @@ if [ $# -lt 1 ]; then
 fi
 
 if [ ! -r "$1" ]; then
-  echo "Diskimage ($1) does not appear to be a readable file." >&2
+  echo "Diskimage ($1) is not a readable file." >&2
   echo >&2
   usage_exit
 fi
@@ -103,28 +146,53 @@ fi
 if [ $debug -eq 1 ]; then
   echo "Debug enabled." >&2
   echo "After parsing arguments, settings are:" >&2
+  echo "- Output directory: $outdir" >&2
   if [ -z "$fiout_import" ]; then
     echo "- Will not import previous Fiwalk output." >&2
   else
     echo "- Importing Fiwalk output from: $fiout_import" >&2
   fi
+  if [ -z "$tskout_import" ]; then
+    echo "- Will not import previous tsk_loaddb output." >&2
+  else
+    echo "- Importing tsk_loaddb output from: $tskout_import" >&2
+  fi
+  if [ -z "$annodb_import" ]; then
+    echo "- Will not import previous Fiwalk-and-TSK database output." >&2
+  else
+    echo "- Importing Fiwalk-and-TSK database output from: $annodb_import" >&2
+  fi
 fi
 
-#Do we have Fiwalk output?
-if [ ! -f "$fiout" ]; then
-  echo "Note: Did not detect Fiwalk output.  Generating fiout.dfxml."
-  fiwalk -Xfiout.dfxml -f "$1" >fiout.dfxml.out.log 2>fiout.dfxml.err.log
+#Create output directory if it doesn't exist.  Fail if we can't change into it.
+mkdir -p "$outdir"
+if [ ! -d "$outdir" ]; then
+  echo "Error: Could not create output directory." >&2
+  exit 1
+fi
+
+pushd "$outdir"
+if [ $? -ne 0 ]; then
+  echo "Erro: Could not change into output directory." >&2
+  exit 1
+fi
+
+#Make or import Fiwalk DFXML
+if [ ! -z "$fiout_import" ]; then
+  ln -s "$(readlink -f ${fiout_import})" $fiout
+fi
+if [ ! -r "$fiout" ]; then
+  echo "Note: Did not detect Fiwalk output.  Generating $fiout."
+  fiwalk -X$fiout -f "$1" >$fiout.out.log 2>$fiout.err.log
   status=$?
   if [ $status -ne 0 ]; then
-    echo "Error: fiwalk: see fiout.dfxml.err.log.  Resuming, but this may fail." >&2
+    echo "Error (fiwalk exited status $status): see $fiout.err.log.  Resuming, but this may fail." >&2
     fiout=
-  else
-    fiout=fiout.dfxml
   fi
 fi
 
 #Check Fiwalk output
-fiout_xmllint_errlog=fiout.dfxml.xmllint.err.log
+fiout_xmllint_errlog=$fiout.xmllint.err.log
 xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
 status=$?
 if [ $status -ne 0 ]; then
@@ -132,23 +200,31 @@ if [ $status -ne 0 ]; then
   exit 1
 fi
 
-tskout=tskout.db
-#Generate TSK database output
-if [ ! -f "$tskout" ]; then
+#Make or import TSK database
+if [ ! -z "$tskout_import" ]; then
+  ln -s "$(readlink -f ${tskout_import})" $tskout
+fi
+if [ ! -r "$tskout" ]; then
   echo "Note: Did not detect TSK output. Generating tskout.db."
-  tsk_loaddb -d tskout.db "$1" >tskout.db.out.log 2>tskout.db.err.log
+  tsk_loaddb -d $tskout "$1" >$tskout.out.log 2>$tskout.err.log
   status=$?
   if [ $status -ne 0 ]; then
-    echo "Error: tsk_loaddb: see tskout.db.err.log.  Continuing without TSK output."
+    echo "Error (tsk_loaddb exited status $status): see $tskout.err.log.  Continuing without TSK output."
     tskout=
-  else
-    tskout=tskout.db
   fi
 fi
 
-#Make Fiwalk lookup database
-if [ ! -f fiwalk_lookup.db ]; then
-  $PYTHON /Users/ajnelson/local/src/regxml_extractor/deps/dfxml/python/verify_fiwalk_versus_tsk_db.py $fiout $tskout fiwalk_lookup.db >fiwalk_lookup.db.out.log 2>fiwalk_lookup.db.err.log
+#Make or import Fiwalk lookup database
+if [ ! -z "$annodb_import" ]; then
+  ln -s "$(readlink -f ${annodb_import})" $annodb
+fi
+if [ ! -r "$annodb" ]; then
+  $PYTHON "$bindir/verify_fiwalk_versus_tsk_db.py" $fiout $tskout $annodb >$annodb.out.log 2>$annodb.err.log
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "Error (Fiwalk lookup script exited status $status): see $annodb.err.log."
+    annodb=
+  fi
 fi
 
 #Does it look like we ran before?
@@ -179,3 +255,5 @@ else
     "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
   fi
 fi
+
+popd
