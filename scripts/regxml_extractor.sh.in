@@ -45,11 +45,6 @@ usage=$usage"\t  Output files into target directory.  Does not need to be empty.
 usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
 usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. The DFXML is soft-linked in the output directory to its absolute path.\n"
 usage=$usage"\t  DFXML is created afresh if this option is absent.\n"
-usage=$usage"\t-t tskout.db, --tskdb=tskout.db\n"
-usage=$usage"\t  Import tsk_loaddb output SQLite. The SQLite file is soft-linked in the output directory to its absolute path.\n"
-usage=$usage"\t  A TSK database is created afresh if this option is absent.\n"
-usage=$usage"\t-a anno.db, --anno=anno.db\n"
-usage=$usage"\t  Import annotation database of Fiwalk and TSK records. The .db file is soft-linked in the output directory to its absolute path.\n"
 usage=$usage"\n"
 usage=$usage"Note that the results are written to the current working directory.\n"
 
@@ -62,16 +57,12 @@ usage_exit() {
 outdir=$PWD
 fiout=fiout.dfxml
 fiout_import=""
-tskout=tskout.db
-tskout_import=""
-annodb=fiwalk_lookup.db
-annodb_import="" #TODO
 debug=0
 
 #Canonicalize command-line options with GNU getopt
 #  BSD getopt (default on OS X) does not behave correctly <http://stackoverflow.com/a/7948533/1207160>.
 #  Another example of getopt usage, quicker to read but needs 'eval', is earlier in the same thread <http://stackoverflow.com/a/5230306/1207160>.
-if ! options=$(${GNU_GETOPT} -o do:x:t:a: -l debug,output:,xml:,tskdb:,anno: -- "$@"); then
+if ! options=$(${GNU_GETOPT} -o do:x: -l debug,output:,xml: -- "$@"); then
   # Something went wrong; getopt should report what.
   exit 1
 fi
@@ -100,26 +91,6 @@ while [ $# -ge 1 ]; do
       if [ -r "$fiout" ]; then
         echo "Warning: $fiout already present. Ignoring $1 parameter." >&2
         fiout_import=
-      fi
-      shift
-      ;;
-    -t | --tskdb )
-      tskout_import=$2
-      if [ ! -r "$tskout_import" ]; then
-        echo "Error: TSK output (supplied to $1) is not a readable file." >&2
-        exit 1
-      fi
-      if [ -r "$tskout" ]; then
-        echo "Warning: $tskout already present. Ignoring $1 parameter." >&2
-        tskout_import=
-      fi
-      shift
-      ;;
-    -a | --anno )
-      annodb_import=$2
-      if [  ! -r "$annodb_import" ]; then
-        echo "Error: AnnoDB output (supplied to $1) is not a readable file." >&2
-        exit 1
       fi
       shift
       ;;
@@ -155,16 +126,6 @@ if [ $debug -eq 1 ]; then
     echo "- Will not import previous Fiwalk output." >&2
   else
     echo "- Importing Fiwalk output from: $fiout_import" >&2
-  fi
-  if [ -z "$tskout_import" ]; then
-    echo "- Will not import previous tsk_loaddb output." >&2
-  else
-    echo "- Importing tsk_loaddb output from: $tskout_import" >&2
-  fi
-  if [ -z "$annodb_import" ]; then
-    echo "- Will not import previous Fiwalk-and-TSK database output." >&2
-  else
-    echo "- Importing Fiwalk-and-TSK database output from: $annodb_import" >&2
   fi
 fi
 
@@ -202,33 +163,6 @@ status=$?
 if [ $status -ne 0 ]; then
   echo "Error validating DFXML file '$fiout' (error code $status): see $fiout_xmllint_errlog." >&2
   exit 1
-fi
-
-#Make or import TSK database
-if [ ! -z "$tskout_import" ]; then
-  ln -s "$(readlink -f ${tskout_import})" $tskout
-fi
-if [ ! -r "$tskout" ]; then
-  echo "Note: Did not detect TSK output. Generating tskout.db."
-  tsk_loaddb -d $tskout "$1" >$tskout.out.log 2>$tskout.err.log
-  status=$?
-  if [ $status -ne 0 ]; then
-    echo "Error (tsk_loaddb exited status $status): see $tskout.err.log.  Continuing without TSK output."
-    tskout=
-  fi
-fi
-
-#Make or import Fiwalk lookup database
-if [ ! -z "$annodb_import" ]; then
-  ln -s "$(readlink -f ${annodb_import})" $annodb
-fi
-if [ ! -r "$annodb" ]; then
-  $PYTHON "$bindir/verify_fiwalk_versus_tsk_db.py" $fiout $tskout $annodb >$annodb.out.log 2>$annodb.err.log
-  status=$?
-  if [ $status -ne 0 ]; then
-    echo "Error (Fiwalk lookup script exited status $status): see $annodb.err.log."
-    annodb=
-  fi
 fi
 
 #Does it look like we ran before?
