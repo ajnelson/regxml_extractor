@@ -144,7 +144,7 @@ fi
 
 #Make or import Fiwalk DFXML
 if [ ! -z "$fiout_import" ]; then
-  ln -s "$(readlink -f ${fiout_import})" $fiout
+  ln -s "${fiout_import}" $fiout
 fi
 if [ ! -r "$fiout" ]; then
   echo "Note: Did not detect Fiwalk output.  Generating $fiout."
