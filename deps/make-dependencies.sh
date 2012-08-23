@@ -5,7 +5,7 @@ if [ -z "$prefix" ]; then
 fi
 
 pushd hivex
-(./autogen.sh && ./configure && make) || exit 1
+(./autogen.sh && ./configure --disable-ruby && make) || exit 1
 popd
 
 pushd sleuthkit
