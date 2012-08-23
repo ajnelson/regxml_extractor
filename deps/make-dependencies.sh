@@ -9,5 +9,5 @@ pushd hivex
 popd
 
 pushd sleuthkit
-(./bootstrap && ./configure --prefix="$prefix" && make && make install) || exit 1
+(./bootstrap && ./configure --prefix="$prefix" && make -j && make install) || exit 1
 popd
