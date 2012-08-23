@@ -51,16 +51,6 @@ if test "$HAVE_PYMOD_ARGPARSE" != "yes"; then
   AC_MSG_ERROR([Argparse Python module not found; this can be installed with 'easy_install argparse'.])
 fi
 
-AX_PYTHON_MODULE(dfxml)
-if test "$HAVE_PYMOD_DFXML" != "yes"; then
-  AC_MSG_ERROR([DFXML Python module not found; refer to the README notes on PYTHONPATH.])
-fi
-
-AX_PYTHON_MODULE(fiwalk)
-if test "$HAVE_PYMOD_FIWALK" != "yes"; then
-  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README notes on PYTHONPATH.])
-fi
-
 AC_CONFIG_FILES([
   scripts/regxml_extractor.sh
 ])
