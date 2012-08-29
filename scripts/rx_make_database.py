@@ -32,7 +32,7 @@
 For usage, run without arguments.
 """
 
-__version__ = "0.2.2"
+__version__ = "0.2.3"
 
 import sys
 
@@ -149,7 +149,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
 
     #type
     #    "root" or None for keys, value type for values
-    record_dict["type"] = co.type
+    record_dict["type"] = co.type()
     
     #mtime
     #	Null for values

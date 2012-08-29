@@ -44,9 +44,12 @@ import argparse
 def proc_dfxml(fi):
     global hivexml_command
     global imageabspath
-    basename = os.path.basename(fi.filename()).lower()
+    fn = fi.filename()
+    if fn is None:
+        #All matching happens on file name for now (we might want libmagic checks later); move on for now.
+        return
     #Names noted in Carvey, 2011 (_Windows Registry Forensics_), page 18
-    if fi.filename().lower().endswith(("ntuser.dat", "system32/config/sam", "system32/config/security", "system32/config/software", "system32/config/system", "system32/config/components", "local settings/application data/microsoft/windows/usrclass.dat")):
+    if fn.lower().endswith(("ntuser.dat", "system32/config/sam", "system32/config/security", "system32/config/software", "system32/config/system", "system32/config/components", "local settings/application data/microsoft/windows/usrclass.dat")):
         outfilename = os.path.abspath(str(fi.tag("id")) + ".hive")
         print("\t".join(map(str, [
           outfilename,
