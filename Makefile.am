@@ -1,3 +1,3 @@
 ACLOCAL_AMFLAGS = -I m4 --install
-SUBDIRS = lib scripts
+SUBDIRS = deps lib scripts
 EXTRA_DIST = bootstrap.sh

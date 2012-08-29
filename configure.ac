@@ -4,7 +4,7 @@
 AC_PREREQ(2.61)
 AC_INIT(regxml_extractor, 0.3.0, ajnelson@cs.ucsc.edu)
 AM_INIT_AUTOMAKE(regxml_extractor, 0.3.0)
-AC_OUTPUT(Makefile lib/Makefile scripts/Makefile)
+AC_OUTPUT(Makefile deps/Makefile lib/Makefile scripts/Makefile)
 
 # Checks for programs.
 
