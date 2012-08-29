@@ -138,7 +138,7 @@ fi
 
 pushd "$outdir"
 if [ $? -ne 0 ]; then
-  echo "Erro: Could not change into output directory." >&2
+  echo "Error: Could not change into output directory." >&2
   exit 1
 fi
 
