@@ -89,8 +89,8 @@ All of the following packages will need to be installed (software that require t
 
 * Fedora Core 16, 17: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
 * Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils libssl-dev
-* OS X 10.6.8 Server MacPorts: ocaml pkgconfig
-* OS X 10.7.4 Desktop MacPorts: automake autoconf libtool ocaml pkgconfig
+* OS X 10.6.8 Server MacPorts: ocaml pkgconfig getopt
+* OS X 10.7.4 Desktop MacPorts: automake autoconf libtool ocaml pkgconfig getopt
 
 For development or building from Git, these packages are also necessary:
 
