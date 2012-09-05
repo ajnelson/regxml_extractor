@@ -272,7 +272,7 @@ def update_db(connection, cursor, table_name, update_dict, id_field, id, commit)
         try:
             cursor.execute(sql_update_statement, tuple(sql_update_values))
         except:
-            sys.stderr.write("Failed upate.\nStatement:\t" + sql_update_statement + "\nData:\t" + str(tuple(sql_update_values)) + "\n")
+            sys.stderr.write("Failed upate.\nStatement:\t" + sql_update_statement + "\nData:\t" + repr(tuple(sql_update_values)) + "\n")
             raise
         if commit:
             connection.commit()
@@ -288,7 +288,7 @@ def insert_db(cursor, table_name, update_dict):
         try:
             cursor.execute(sql_insert_statement, tuple(sql_insert_values))
         except:
-            sys.stderr.write("Failed insertion.\nStatement:\t" + sql_insert_statement + "\nData:\t" + str(tuple(sql_insert_values)) + "\n")
+            sys.stderr.write("Failed insertion.\nStatement:\t" + sql_insert_statement + "\nData:\t" + repr(tuple(sql_insert_values)) + "\n")
             raise
 
 def hive_type_from_path(dfxml_hive_path, collapse_names=True):
