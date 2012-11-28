@@ -114,9 +114,7 @@ To build hivex from a tarball, you must have the following packages installed (a
 
 With those prerequisites installed, run the normal building commands from the extracted source directory:
 
-    ./configure && make && sudo make install
-
-(`./configure --prefix=foo` does not work, unfortunately; but if you do not have `sudo` rights, the `hivexml` program can be executed in-place from `xml/hivexml`.)
+    ./configure --prefix=foo && make && sudo make install
 
 #### Hivex from Git
 
