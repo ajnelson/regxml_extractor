@@ -116,6 +116,8 @@ With those prerequisites installed, run the normal building commands from the ex
 
     ./configure --prefix=foo && make && sudo make install
 
+(Due to a build quirk, to use `./configure --prefix=foo', you must also pass `--disable-python' to `./configure'.)
+
 #### Hivex from Git
 
 To build from Git source, also include these packages:
