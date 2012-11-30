@@ -192,7 +192,7 @@ else
     xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log&& \
     printf "$PWD/$x\t$PWD/$x.regxml\n" >>linted.txt ;
   done
-  if [ $(wc -l linted.txt) -eq 0 ]; then
+  if [ $(cat linted.txt | wc -l) -eq 0 ]; then
     echo "Warning: No regxml files passed xmllint validation." >&2
   fi
   # When all regxml is pretty-printed, generate a database
