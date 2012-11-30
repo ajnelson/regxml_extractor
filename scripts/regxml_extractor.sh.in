@@ -34,6 +34,7 @@ PYTHON=@PYTHON@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 bindir=$exec_prefix/bin
+pkgdatadir=@datadir@/@PACKAGE@
 
 #Set up usage string
 usage="Usage: $0 [option]... <disk image>\n"
@@ -174,7 +175,8 @@ else
     maybe_dfxml_flag=-x"$fiout"
   fi
   #Invoke extraction script
-  "$PYTHON" "$bindir/rx_extract_hives.py" $maybe_dfxml_flag "$1" >manifest.txt
+  PYTHONPATH="${pkgdatadir}/python:$PYTHONPATH" \
+    "$PYTHON" "$bindir/rx_extract_hives.py" $maybe_dfxml_flag "$1" >manifest.txt
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
@@ -194,7 +196,8 @@ else
     echo "Warning: No regxml files passed xmllint validation." >&2
   fi
   # When all regxml is pretty-printed, generate a database
-  "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
+  PYTHONPATH="${pkgdatadir}/python:$PYTHONPATH" \
+    "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
 fi
 
 popd

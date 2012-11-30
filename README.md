@@ -68,12 +68,6 @@ Also, in Ubuntu, compilation and installation from tarballs requires a path augm
 
     export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 
-The Python in `regxml_extractor` requires DFXML, which is easiest to satisfy with a path augmentation.  (This is, unfortunately, a kludge until DFXML's Python libraries are deployable with, say, distutils.)  Append this to your shell's `.rc` file (e.g. `.bashrc` for Bash):
-
-    export PYTHONPATH="$REGXML_EXTRACTOR_SRC_DIR/lib:$PYTHONPATH"
-
-(Where `$REGXML_EXTRACTOR_SRC_DIR` is the directory with this README, aka `$(abs_srcdir)`.)
-
 The Sleuth Kit can link against libewf.  For example, in OS X, adding these paths let a locally-built TSK link against the MacPorts-installed libewf:
 
     export LIBRARY_PATH="/opt/local/lib:$LIBRARY_PATH"
