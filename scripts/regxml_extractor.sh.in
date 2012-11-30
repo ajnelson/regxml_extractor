@@ -179,7 +179,9 @@ fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
 rm -f linted.txt out.sqlite
-if [ $(ls *hive | wc -l) -eq 0 ]; then
+#The 'linted.txt' file contains all the RegXML files that passed xmllint's pretty-printing; note the file can be empty.
+touch linted.txt
+if [ $(ls *hive 2>/dev/null | wc -l) -eq 0 ]; then
   echo "Note: No hives extracted."
 else
   for x in $(ls *hive);
@@ -188,10 +190,11 @@ else
     xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log&& \
     printf "$PWD/$x\t$PWD/$x.regxml\n" >>linted.txt ;
   done
-  # When all regxml is pretty-printed, generate a database
-  if [ -f linted.txt ]; then
-    "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
+  if [ $(wc -l linted.txt) -eq 0 ]; then
+    echo "Warning: No regxml files passed xmllint validation." >&2
   fi
+  # When all regxml is pretty-printed, generate a database
+  "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
 fi
 
 popd
