@@ -44,6 +44,11 @@ if test "$HAVE_XMLLINT" != "yes"; then
   AC_MSG_ERROR([xmllint not found; refer to the README notes on xmllint.])
 fi
 
+AC_CHECK_PROG(HAVE_SQLITE3,sqlite3,yes)
+if test "$HAVE_SQLITE3" != "yes"; then
+  AC_MSG_ERROR([sqlite3 not found; please install it with your package manager (the package is most often named 'sqlite3').])
+fi
+
 AM_PATH_PYTHON(2.7)
 
 AX_PYTHON_MODULE(argparse)
