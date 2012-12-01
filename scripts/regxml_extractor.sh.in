@@ -189,15 +189,22 @@ else
   for x in $(ls *hive);
   do
     hivexml "${x}" >"${x}.regxml" 2>${x}.hivexml.err.log && \
-    xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log&& \
+    xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log && \
     printf "$PWD/$x\t$PWD/$x.regxml\n" >>linted.txt ;
   done
-  if [ $(cat linted.txt | wc -l) -eq 0 ]; then
-    echo "Warning: No regxml files passed xmllint validation." >&2
+  hives_linted=$(cat linted.txt | wc -l)
+  if [ $hives_linted -eq 0 ]; then
+    echo "Warning: No RegXML files passed structural validation." >&2
   fi
   # When all regxml is pretty-printed, generate a database
   PYTHONPATH="${pkgdatadir}/python:$PYTHONPATH" \
     "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
+  #Check if any of the .regxml files that passed xmllint failed to ingest into SQLite
+  hive_ingests_failed=$(sqlite3 out.sqlite 'select count(*) from hives_failed;')
+  if [ $hive_ingests_failed -gt 0 ]; then
+    #TODO Left-strip the hives_linted variable
+    echo "Warning: Some RegXML files failed to convert to SQL (${hive_ingests_failed} of ${hives_linted} checked files failed).  See the hives_failed table in out.sqlite for debug information." >&2
+  fi
 fi
 
 popd
