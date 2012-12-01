@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012, Regents of the University of California
 # All rights reserved.
@@ -32,7 +32,7 @@
 For usage, run without arguments.
 """
 
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 
 import sys
 

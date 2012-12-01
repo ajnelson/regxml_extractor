@@ -49,7 +49,7 @@ if test "$HAVE_SQLITE3" != "yes"; then
   AC_MSG_ERROR([sqlite3 not found; please install it with your package manager (the package is most often named 'sqlite3').])
 fi
 
-AM_PATH_PYTHON(2.7)
+AM_PATH_PYTHON(3.2)
 
 AX_PYTHON_MODULE(argparse)
 if test "$HAVE_PYMOD_ARGPARSE" != "yes"; then

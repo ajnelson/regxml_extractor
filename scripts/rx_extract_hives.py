@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012, Regents of the University of California
 # All rights reserved.
@@ -32,7 +32,7 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 import sys
 
@@ -61,7 +61,7 @@ def proc_dfxml(fi):
         outfile.write(fi.contents())
         outfile.close()
         if hivexml_command:
-            command_string = hivexml_command + " " + outfilename + ">" + outfilename+".regxml" + " 2>" + outfilename + ".err.log"
+            command_string = hivexml_command + " " + outfilename + " >" + outfilename+".regxml" + " 2>" + outfilename + ".err.log"
             sysrc = os.system(command_string)
             if sysrc:
                 sys.stderr.write("Error, see err.log: " + command_string + "\n")
