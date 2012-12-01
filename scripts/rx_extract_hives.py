@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012, Regents of the University of California
 # All rights reserved.
@@ -32,10 +32,13 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
+
+import sys
 
 import dfxml,fiwalk
-import sys,os,datetime
+
+import os,datetime
 import argparse
 
 tally = 0
@@ -78,7 +81,7 @@ if __name__=="__main__":
 
     xmlfh = None
     if args.dfxml_file_name != None:
-        xmlfh = open(args.dfxml_file_name, "r")
+        xmlfh = open(args.dfxml_file_name, "rb")
     imageabspath = os.path.abspath(args.imagefilename)
 
     fiwalk.fiwalk_using_sax(imagefile=open(imageabspath, "r"), xmlfile=xmlfh, callback=proc_dfxml)

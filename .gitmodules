@@ -6,4 +6,4 @@
 	url = https://github.com/kfairbanks/sleuthkit.git
 [submodule "deps/dfxml"]
 	path = deps/dfxml
-	url = https://github.com/ajnelson/dfxml.git
+	url = https://github.com/simsong/dfxml.git
