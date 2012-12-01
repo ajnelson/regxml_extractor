@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Halt on any error
+set -e
+
 if [ -z "$prefix" ]; then
   prefix=$HOME/local
 fi
