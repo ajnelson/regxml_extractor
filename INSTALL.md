@@ -1,12 +1,14 @@
 # Installing RegXML Extractor
 
-This document details how to build RegXML Extractor (RE)'s dependent software.
+This document details how to build RegXML Extractor and its dependent software.
 
 ## Building `regxml_extractor`
 
 To build from the tarball:
 
     ./configure && make && sudo make install
+
+Note that `./configure` respects the `--prefix` argument, so you can install the software to your home directory, not needing root privileges.
 
 To build from upstream (Git):
 
@@ -15,7 +17,7 @@ To build from upstream (Git):
 
 If `./bootstrap` or `./configure` do not work for lack of dependencies, refer to the detailed dependency building section.
 
-The Git repository includes the expected versions of the DFXML library, Hivex, The Sleuth Kit, and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` cloned source directory:
+The Git repository includes the expected versions of the DFXML library, Hivex, The Sleuth Kit, and Fiwalk.  Instead of running the Git clones below, you can instead run these commands from the `regxml_extractor` source directory:
 
     git submodule init
     git submodule update
@@ -34,9 +36,9 @@ In Lion, XCode 4.3.3 requires the command line tools (which include `gcc` and `g
 
 ## Building and installing dependencies
 
-This program depends on The Sleuth Kit, Fiwalk, Python 3, Hivex, DFXML, and libxml2.
+This program depends on The Sleuth Kit, Fiwalk, Python 3, Hivex, DFXML, and libxml2.  Some of the software used is not yet consistent with package versions, or no package versions exist.
 
-Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.
+Also, in Ubuntu, compilation and installation from tarballs requires a path augmentation for Hivex and Fiwalk.  This line should go at the end of your `.bashrc` or equivalent file:
 
     export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 
@@ -49,30 +51,13 @@ The Sleuth Kit can link against libewf.  For example, in OS X, adding these path
 
 In Linux, `/usr` replaces `/opt`.
 
-### Package summary
-
-All of the following packages will need to be installed (software that require these are noted below):
-
-* Fedora Core 16, 17: python-dateutil gcc libxml2-devel python-devel gcc-c++ libtool java-1.7.0-openjdk-devel openssl-devel
-* Ubuntu 12:04: automake libxml2-dev python-dev g++ libtool openjdk-7-jdk libxml2-utils libssl-dev
-* OS X 10.6.8 Server MacPorts: ocaml pkgconfig getopt
-* OS X 10.7.4 Desktop MacPorts: automake autoconf libtool ocaml pkgconfig getopt
-
-For development or building from Git, these packages are also necessary:
-
-* Fedora Core 16: git libtool gettext-devel autopoint ocaml automake
-* Fedora Core 17: git libtool gettext-devel ocaml automake
-* Ubuntu 12:04: git libtool autopoint ocaml autoconf python-dateutil gettext
-* OS X 10.6.8 Server MacPorts: (Nothing more needed)
-* OS X 10.7.4 Desktop MacPorts: (Nothing more needed)
-
 ### Hivex
 
 A version of Hivex that generates RegXML can be found [here](https://github.com/ajnelson/hivex.git), in the branch '`regxml`'.  Package dependencies are equivalent to the [upstream hivex](https://github.com/libguestfs/hivex.git).
 
 Building in OS X is a slight bit trickier.  You can skip to the OS X subsection and ignore the Linux instructions.
 
-To build hivex from a tarball, you must have the following packages installed (assuming a default environment for the named distros):
+To build Hivex from a tarball, you must have the following packages installed (assuming a default environment for the named distros):
 
 * Fedora Core 16, 17: gcc libxml2-devel python-devel
 * Ubuntu 12.04: libxml2-dev python-dev
