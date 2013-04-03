@@ -1,9 +1,9 @@
 [submodule "deps/hivex"]
 	path = deps/hivex
-	url = https://users.soe.ucsc.edu/~ajnelson/research/git/ba0364a6aea550880636cfd4f5aa098bb9c5965e/hivex.git
+	url = https://github.com/ajnelson/hivex.git
 [submodule "deps/sleuthkit"]
 	path = deps/sleuthkit
-	url = https://users.soe.ucsc.edu/~ajnelson/research/git/ba0364a6aea550880636cfd4f5aa098bb9c5965e/sleuthkit.git
+	url = https://github.com/sleuthkit/sleuthkit.git
 [submodule "deps/dfxml"]
 	path = deps/dfxml
-	url = https://users.soe.ucsc.edu/~ajnelson/research/git/ba0364a6aea550880636cfd4f5aa098bb9c5965e/dfxml.git
+	url = https://github.com/ajnelson/dfxml.git
