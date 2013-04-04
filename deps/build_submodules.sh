@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#Halt on any error
-set -e
-set -v
-
 get_abspath() {
   python -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
@@ -27,9 +23,13 @@ case $1 in
     ;;
 esac
 
+#Halt on any error
+set -e
+set -v
+
 #One-liner c/o http://stackoverflow.com/a/246128/1207160
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-prefix="$INSTALLDIR" $SCRIPTDIR/make-hivex.sh
-
 prefix="$INSTALLDIR" $SCRIPTDIR/make-sleuthkit.sh
+
+prefix="$INSTALLDIR" $SCRIPTDIR/make-hivex.sh
