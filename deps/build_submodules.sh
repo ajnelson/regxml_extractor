@@ -4,14 +4,17 @@
 set -e
 set -v
 
-#TODO Get realpath of $INSTALLDIR
+get_abspath() {
+  python -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+}
+
 case $1 in
   local )
     MAKEINSTALL="make install"
     if [ -z "$2" ]; then
       INSTALLDIR=$HOME/local
     else
-      INSTALLDIR=$2
+      INSTALLDIR=$(get_abspath "$2")
     fi
     ;;
   system )
