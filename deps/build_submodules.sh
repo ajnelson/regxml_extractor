@@ -30,6 +30,10 @@ set -v
 #One-liner c/o http://stackoverflow.com/a/246128/1207160
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-prefix="$INSTALLDIR" $SCRIPTDIR/make-sleuthkit.sh
+pushd $SCRIPTDIR/sleuthkit
+(./bootstrap && ./configure --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
+popd
 
-prefix="$INSTALLDIR" $SCRIPTDIR/make-hivex.sh
+pushd $SCRIPTDIR/hivex
+(./autogen.sh && ./configure --disable-ruby --disable-python --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
+popd
