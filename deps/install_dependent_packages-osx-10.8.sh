@@ -11,9 +11,11 @@ set -x
 sudo port install \
     autoconf \
     automake \
+    getopt \
     libtool \
     ocaml \
-    pkgconfig
+    pkgconfig \
+    python33
 
 #Thanks to Jim Meyering for the dirlist tip for dealing with PKG_CHECK_MODULES not being found.
 PKGM4=$(find /opt/local /usr -name 'pkg.m4' | head -n1 2>/dev/null)
