@@ -1,0 +1,8 @@
+#Path extensions for local installation of forensic software
+#NOTE: Even if you don't do a local installation, the /usr/local/lib path insertions are necessary due to not being included by default in Fedora or Ubuntu.  bulk_extractor and fiwalk fail to load a TSK module without those path additions.
+
+export PATH="$HOME/local/bin:$PATH"
+export LIBRARY_PATH="$HOME/local/lib:/usr/local/lib:$LIBRARY_PATH"
+export LD_LIBRARY_PATH="$HOME/local/lib:/usr/local/lib:$LD_LIBRARY_PATH"
+export C_INCLUDE_PATH="$HOME/local/include:$C_INCLUDE_PATH"
+export CPLUS_INCLUDE_PATH="$HOME/local/include:$CPLUS_INCLUDE_PATH"
