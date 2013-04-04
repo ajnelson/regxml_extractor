@@ -8,3 +8,5 @@
 (This will benefit slackspace carving discoveries.)
 
 - Write a hive subset exporter; e.g. export(r"\*") would export as DFXML the whole hive's contents
+
+- Output hive manifest and extraction success as DFXML

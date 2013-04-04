@@ -44,21 +44,16 @@ if test "$HAVE_XMLLINT" != "yes"; then
   AC_MSG_ERROR([xmllint not found; refer to the README notes on xmllint.])
 fi
 
-AM_PATH_PYTHON(2.7)
+AC_CHECK_PROG(HAVE_SQLITE3,sqlite3,yes)
+if test "$HAVE_SQLITE3" != "yes"; then
+  AC_MSG_ERROR([sqlite3 not found; please install it with your package manager (the package is most often named 'sqlite3').])
+fi
+
+AM_PATH_PYTHON(3.2)
 
 AX_PYTHON_MODULE(argparse)
 if test "$HAVE_PYMOD_ARGPARSE" != "yes"; then
   AC_MSG_ERROR([Argparse Python module not found; this can be installed with 'easy_install argparse'.])
-fi
-
-AX_PYTHON_MODULE(dfxml)
-if test "$HAVE_PYMOD_DFXML" != "yes"; then
-  AC_MSG_ERROR([DFXML Python module not found; refer to the README notes on PYTHONPATH.])
-fi
-
-AX_PYTHON_MODULE(fiwalk)
-if test "$HAVE_PYMOD_FIWALK" != "yes"; then
-  AC_MSG_ERROR([Fiwalk Python module not found; refer to the README notes on PYTHONPATH.])
 fi
 
 AC_CONFIG_FILES([

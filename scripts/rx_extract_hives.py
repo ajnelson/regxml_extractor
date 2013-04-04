@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012, Regents of the University of California
 # All rights reserved.
@@ -32,7 +32,7 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 import sys
 
@@ -41,16 +41,16 @@ import dfxml,fiwalk
 import os,datetime
 import argparse
 
-tally = 0
-
 def proc_dfxml(fi):
-    global tally
     global hivexml_command
     global imageabspath
-    basename = os.path.basename(fi.filename()).lower()
+    fn = fi.filename()
+    if fn is None:
+        #All matching happens on file name for now (we might want libmagic checks later); move on for now.
+        return
     #Names noted in Carvey, 2011 (_Windows Registry Forensics_), page 18
-    if fi.filename().lower().endswith(("ntuser.dat", "system32/config/sam", "system32/config/security", "system32/config/software", "system32/config/system", "system32/config/components", "local settings/application data/microsoft/windows/usrclass.dat")):
-        outfilename = os.path.abspath(str(tally) + ".hive")
+    if fn.lower().endswith(("ntuser.dat", "system32/config/sam", "system32/config/security", "system32/config/software", "system32/config/system", "system32/config/components", "local settings/application data/microsoft/windows/usrclass.dat")):
+        outfilename = os.path.abspath(str(fi.tag("id")) + ".hive")
         print("\t".join(map(str, [
           outfilename,
           imageabspath,
@@ -61,11 +61,10 @@ def proc_dfxml(fi):
         outfile.write(fi.contents())
         outfile.close()
         if hivexml_command:
-            command_string = hivexml_command + " " + outfilename + ">" + outfilename+".regxml" + " 2>" + outfilename + ".err.log"
+            command_string = hivexml_command + " " + outfilename + " >" + outfilename+".regxml" + " 2>" + outfilename + ".err.log"
             sysrc = os.system(command_string)
             if sysrc:
                 sys.stderr.write("Error, see err.log: " + command_string + "\n")
-        tally += 1
 
 if __name__=="__main__":
     global hivexml_command
@@ -81,7 +80,7 @@ if __name__=="__main__":
 
     xmlfh = None
     if args.dfxml_file_name != None:
-        xmlfh = open(args.dfxml_file_name, "r")
+        xmlfh = open(args.dfxml_file_name, "rb")
     imageabspath = os.path.abspath(args.imagefilename)
 
     fiwalk.fiwalk_using_sax(imagefile=open(imageabspath, "r"), xmlfile=xmlfh, callback=proc_dfxml)

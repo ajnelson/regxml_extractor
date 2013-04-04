@@ -34,6 +34,78 @@ PYTHON=@PYTHON@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 bindir=$exec_prefix/bin
+pkgdatadir=@datadir@/@PACKAGE@
+
+#Set up usage string
+usage="Usage: $0 [option]... <disk image>\n"
+usage=$usage"Options:\n"
+usage=$usage"\t-d, --debug\n"
+usage=$usage"\t  Enable debug output (writes to stderr).\n"
+usage=$usage"\t-o outdir, --output=outdir\n"
+usage=$usage"\t  Output files into target directory.  Does not need to be empty.  Defaults tp present working directory.\n"
+usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
+usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. The DFXML is soft-linked in the output directory to its absolute path.\n"
+usage=$usage"\t  DFXML is created afresh if this option is absent.\n"
+usage=$usage"\n"
+usage=$usage"Note that the results are written to the current working directory.\n"
+
+usage_exit() {
+  printf "$usage" >&2
+  exit 1
+}
+
+#Set command-line defaults
+outdir=$PWD
+fiout=fiout.dfxml
+fiout_import=""
+debug=0
+
+#Canonicalize command-line options with GNU getopt
+#  BSD getopt (default on OS X) does not behave correctly <http://stackoverflow.com/a/7948533/1207160>.
+#  Another example of getopt usage, quicker to read but needs 'eval', is earlier in the same thread <http://stackoverflow.com/a/5230306/1207160>.
+if ! options=$(${GNU_GETOPT} -o do:x: -l debug,output:,xml: -- "$@"); then
+  # Something went wrong; getopt should report what.
+  exit 1
+fi
+eval set -- "$options"
+
+#Handle command-line arguments and options
+while [ $# -ge 1 ]; do
+  case $1 in
+    -d | --debug )
+      debug=1
+      ;;
+    -o | --output )
+      outdir=$2
+      if [ -e "$outdir" -a ! -d "$outdir" ]; then
+        echo "Error: Specified output directory (supplied to $1) is not a directory." >&2
+        exit 1
+      fi
+      shift
+      ;;
+    -x | --xml )
+      fiout_import=$2
+      if [ ! -r "$fiout_import" ]; then
+        echo "Error: Fiwalk output (supplied to $1) is not a readable file." >&2
+        exit 1
+      fi
+      if [ -r "$fiout" ]; then
+        echo "Warning: $fiout already present. Ignoring $1 parameter." >&2
+        fiout_import=
+      fi
+      shift
+      ;;
+    -- )
+      shift
+      break
+      ;;
+    * )
+      echo "Error: Unexpected command-line argument ($1)." >&2
+      echo >&2
+      usage_exit
+  esac
+  shift
+done
 
 #Set up usage string
 usage="Usage: $0 [option]... <disk image>\n"
@@ -166,6 +238,7 @@ if [ $status -ne 0 ]; then
 fi
 
 #Does it look like we ran before?
+touch manifest.txt
 if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
   echo "Note: Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive."
 else
@@ -174,23 +247,38 @@ else
     maybe_dfxml_flag=-x"$fiout"
   fi
   #Invoke extraction script
-  "$PYTHON" "$bindir/rx_extract_hives.py" $maybe_dfxml_flag "$1" >manifest.txt
+  "$PYTHON" "$pkgdatadir/python/rx_extract_hives.py" $maybe_dfxml_flag "$1" >manifest.txt
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echo "Error: Hive extraction script failed." >&2
+    exit $rc
+  fi
 fi
 
 # For each regxml file generated, run xmllint to validate and pretty-print
 rm -f linted.txt out.sqlite
-if [ $(ls *hive | wc -l) -eq 0 ]; then
+#The 'linted.txt' file contains all the RegXML files that passed xmllint's pretty-printing; note the file can be empty.
+touch linted.txt
+if [ $(ls *hive 2>/dev/null | wc -l) -eq 0 ]; then
   echo "Note: No hives extracted."
 else
   for x in $(ls *hive);
   do
     hivexml "${x}" >"${x}.regxml" 2>${x}.hivexml.err.log && \
-    xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log&& \
+    xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>${x}.xmllint.err.log && \
     printf "$PWD/$x\t$PWD/$x.regxml\n" >>linted.txt ;
   done
+  hives_linted=$(cat linted.txt | wc -l)
+  if [ $hives_linted -eq 0 ]; then
+    echo "Warning: No RegXML files passed structural validation." >&2
+  fi
   # When all regxml is pretty-printed, generate a database
-  if [ -f linted.txt ]; then
-    "$PYTHON" "$bindir/rx_make_database.py" linted.txt manifest.txt out.sqlite
+  "$PYTHON" "$pkgdatadir/python/rx_make_database.py" linted.txt manifest.txt out.sqlite
+  #Check if any of the .regxml files that passed xmllint failed to ingest into SQLite
+  hive_ingests_failed=$(sqlite3 out.sqlite 'select count(*) from hives_failed;')
+  if [ $hive_ingests_failed -gt 0 ]; then
+    #TODO Left-strip the hives_linted variable
+    echo "Warning: Some RegXML files failed to convert to SQL (${hive_ingests_failed} of ${hives_linted} checked files failed).  See the hives_failed table in out.sqlite for debug information." >&2
   fi
 fi
 
