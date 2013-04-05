@@ -8,6 +8,7 @@ fi
 set -e
 set -x
 
+#TODO 10.6.8 server only needed ocaml, pkgconfig, getopt in prior testing; check again.
 sudo port install \
   autoconf \
   automake \
