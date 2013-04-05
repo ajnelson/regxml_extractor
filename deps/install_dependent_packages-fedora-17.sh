@@ -8,6 +8,7 @@ fi
 set -e
 set -x
 
+#Below the 'automake' line are "devel" packages, but we'll break that out after the Hivex revisions are upstream.
 sudo yum install \
   gcc \
   gcc-c++ \
@@ -16,7 +17,6 @@ sudo yum install \
   openssl-devel \
   python-dateutil \
   python-devel \
-#Below this line are "devel" packages, but we'll break that out after the Hivex revisions are upstream.
   automake \
   gettext-devel \
   libtool \
