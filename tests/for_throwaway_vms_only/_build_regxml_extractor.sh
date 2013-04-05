@@ -12,8 +12,8 @@ fi
 #One-liner c/o http://stackoverflow.com/a/246128/1207160
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+set -e
 set -x
-set -v
 
 pushd "$SCRIPTDIR/../.."
 cat deps/bashrc >>~/.bashrc
