@@ -15,8 +15,6 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 set -x
 set -v
 
-git clone --branch=unstable https://github.com/ajnelson/regxml_extractor.git
-cd regxml_extractor/
 pushd "$SCRIPTDIR/../.."
 cat deps/bashrc >>~/.bashrc
 source ~/.bashrc
