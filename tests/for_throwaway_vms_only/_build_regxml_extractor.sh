@@ -9,14 +9,22 @@ if [ "x$INSTALL_DEPS" == "x" ]; then
   exit 1
 fi
 
+#One-liner c/o http://stackoverflow.com/a/246128/1207160
+SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+set -x
+set -v
+
 git clone --branch=unstable https://github.com/ajnelson/regxml_extractor.git
 cd regxml_extractor/
+pushd "$SCRIPTDIR/../.."
 cat deps/bashrc >>~/.bashrc
 source ~/.bashrc
-"$INSTALL_DEPS"
+"deps/$INSTALL_DEPS"
 git submodule init
 git submodule update
 deps/build_submodules.sh local
 ./bootstrap.sh && ./configure --prefix=$HOME/local && make && make install
 hivexml deps/hivex/images/minimal
 hivexml deps/hivex/images/large
+popd
