@@ -18,6 +18,10 @@ set -x
 pushd "$SCRIPTDIR/../.."
 cat deps/bashrc >>~/.bashrc
 source ~/.bashrc
+if [ $(echo "$PATH" | grep "$HOME/local" | wc -l) -lt 1 ]; then
+  echo "~/local did not appear in your PATH, so this test will fail.  Modify your environment (e.g. with \`. "$SCRIPTDIR/../../deps/bashrc"\`) and re-run."
+  exit 1
+fi
 "deps/$INSTALL_DEPS"
 git submodule init
 git submodule update
