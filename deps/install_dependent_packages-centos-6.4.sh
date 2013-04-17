@@ -12,7 +12,6 @@ set -x
 sudo yum install \
   gcc \
   gcc-c++ \
-  libtool \
   libxml2-devel \
   openssl-devel \
   python-dateutil \
