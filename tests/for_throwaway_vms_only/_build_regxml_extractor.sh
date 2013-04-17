@@ -16,8 +16,6 @@ set -e
 set -x
 
 pushd "$SCRIPTDIR/../.."
-cat deps/bashrc >>~/.bashrc
-source ~/.bashrc
 if [ $(echo "$PATH" | grep "$HOME/local" | wc -l) -lt 1 ]; then
   echo "~/local did not appear in your PATH, so this test will fail.  Modify your environment (e.g. with \`. "$SCRIPTDIR/../../deps/bashrc"\`) and re-run."
   exit 1
@@ -26,7 +24,11 @@ fi
 git submodule init
 git submodule update
 deps/build_submodules.sh local
-./bootstrap.sh && ./configure --prefix=$HOME/local && make && make install
+./bootstrap.sh
+./configure --prefix=$HOME/local
+make
+make install
+regxml_extractor.sh -h
 hivexml deps/hivex/images/minimal
 hivexml deps/hivex/images/large
 popd
