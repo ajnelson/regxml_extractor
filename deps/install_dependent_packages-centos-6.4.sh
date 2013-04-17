@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -r /etc/centos-release ]; then
-  echo "This does not appear to be a Fedora machine." >&2
+  echo "This does not appear to be a Centos machine." >&2
   exit 1
 fi
 
