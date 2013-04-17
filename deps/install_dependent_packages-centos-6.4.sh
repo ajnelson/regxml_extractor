@@ -5,6 +5,12 @@ if [ ! -r /etc/centos-release ]; then
   exit 1
 fi
 
+p3=`which python3`
+if [ ! -x "$p3" ]; then
+  echo "Centos 6.4 does not package Python 3.  You must install it from source."
+  echo "  Reference:  http://www.hosting.com/support/linux/installing-python-3-on-centosredhat-5x-from-source" >&2
+fi
+
 set -e
 set -x
 
