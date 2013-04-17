@@ -63,7 +63,7 @@ debug=0
 #Canonicalize command-line options with GNU getopt
 #  BSD getopt (default on OS X) does not behave correctly <http://stackoverflow.com/a/7948533/1207160>.
 #  Another example of getopt usage, quicker to read but needs 'eval', is earlier in the same thread <http://stackoverflow.com/a/5230306/1207160>.
-if ! options=$(${GNU_GETOPT} -o do:x: -l debug,output:,xml: -- "$@"); then
+if ! options=$(${GNU_GETOPT} -o dho:x: -l debug,help,output:,xml: -- "$@"); then
   # Something went wrong; getopt should report what.
   exit 1
 fi
@@ -74,6 +74,10 @@ while [ $# -ge 1 ]; do
   case $1 in
     -d | --debug )
       debug=1
+      ;;
+    -h | --help )
+      printf "$usage"
+      exit 0
       ;;
     -o | --output )
       outdir=$2
