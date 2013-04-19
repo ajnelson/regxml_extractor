@@ -42,12 +42,12 @@ usage=$usage"Options:\n"
 usage=$usage"\t-d, --debug\n"
 usage=$usage"\t  Enable debug output (writes to stderr).\n"
 usage=$usage"\t-o outdir, --output=outdir\n"
-usage=$usage"\t  Output files into target directory.  Does not need to be empty.  Defaults to present working directory.\n"
+usage=$usage"\t  Output files into target directory.  Does not need to be empty.  Defaults tp present working directory.\n"
 usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
 usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. The DFXML is soft-linked in the output directory to its absolute path.\n"
 usage=$usage"\t  DFXML is created afresh if this option is absent.\n"
 usage=$usage"\n"
-usage=$usage"Note that the results by default are written to the current working directory.\n"
+usage=$usage"Note that the results are written to the current working directory.\n"
 
 usage_exit() {
   printf "$usage" >&2
