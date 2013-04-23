@@ -56,6 +56,11 @@ if test "$HAVE_PYMOD_ARGPARSE" != "yes"; then
   AC_MSG_ERROR([Argparse Python module not found; this can be installed with 'easy_install argparse'.])
 fi
 
+AX_PYTHON_MODULE(sqlite3)
+if test "$HAVE_PYMOD_SQLITE3" != "yes"; then
+  AC_MSG_ERROR([Sqlite3 Python module not found; you may need to install the sqlite3 development package and then rebuild your Python (see, e.g., the CentOS package script in deps/).])
+fi
+
 AC_CONFIG_FILES([
   scripts/regxml_extractor.sh
 ])
