@@ -12,6 +12,14 @@ if [ ! -x "$p3" ]; then
   exit 1
 fi
 
+python3 -c 'import sqlite3'
+rcpy3sqlite3=$?
+if [ ! $rcpy3sqlite3 -eq 0 ]; then
+  echo "Error: Python 3 was not configured with SQLite support.  Install 'sqlite-devel' and then re-configure Python 3." >&2
+  echo "  Reference:  http://stackoverflow.com/a/2747227" >&2
+  exit 1
+fi
+
 set -e
 set -x
 
