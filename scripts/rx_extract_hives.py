@@ -32,7 +32,7 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 import sys
 
@@ -49,7 +49,19 @@ def proc_dfxml(fi):
         #All matching happens on file name for now (we might want libmagic checks later); move on for now.
         return
     #Names noted in Carvey, 2011 (_Windows Registry Forensics_), page 18
-    if fn.lower().endswith(("ntuser.dat", "system32/config/sam", "system32/config/security", "system32/config/software", "system32/config/system", "system32/config/components", "local settings/application data/microsoft/windows/usrclass.dat")):
+    #Some names found by pattern-matching
+    if fn.lower().endswith((
+      "ntuser.dat",
+      "repair/sam",
+      "repair/security",
+      "repair/software",
+      "repair/system",
+      "system32/config/sam",
+      "system32/config/security",
+      "system32/config/software",
+      "system32/config/system",
+      "system32/config/components",
+      "local settings/application data/microsoft/windows/usrclass.dat")):
         outfilename = os.path.abspath(str(fi.tag("id")) + ".hive")
         print("\t".join(map(str, [
           outfilename,
