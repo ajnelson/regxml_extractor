@@ -32,7 +32,7 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 import sys
 
@@ -52,6 +52,10 @@ def proc_dfxml(fi):
     #Some names found by pattern-matching
     if fn.lower().endswith((
       "ntuser.dat",
+      "repair/sam",
+      "repair/security",
+      "repair/software",
+      "repair/system",
       "system32/config/sam",
       "system32/config/security",
       "system32/config/software",
