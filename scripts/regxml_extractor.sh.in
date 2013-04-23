@@ -127,10 +127,10 @@ if [ $debug -eq 1 ]; then
   echo "Debug enabled." >&2
   echo "After parsing arguments, settings are:" >&2
   echo "- Output directory: $outdir" >&2
-  if [ -z "$fiout_import" ]; then
-    echo "- Will not import previous Fiwalk output." >&2
-  else
+  if [ -r "$fiout_import" ]; then
     echo "- Importing Fiwalk output from: $fiout_import" >&2
+  else
+    echo "- Will not import previous Fiwalk output." >&2
   fi
 fi
 
@@ -141,14 +141,14 @@ if [ ! -d "$outdir" ]; then
   exit 1
 fi
 
-pushd "$outdir"
+pushd "$outdir" >/dev/null
 if [ $? -ne 0 ]; then
   echo "Error: Could not change into output directory." >&2
   exit 1
 fi
 
 #Make or import Fiwalk DFXML
-if [ ! -z "$fiout_import" ]; then
+if [ -r "$fiout_import" ]; then
   ln -s "${fiout_import}" $fiout
 fi
 if [ ! -r "$fiout" ]; then
@@ -215,4 +215,4 @@ else
   fi
 fi
 
-popd
+popd >/dev/null
