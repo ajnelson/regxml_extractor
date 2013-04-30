@@ -8,6 +8,7 @@ fi
 set -e
 set -x
 
+sudo port selfupdate
 sudo port install \
   autoconf \
   automake \
@@ -28,3 +29,5 @@ if [ ! -r "$ACLOCALDIRLIST" -o ! $(grep "$(dirname "$PKGM4")" "$ACLOCALDIRLIST" 
   echo "Note: Augmenting aclocal path with m4 directories." >&2
   sudo bash -c "printf '%s/share/aclocal\n' /opt/local /usr >>$(aclocal --print-ac-dir)/dirlist"
 fi
+test $(grep 'pkg.m4' $(aclocal --print-ac-dir)/dirlist | wc -l) -gt 0 ;
+echo Done.
