@@ -14,16 +14,14 @@ fi
 
 githead=$(git rev-parse HEAD)
 
-#TODO pushd into here.
-
-mkdir evaluation
+mkdir -p evaluation
 while read x; do
   if [ -r "$x.dfxml" ]; then
-    bn=$(basename $x)
-    mkdir -p "evaluations_by_commit/$githead/$bn"
-    pushd "evaluations_by_commit/$githead/$bn"
-    regxml_extractor.sh -x "$x.dfxml" "$x" >"../$bn.out.log" 2>"../$bn.err.log"
-    echo $? >../$bn.status.log
-    popd
+    bn=$(basename "$x")
+    outdir=evaluations_by_commit/$githead/$bn
+    regxml_extractor.sh -d -o "$outdir" -x "$x.dfxml" "$x" >"${outdir}.out.log" 2>"${outdir}.err.log"
+    echo $? >${outdir}.status.log
   fi
 done <"$imglist"
+
+echo "Number of disk images processing errors: $(grep -v '0' evaluation/$githead/*.status.log | wc -l)"
