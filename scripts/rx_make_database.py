@@ -32,7 +32,7 @@
 For usage, run without arguments.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 import sys
 
@@ -44,6 +44,7 @@ import base64
 from operator import itemgetter
 import argparse
 import traceback
+import collections
 
 #For endian conversions
 import struct
@@ -112,9 +113,14 @@ CREATE INDEX full_paths ON cell_analysis (hive_id,full_path);
 SQL_CREATE_TABLE_HIVES_FAILED = """
 CREATE TABLE hives_failed (
     hive_id INTEGER PRIMARY KEY,
+    cells_processed INTEGER,
     error_text TEXT
 );
 """
+
+#Key: hive_id
+#Value: Count of cells processed for this hive before the dfxml callback loop terminated (successfully or not)
+hive_cell_proc_tallies = collections.defaultdict(lambda:0)
 
 def filetime_to_timestamp(ft):
     WINDOWS_TICK = 10000000
@@ -126,6 +132,7 @@ def dftime_from_filetime(ft):
 
 def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     """Insert a new record into the database."""
+    global hive_cell_proc_tallies
     rh = co.registry_handle
     #Ensure mtime extrema are rh properties
     if "mtime_earliest_key" not in dir(rh):
@@ -259,6 +266,7 @@ def process_regxml_callback_object(co, current_hive_id, prev_hive_id, cursor):
     #Output
     insert_db(cursor, "cell_analysis", record_dict)
     #Committing on every key fairly well kills performance.  Implement a throttled committer if desired.
+    hive_cell_proc_tallies[current_hive_id] += 1
 
 def update_db(connection, cursor, table_name, update_dict, id_field, id, commit):
     if len(update_dict.keys()) > 0:
@@ -502,8 +510,8 @@ def main():
         try:
             reader = dfxml.read_regxml(xmlfile=open(work_order["regxml_path"], "rb"), callback=lambda co: process_regxml_callback_object(co, current_hive_id, previous_hive_id, cursor))
         except:
-            sql_insert_failure = "INSERT INTO hives_failed(hive_id, error_text) VALUES (?, ?);"
-            cursor.execute(sql_insert_failure, (current_hive_id, traceback.format_exc()))
+            sql_insert_failure = "INSERT INTO hives_failed(hive_id, cells_processed, error_text) VALUES (?, ?, ?);"
+            cursor.execute(sql_insert_failure, (current_hive_id, hive_cell_proc_tallies[current_hive_id], traceback.format_exc()))
         conn.commit() #Ensure the last updates made it in
 
         #Update the hive and image records with the necessarily-computed times
