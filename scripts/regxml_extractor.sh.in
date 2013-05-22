@@ -117,8 +117,10 @@ if [ $# -lt 1 ]; then
   usage_exit
 fi
 
-if [ ! -r "$1" ]; then
-  echo "Diskimage ($1) is not a readable file." >&2
+diskimage=$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1")
+
+if [ ! -r "$diskimage" ]; then
+  echo "Disk image ($diskimage) is not a readable file." >&2
   echo >&2
   usage_exit
 fi
@@ -153,7 +155,7 @@ if [ -r "$fiout_import" ]; then
 fi
 if [ ! -r "$fiout" ]; then
   echo "Note: Did not detect Fiwalk output.  Generating $fiout."
-  fiwalk -X$fiout -f "$1" >$fiout.out.log 2>$fiout.err.log
+  fiwalk -X$fiout -f "$diskimage" >$fiout.out.log 2>$fiout.err.log
   status=$?
   if [ $status -ne 0 ]; then
     echo "Error (fiwalk exited status $status): see $fiout.err.log.  Resuming, but this may fail." >&2
@@ -182,7 +184,7 @@ else
     maybe_dfxml_flag=-x"$fiout"
   fi
   #Invoke extraction script
-  "$PYTHON" "$pkgdatadir/python/rx_extract_hives.py" $maybe_dfxml_flag "$1" >manifest.txt
+  "$PYTHON" "$pkgdatadir/python/rx_extract_hives.py" $maybe_dfxml_flag "$diskimage" >manifest.txt
   rc=$?
   if [ $rc -ne 0 ]; then
     echo "Error: Hive extraction script failed." >&2
