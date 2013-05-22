@@ -5,6 +5,9 @@ if [ ! -r /etc/centos-release ]; then
   exit 1
 fi
 
+#Install sqlite-devel before configuring Python 3
+sudo yum install sqlite-devel
+
 p3=`which python3`
 if [ ! -x "$p3" ]; then
   echo "Error: Centos 6.4 does not package Python 3.  You must install it from source." >&2
