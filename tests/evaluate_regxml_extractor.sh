@@ -12,9 +12,10 @@ if [ ! -r "$imglist" ]; then
   exit 1
 fi
 
+#TODO Change pwd to here, to be in Git source directory
 githead=$(git rev-parse HEAD)
 
-mkdir -p evaluation
+mkdir -p evaluations_by_commit/$githead
 while read x; do
   if [ -r "$x.dfxml" ]; then
     bn=$(basename "$x")
@@ -24,4 +25,4 @@ while read x; do
   fi
 done <"$imglist"
 
-echo "Number of disk images processing errors: $(grep -v '0' evaluation/$githead/*.status.log | wc -l)"
+echo "Number of disk images processing errors: $(grep -v '0' evaluations_by_commit/$githead/*.status.log | wc -l)"
