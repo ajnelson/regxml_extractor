@@ -162,12 +162,14 @@ if [ ! -r "$fiout" ]; then
 fi
 
 #Check Fiwalk output
-fiout_xmllint_errlog=$fiout.xmllint.err.log
-xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
-status=$?
-if [ $status -ne 0 ]; then
-  echo "Error validating DFXML file '$fiout' (error code $status): see $fiout_xmllint_errlog." >&2
-  exit 1
+if [ ! -z "$fiout" ]; then
+  fiout_xmllint_errlog=$fiout.xmllint.err.log
+  xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
+  status=$?
+  if [ $status -ne 0 ]; then
+    echo "Error validating DFXML file '$fiout' (error code $status): see $fiout_xmllint_errlog." >&2
+    exit 1
+  fi
 fi
 
 #Does it look like we ran before?
