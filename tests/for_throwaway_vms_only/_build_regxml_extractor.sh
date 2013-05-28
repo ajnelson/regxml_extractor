@@ -43,6 +43,8 @@ deps/build_submodules.sh local
 ./bootstrap.sh
 ./configure --prefix=$HOME/local
 make
+make check
+make distcheck
 make install
 
 #Run post-install tests
