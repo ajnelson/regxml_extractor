@@ -14,6 +14,7 @@ sudo yum install \
   gcc-c++ \
   libxml2-devel \
   openssl-devel \
+  python3 \
   python-dateutil \
   python-devel \
   automake \
