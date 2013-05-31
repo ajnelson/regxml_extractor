@@ -15,6 +15,7 @@ sudo apt-get install \
   libxml2-dev \
   libxml2-utils \
   python-dev \
+  sqlite3 \
   autoconf \
   autopoint \
   gettext \
