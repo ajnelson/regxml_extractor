@@ -47,6 +47,17 @@ usage=$usage"\t-x fiout.dfxml, --xml=fiout.dfxml\n"
 usage=$usage"\t  Import DFXML, such as from a previous run of Fiwalk. The DFXML is soft-linked in the output directory to its absolute path.\n"
 usage=$usage"\t  DFXML is created afresh if this option is absent.\n"
 usage=$usage"\n"
+usage=$usage"Experimental options:\n"
+usage=$usage"\n"
+usage=$usage"\t--hive\n"
+usage=$usage"\t  Instead of processing a disk image, process just a single hive.\n"
+usage=$usage"\t--hive-name=label\n"
+usage=$usage"\t  Provide an arbitrary name for the hive file.\n"
+usage=$usage"\t  --hive must be passed if you use this option.\n"
+usage=$usage"\t--hive-path=path\n"
+usage=$usage"\t  Provide the subject disk's file system path of the hive file.\n"
+usage=$usage"\t  --hive must be passed if you use this option.\n"
+usage=$usage"\n"
 usage=$usage"Note that the results are written to the current working directory by default.\n"
 
 usage_exit() {
@@ -60,10 +71,14 @@ fiout=fiout.dfxml
 fiout_import=""
 debug=0
 
+hive_mode=0
+hive_name=""
+hive_path=""
+
 #Canonicalize command-line options with GNU getopt
 #  BSD getopt (default on OS X) does not behave correctly <http://stackoverflow.com/a/7948533/1207160>.
 #  Another example of getopt usage, quicker to read but needs 'eval', is earlier in the same thread <http://stackoverflow.com/a/5230306/1207160>.
-if ! options=$(${GNU_GETOPT} -o dho:x: -l debug,help,output:,xml: -- "$@"); then
+if ! options=$(${GNU_GETOPT} -o dho:x: -l debug,help,hive,hive-name:,hive-path:,output:,xml: -- "$@"); then
   # Something went wrong; getopt should report what.
   exit 1
 fi
@@ -78,6 +93,17 @@ while [ $# -ge 1 ]; do
     -h | --help )
       printf "$usage"
       exit 0
+      ;;
+    --hive )
+      hive_mode=1
+      ;;
+    --hive-name )
+      hive_name=$2
+      shift
+      ;;
+    --hive-path )
+      hive_path=$2
+      shift
       ;;
     -o | --output )
       outdir=$2
@@ -115,6 +141,14 @@ if [ $# -lt 1 ]; then
   echo "Error: More arguments required." >&2
   echo >&2
   usage_exit
+fi
+
+if [ ! -z "$hive_name" -o ! -z "$hive_path" ]; then
+  if [ $hive_mode -ne 1 ]; then
+    echo "Error: Individual hive details provided, but hive mode (--hive) not specified." >&2
+    echo >&2
+    usage_exit
+  fi
 fi
 
 diskimage=$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1")
