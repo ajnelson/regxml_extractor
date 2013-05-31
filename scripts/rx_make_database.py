@@ -408,7 +408,7 @@ def main():
 
     image_list_file = open(args.hive_meta_list, "r")
     for line in image_list_file:
-        cleaned_line = line.strip()
+        cleaned_line = line[:-1]
         if cleaned_line != "":
             hive_dump_path, image_file, dfxml_hive_path, hive_mtime, hive_atime, hive_ctime, hive_crtime = cleaned_line.split("\t")
             if hive_dump_path in successful_regxmls:
