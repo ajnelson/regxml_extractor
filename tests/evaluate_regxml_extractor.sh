@@ -20,11 +20,19 @@ pushd "$script_dir" >/dev/null
 outdir_root=evaluations_by_commit/$(git rev-parse HEAD)
 
 mkdir -p "$outdir_root"
-while read x; do
-  if [ -r "$x.dfxml" ]; then
-    ./log_re_on_one_image.sh "$x" "$outdir_root"
-  fi
-done <"$imglist"
+
+GPARALLEL=$(which parallel)
+if [ -z "$GPARALLEL" ]; then
+  echo "Note: Executing RE in serial." >&2
+  while read x; do
+    if [ -r "$x.dfxml" ]; then
+      ./log_re_on_one_image.sh "$x" "$outdir_root"
+    fi
+  done <"$imglist"
+else
+  echo "Note: Executing RE in parallel." >&2
+  parallel --progress --keep-order ./log_re_on_one_image.sh {} "$outdir_root" :::: "$imglist"
+fi
 
 echo "Number of disk images processing successes: $(grep '0' ${outdir_root}/*.status.log | wc -l)"
 echo "Number of disk images processing errors: $(grep -v '0' ${outdir_root}/*.status.log | wc -l)"
