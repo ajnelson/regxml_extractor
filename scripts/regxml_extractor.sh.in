@@ -143,6 +143,7 @@ if [ $# -lt 1 ]; then
   usage_exit
 fi
 
+#Check options for hive-only mode
 if [ ! -z "$hive_name" -o ! -z "$hive_path" ]; then
   if [ $hive_mode -ne 1 ]; then
     echo "Error: Individual hive details provided, but hive mode (--hive) not specified." >&2
@@ -151,10 +152,10 @@ if [ ! -z "$hive_name" -o ! -z "$hive_path" ]; then
   fi
 fi
 
-diskimage=$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1")
+hivefile=$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1")
 
-if [ ! -r "$diskimage" ]; then
-  echo "Disk image ($diskimage) is not a readable file." >&2
+if [ ! -r "$hivefile" ]; then
+  echo "Hive file ($hivefile) is not a readable file." >&2
   echo >&2
   usage_exit
 fi
@@ -163,11 +164,6 @@ if [ $debug -eq 1 ]; then
   echo "Debug enabled." >&2
   echo "After parsing arguments, settings are:" >&2
   echo "- Output directory: $outdir" >&2
-  if [ -r "$fiout_import" ]; then
-    echo "- Importing Fiwalk output from: $fiout_import" >&2
-  else
-    echo "- Will not import previous Fiwalk output." >&2
-  fi
 fi
 
 #Create output directory if it doesn't exist.  Fail if we can't change into it.
@@ -183,58 +179,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-#Make or import Fiwalk DFXML
-if [ -r "$fiout_import" ]; then
-  ln -s "${fiout_import}" $fiout
-fi
-if [ ! -r "$fiout" ]; then
-  echo "Note: Did not detect Fiwalk output.  Generating $fiout."
-  fiwalk -X$fiout -f "$diskimage" >$fiout.out.log 2>$fiout.err.log
-  status=$?
-  if [ $status -ne 0 ]; then
-    echo "Error (fiwalk exited status $status): see $fiout.err.log.  Resuming, but this may fail." >&2
-    fiout=
-  fi
-fi
-
-#Check Fiwalk output
-if [ ! -z "$fiout" ]; then
-  fiout_xmllint_errlog=$fiout.xmllint.err.log
-  xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
-  status=$?
-  if [ $status -ne 0 ]; then
-    echo "Error validating DFXML file '$fiout' (error code $status): see $fiout_xmllint_errlog." >&2
-    exit 1
-  fi
-fi
-
-#Does it look like we ran before?
-touch manifest.txt
-if [ $(ls *hive 2>/dev/null | wc -l) -gt 0 ]; then
-  echo "Note: Found some hive files.  Assuming extraction has already run.  If this is wrong, remove *.hive."
-else
-  maybe_dfxml_flag=
-  if [ ! "$fiout" == "" ]; then
-    maybe_dfxml_flag=-x"$fiout"
-  fi
-  #Invoke extraction script
-  "$PYTHON" "$pkgdatadir/python/rx_extract_hives.py" $maybe_dfxml_flag "$diskimage" >manifest.txt 2>rx_extract_hives.py.err.log
-  rc=$?
-  echo $rc >rx_extract_hives.py.status.log
-  if [ $rc -ne 0 ]; then
-    echo "Error: Hive extraction script failed." >&2
-    exit $rc
-  fi
-fi
+#Generate manifest file
+printf "$hivefile\t\t$hive_path\t\t\t\t\n" >manifest.txt
 
 # For each regxml file generated, run xmllint to validate and pretty-print
 rm -f linted.txt out.sqlite
 #The 'linted.txt' file contains all the RegXML files that passed xmllint's pretty-printing; note the file can be empty.
 touch linted.txt
-if [ $(ls *hive 2>/dev/null | wc -l) -eq 0 ]; then
+if [ $(ls "$hivefile" 2>/dev/null | wc -l) -eq 0 ]; then
   echo "Note: No hives extracted."
 else
-  for x in $(ls *hive);
+  for x in "$hivefile";
   do
     #Generate RegXML
     hivexml "${x}" >"${x}.regxml" 2>"${x}.hivexml.err.log"
@@ -252,7 +207,7 @@ else
     echo "Warning: No RegXML files passed structural validation." >&2
   fi
   # When all regxml is pretty-printed, generate a database
-  "$PYTHON" "$pkgdatadir/python/rx_make_database.py" linted.txt manifest.txt out.sqlite
+  "$PYTHON" "$pkgdatadir/python/rx_make_database.py" linted.txt manifest.txt out.sqlite || exit 1
   #Check if any of the .regxml files that passed xmllint failed to ingest into SQLite
   hive_ingests_failed=$(sqlite3 out.sqlite 'select count(*) from hives_failed;')
   if [ $hive_ingests_failed -gt 0 ]; then
