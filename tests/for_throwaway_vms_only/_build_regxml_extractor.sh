@@ -51,6 +51,9 @@ make install
 regxml_extractor.sh -h
 hivexml deps/hivex/images/minimal
 hivexml deps/hivex/images/large
+mkdir var #Fail if this directory exists.
+regxml_extractor.sh --hive -o var/test/minimal deps/hivex/images/minimal
+regxml_extractor.sh --hive -o var/test/large deps/hivex/images/large
 
 #Done.
 popd
