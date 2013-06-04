@@ -200,7 +200,7 @@ else
     #If hivexml was successful, syntax-check RegXML, logging successes
     xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>"${x}.xmllint.err.log"
     rcxmllint=$?
-    [ $rcxmllint -eq 0 ] && printf "$PWD/$x\t$PWD/$x.regxml\n" >>linted.txt
+    [ $rcxmllint -eq 0 ] && printf "$x\t$x.regxml\n" >>linted.txt
   done
   hives_linted=$(cat linted.txt | wc -l)
   if [ $hives_linted -eq 0 ]; then
