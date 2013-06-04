@@ -407,7 +407,7 @@ def main():
         else:
             raise Exception("Unexpected number of line components when reading hive-regxml mapping:\nrepr(line) = " + repr(line))
         successful_regxmls[hive_path] = xml_path
-    logging.debug("Successful hive file-RegXML pairs: %r" % [(k,successful_regxmls[k]) for k in successful_regxmls])
+    logging.debug("Successful hive file-RegXML pairs: %r" % successful_regxmls)
 
     #Produce a list of the images to use
     work_list_unordered = []
@@ -432,7 +432,7 @@ def main():
     else:
         #Ingest order will do fine in the single-image case.
         work_list = work_list_unordered
-    logging.debug("In-order work list we are processing:\n\t" + "\n\t".join(map(str, work_list)))
+    logging.debug("In-order work list we are processing: %r" % work_list)
 
     #Begin the SQL database
     conn = sqlite3.connect(args.output_database_file)
