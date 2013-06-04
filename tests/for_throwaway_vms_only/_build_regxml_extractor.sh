@@ -53,7 +53,9 @@ hivexml deps/hivex/images/minimal
 hivexml deps/hivex/images/large
 mkdir var #Fail if this directory exists.
 regxml_extractor.sh --hive -o var/test/minimal deps/hivex/images/minimal
+echo "Note: Analyzed $(sqlite3 var/test/minimal/out.sqlite 'select count(*) from cell_analysis;') cells with that call."
 regxml_extractor.sh --hive -o var/test/large deps/hivex/images/large
+echo "Note: Analyzed $(sqlite3 var/test/large/out.sqlite 'select count(*) from cell_analysis;') cells with that call."
 
 #Done.
 popd
