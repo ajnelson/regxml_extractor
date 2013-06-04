@@ -207,7 +207,7 @@ else
     echo "Warning: No RegXML files passed structural validation." >&2
   fi
   # When all regxml is pretty-printed, generate a database
-  "$PYTHON" "$pkgdatadir/python/rx_make_database.py" linted.txt manifest.txt out.sqlite || exit 1
+  "$PYTHON" "$pkgdatadir/python/rx_make_database.py" --debug linted.txt manifest.txt out.sqlite || exit 1
   #Check if any of the .regxml files that passed xmllint failed to ingest into SQLite
   hive_ingests_failed=$(sqlite3 out.sqlite 'select count(*) from hives_failed;')
   if [ $hive_ingests_failed -gt 0 ]; then
