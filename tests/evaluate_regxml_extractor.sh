@@ -75,7 +75,8 @@ else
   if [ $debug -eq 1 ]; then
     report_progress=--progress
   fi
-  parallel $report_progress --keep-order ./log_re_on_one_image.sh {} "$outdir_root" :::: "$imglist"
+  #AJN TODO Ubuntu 12.10 was triggering the '--tollef' flag somehow; that will be retired 20140222. At that point, '--gnu' can be dropped from this command.
+  parallel --gnu $report_progress --keep-order ./log_re_on_one_image.sh {} "$outdir_root" :::: "$imglist"
 fi
 
 echo "Number of disk images processing successes: $(grep '0' ${outdir_root}/*.status.log | wc -l)"
