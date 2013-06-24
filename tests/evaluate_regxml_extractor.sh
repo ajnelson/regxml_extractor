@@ -5,6 +5,8 @@ usage=$usage"\n"
 usage=$usage"Options:\n"
 usage=$usage"\t-d, --debug\n"
 usage=$usage"\t  Enable debug output (writes to stderr).\n"
+usage=$usage"\t--force-fiwalk\n"
+usage=$usage"\t  Force fiwalk to run.\n"
 usage=$usage"\t-j\n"
 usage=$usage"\t  Execute RegXML Extractor on disk images in parallel.  Requires GNU Parallel.\n"
 usage=$usage"\n"
@@ -18,11 +20,15 @@ GPARALLEL=$(which parallel)
 
 debug=0
 do_parallel=0
+force_fiwalk=
 
 while [ $# -ge 1 ]; do
   case $1 in
     -d | --debug )
       debug=1
+      ;;
+    --force-fiwalk )
+      force_fiwalk=--force-fiwalk
       ;;
     -j )
       do_parallel=1
@@ -76,7 +82,7 @@ else
     report_progress=--progress
   fi
   #AJN TODO Ubuntu 12.10 was triggering the '--tollef' flag somehow; that will be retired 20140222. At that point, '--gnu' can be dropped from this command.
-  parallel --gnu $report_progress --keep-order ./log_re_on_one_image.sh {} "$outdir_root" :::: "$imglist"
+  parallel --gnu $report_progress --keep-order ./log_re_on_one_image.sh $force_fiwalk {} "$outdir_root" :::: "$imglist"
 fi
 
 echo "Number of disk images processing successes: $(grep '0' ${outdir_root}/*.status.log | wc -l)"
