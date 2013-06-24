@@ -10,5 +10,12 @@ fi
 img_abs_path=$(python -c 'import sys, os; print(os.path.realpath(sys.argv[1]))' "$1")
 output_dir=$2/$(basename "$1")
 
-regxml_extractor.sh -d -o "$output_dir" -x "${img_abs_path}.dfxml" "$img_abs_path" >"${output_dir}.out.log" 2>"${output_dir}.err.log"
+#TODO Test this on a path with a space in it
+xmlarg=
+if [ -r "${img_abs_path}.dfxml" ]; then
+  xmlarg=-x
+  xmlarg="$xmlarg" "${img_abs_path}.dfxml"
+fi
+
+regxml_extractor.sh -d -o "$output_dir" $xmlarg "$img_abs_path" >"${output_dir}.out.log" 2>"${output_dir}.err.log"
 echo $? >"${output_dir}.status.log"
