@@ -82,7 +82,8 @@ else
     report_progress=--progress
   fi
   #AJN TODO Ubuntu 12.10 was triggering the '--tollef' flag somehow; that will be retired 20140222. At that point, '--gnu' can be dropped from this command.
-  parallel --gnu $report_progress --keep-order ./log_re_on_one_image.sh $force_fiwalk {} "$outdir_root" :::: "$imglist"
+  #Assumption: Fiwalk won't take more than four hours.
+  parallel --gnu $report_progress --timeout 14400 --keep-order ./log_re_on_one_image.sh $force_fiwalk {} "$outdir_root" :::: "$imglist"
 fi
 
 echo "Number of disk images processing successes: $(grep '0' ${outdir_root}/*.status.log | wc -l)"
