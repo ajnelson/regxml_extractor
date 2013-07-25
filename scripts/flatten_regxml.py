@@ -19,9 +19,7 @@ import datetime
 import dfxml
 
 def main():
-    xmlout_fn = "junk.regxml"
-    logging.info("Opening %r for output." % xmlout_fn)
-    xmlout = open(xmlout_fn, "w")
+    xmlout = sys.stdout
 
     meta = dict()
     meta["creator_program"] = os.path.basename(sys.argv[0])
@@ -78,6 +76,11 @@ def main():
                     name_stack.append(elem.attrib.get("name"))
                 elif elem.tag == "value":
                     name_stack.append(elem.attrib.get("key"))
+
+                #Handling null names: None -> ""
+                if name_stack[-1] is None:
+                    name_stack[-1] = ""
+
             elif event == "end":
                 cell_path = "\\".join(name_stack)
                 name_stack.pop()
