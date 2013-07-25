@@ -13,15 +13,15 @@ if [ "$1" == "--force-fiwalk" ]; then
   shift
 fi
 
-img_abs_path=$(python -c 'import sys, os; print(os.path.realpath(sys.argv[1]))' "$1")
-output_dir=$2/$(basename "$1")
+img_abs_path="$(python -c 'import sys, os; print(os.path.realpath(sys.argv[1]))' "$1")"
+output_dir="$2/$(basename "$1")"
 
-#TODO Test this on a path with a space in it
-xmlarg=
+xmlarg1=
+xmlarg2=
 if [ $force_fiwalk -eq 0 -a -r "${img_abs_path}.dfxml" ]; then
-  xmlarg=-x
-  xmlarg="$xmlarg ${img_abs_path}.dfxml"
+  xmlarg1=-x
+  xmlarg2="${img_abs_path}.dfxml"
 fi
 
-regxml_extractor.sh -d -o "$output_dir" $xmlarg "$img_abs_path" >"${output_dir}.out.log" 2>"${output_dir}.err.log"
+regxml_extractor.sh -d -o "$output_dir" "$xmlarg1" "$xmlarg2" "$img_abs_path" >"${output_dir}.out.log" 2>"${output_dir}.err.log"
 echo $? >"${output_dir}.status.log"
