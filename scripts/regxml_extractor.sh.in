@@ -80,7 +80,7 @@ while [ $# -ge 1 ]; do
       exit 0
       ;;
     -o | --output )
-      outdir=$2
+      outdir="$2"
       if [ -e "$outdir" -a ! -d "$outdir" ]; then
         echo "Error: Specified output directory (supplied to $1) is not a directory." >&2
         exit 1
@@ -88,9 +88,9 @@ while [ $# -ge 1 ]; do
       shift
       ;;
     -x | --xml )
-      fiout_import=$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$2")
+      fiout_import="$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$2")"
       if [ ! -r "$fiout_import" ]; then
-        echo "Error: Fiwalk output (supplied to $1) is not a readable file." >&2
+        echo "Error: Fiwalk output (supplied to $1) is not a readable file: $2" >&2
         exit 1
       fi
       if [ -r "$fiout" ]; then
@@ -117,7 +117,7 @@ if [ $# -lt 1 ]; then
   usage_exit
 fi
 
-diskimage=$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1")
+diskimage="$("$PYTHON" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$1")"
 
 if [ ! -r "$diskimage" ]; then
   echo "Disk image ($diskimage) is not a readable file." >&2
@@ -151,12 +151,13 @@ fi
 
 #Make or import Fiwalk DFXML
 if [ -r "$fiout_import" ]; then
-  ln -s "${fiout_import}" $fiout
+  ln -s "${fiout_import}" "$fiout"
 fi
 if [ ! -r "$fiout" ]; then
   echo "Note: Did not detect Fiwalk output.  Generating $fiout."
-  fiwalk -X$fiout -f "$diskimage" >$fiout.out.log 2>$fiout.err.log
+  fiwalk -X"$fiout" -f "$diskimage" >"$fiout.out.log" 2>"$fiout.err.log"
   status=$?
+  echo $status >"$fiout.status.log"
   if [ $status -ne 0 ]; then
     echo "Error (fiwalk exited status $status): see $fiout.err.log.  Resuming, but this may fail." >&2
     fiout=
@@ -165,7 +166,7 @@ fi
 
 #Check Fiwalk output
 if [ ! -z "$fiout" ]; then
-  fiout_xmllint_errlog=$fiout.xmllint.err.log
+  fiout_xmllint_errlog="$fiout.xmllint.err.log"
   xmllint "$fiout" >/dev/null 2>"$fiout_xmllint_errlog"
   status=$?
   if [ $status -ne 0 ]; then
