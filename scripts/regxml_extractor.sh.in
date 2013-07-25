@@ -209,9 +209,16 @@ else
     echo $rchivexml >"${x}.hivexml.status.log"
     [ $rchivexml -ne 0 ] && continue
 
+    #(Experimental) Flatten RegXML
+    "$PYTHON" "$pkgdatadir/python/flatten_regxml.py" "${x}.regxml" >"${x}.flattened.regxml" 2>"${x}.flattened.regxml.err.log"
+    echo $? >"${x}.flattened.regxml.status.log"
+    xmllint --format "${x}.flattened.regxml" >"${x}.flattened.checked.regxml" 2>"${x}.flattened.checked.regxml.err.log"
+    echo $? >"${x}.flattened.checked.regxml.status.log"
+
     #If hivexml was successful, syntax-check RegXML, logging successes
     xmllint --format "${x}.regxml" >"${x}.checked.regxml" 2>"${x}.xmllint.err.log"
     rcxmllint=$?
+    echo $rcxmllint >"${x}.xmllint.status.log"
     [ $rcxmllint -eq 0 ] && printf "$PWD/$x\t$PWD/$x.regxml\n" >>linted.txt
   done
   hives_linted=$(cat linted.txt | wc -l)

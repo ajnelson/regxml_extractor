@@ -2,10 +2,16 @@
 repdir = ${pkgdatadir}/python
 
 rep_PYTHON = \
+  flatten_regxml.py \
+  rdifference.py \
   rx_extract_hives.py \
-  rx_make_database.py \
-  rdifference.py
+  rx_make_database.py
 
 bin_SCRIPTS = regxml_extractor.sh
 
-EXTRA_DIST = rx_extract_hives.py rx_make_database.py regxml_extractor.sh rdifference.py
+EXTRA_DIST = \
+  flatten_regxml.py \
+  rdifference.py \
+  regxml_extractor.sh \
+  rx_extract_hives.py \
+  rx_make_database.py
