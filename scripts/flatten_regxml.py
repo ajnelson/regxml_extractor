@@ -89,6 +89,11 @@ def main():
                 x.text = cell_path
                 elem.insert(0, x)
 
+                #TODO Note this alloc element is only true for Hivex on the modified 1.3.3 branch.
+                x = ET.Element("alloc")
+                x.text = "1"
+                elem.insert(1, x)
+
                 #Convert tag
                 #value -> valueobject, {node,key} -> keyobject
                 if elem.tag == "value":
@@ -96,7 +101,7 @@ def main():
                 else:
                     elem.tag = "keyobject"
 
-                #At this point, all of the child nodes and values have been parsed.  So, throw them away.
+                #At this point, all of the child keys and values have been parsed.  So, throw them away.
                 for tagname in ["key", "value"]:
                     for parsed_cell in elem.findall(".//" + tagname + "object"):
                         elem.remove(parsed_cell)
