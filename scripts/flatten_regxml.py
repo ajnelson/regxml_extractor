@@ -101,15 +101,14 @@ def main():
                 elem.insert(1, x)
                 elem.tag = "cellobject"
 
-                #TODO Note this alloc element is only true for Hivex on the modified 1.3.3 branch.
+                #Note this alloc element is only true for Hivex on the modified 1.3.3 branch.
                 x = ET.Element("alloc")
                 x.text = "1"
                 elem.insert(1, x)
 
                 #At this point, all of the child keys and values have been parsed.  So, throw them away.
-                for tagname in ["key", "value"]:
-                    for parsed_cell in elem.findall(".//" + tagname + "object"):
-                        elem.remove(parsed_cell)
+                for parsed_cell in elem.findall(".//cellobject"):
+                    elem.remove(parsed_cell)
 
                 cell_dict[cell_path] = ET.tostring(elem, encoding="unicode")
 
