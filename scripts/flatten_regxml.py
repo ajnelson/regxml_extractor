@@ -18,6 +18,32 @@ except ImportError:
 import datetime
 import dfxml
 
+class Encodeable():
+    """
+    Note that null cell names are simply converted to "".
+    """
+    def __init__(self, element_name, data=None, encoding=None):
+        if not isinstance(element_name, str):
+            raise Exception("Element name must be a string.")
+        self._element_name = element_name
+        self._data = data
+        self._encoding = encoding
+
+    def __str__(self):
+        if self._encoding is None:
+            return self._data or ""
+        elif self._encoding == "base64":
+            return dfxml.safe_b64decode(self._data) or ""
+        else:
+            raise Exception("Decodings other than base64 not yet implemented.")
+
+    def to_Element(self):
+        retval = ET.Element(self._element_name)
+        if self._encoding:
+            retval.attrib["encoding"] = self._encoding
+        retval.text = self._data or ""
+        return retval
+
 def main():
     xmlout = sys.stdout
 
@@ -72,39 +98,51 @@ def main():
 
         if elem.tag in ["node", "key", "value"]:
             if event == "start":
+                #Convert the cell's name attribute to an Element shim
                 if elem.tag in ["node", "key"]:
-                    name_stack.append(elem.attrib.get("name"))
+                    cn = Encodeable("name", elem.attrib.get("name"), elem.attrib.get("name_encoding"))
+                    elem.attrib.pop("name", None)
+                    elem.attrib.pop("name_encoding", None)
                 elif elem.tag == "value":
-                    name_stack.append(elem.attrib.get("key"))
-
-                #Handling null names: None -> ""
-                if name_stack[-1] is None:
-                    name_stack[-1] = ""
+                    cn = Encodeable("name", elem.attrib.get("key"), elem.attrib.get("key_encoding"))
+                    elem.attrib.pop("key", None)
+                    elem.attrib.pop("key_encoding", None)
+                name_stack.append(cn)
 
             elif event == "end":
-                cell_path = "\\".join(name_stack)
-                name_stack.pop()
+                cell_path = "\\".join(map(str, name_stack))
+                the_name = name_stack.pop()
 
                 x = ET.Element("cellpath")
                 x.text = cell_path
                 elem.insert(0, x)
 
+                elem.insert(1, the_name.to_Element())
+
                 #Convert tag from key/value to cellobject with a name_type child
                 #value -> valueobject, {node,key} -> keyobject
                 name_type= "?"
+                value_data = None
                 if elem.tag == "value":
                     name_type = "v"
+                    #While we're here, convert the value data, if any
+                    value_data = Encodeable("data", elem.attrib.get("value"), elem.attrib.get("value_encoding"))
+                    elem.attrib.pop("value", None)
+                    elem.attrib.pop("value_encoding", None)
                 else:
                     name_type = "k"
                 x = ET.Element("name_type")
                 x.text = name_type
-                elem.insert(1, x)
+                elem.insert(2, x)
                 elem.tag = "cellobject"
 
                 #Note this alloc element is only true for Hivex on the modified 1.3.3 branch.
                 x = ET.Element("alloc")
                 x.text = "1"
-                elem.insert(1, x)
+                elem.insert(3, x)
+
+                if value_data:
+                    elem.insert(4, value_data.to_Element())
 
                 #At this point, all of the child keys and values have been parsed.  So, throw them away.
                 for parsed_cell in elem.findall(".//cellobject"):
