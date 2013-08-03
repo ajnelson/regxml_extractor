@@ -122,11 +122,13 @@ def main():
                 #Convert tag from key/value to cellobject with a name_type child
                 #value -> valueobject, {node,key} -> keyobject
                 name_type= "?"
-                value_data = None
+                value_elem = None
                 if elem.tag == "value":
                     name_type = "v"
                     #While we're here, convert the value data, if any
-                    value_data = Encodeable("data", elem.attrib.get("value"), elem.attrib.get("value_encoding"))
+                    value_elem = Encodeable("data", elem.attrib.get("value"), elem.attrib.get("value_encoding")).to_Element()
+                    value_elem.attrib["type"] = elem.attrib["type"] #Values must have a type.  So if this fails, it's worth knowing.
+                    elem.attrib.pop("type", None)
                     elem.attrib.pop("value", None)
                     elem.attrib.pop("value_encoding", None)
                 else:
@@ -141,8 +143,8 @@ def main():
                 x.text = "1"
                 elem.insert(3, x)
 
-                if value_data:
-                    elem.insert(4, value_data.to_Element())
+                if value_elem:
+                    elem.insert(4, value_elem)
 
                 #At this point, all of the child keys and values have been parsed.  So, throw them away.
                 for parsed_cell in elem.findall(".//cellobject"):
