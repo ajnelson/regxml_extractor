@@ -89,17 +89,22 @@ def main():
                 x.text = cell_path
                 elem.insert(0, x)
 
+                #Convert tag from key/value to cellobject with a name_type child
+                #value -> valueobject, {node,key} -> keyobject
+                name_type= "?"
+                if elem.tag == "value":
+                    name_type = "v"
+                else:
+                    name_type = "k"
+                x = ET.Element("name_type")
+                x.text = name_type
+                elem.insert(1, x)
+                elem.tag = "cellobject"
+
                 #TODO Note this alloc element is only true for Hivex on the modified 1.3.3 branch.
                 x = ET.Element("alloc")
                 x.text = "1"
                 elem.insert(1, x)
-
-                #Convert tag
-                #value -> valueobject, {node,key} -> keyobject
-                if elem.tag == "value":
-                    elem.tag += "object"
-                else:
-                    elem.tag = "keyobject"
 
                 #At this point, all of the child keys and values have been parsed.  So, throw them away.
                 for tagname in ["key", "value"]:
