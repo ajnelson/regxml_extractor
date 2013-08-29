@@ -4,7 +4,7 @@
 Converts hivexml output to flat-hierarchy RegXML.
 """
 
-__version__ = "0.0.3"
+__version__ = "0.1.0"
 
 import sys
 import os
@@ -58,14 +58,15 @@ def main():
 
     xmlout.write("""\
 <?xml version='1.0' encoding='UTF-8'?>
-<regxml version='2.0'>
-  <metadata 
-  xmlns='https://github.com/ajnelson/regxml_extractor'
+<regxml 
+  xmlns='http://www.forensicswiki.org/wiki/RegXML'
   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
-  xmlns:dc='http://purl.org/dc/elements/1.1/'>
+  xmlns:dc='http://purl.org/dc/elements/1.1/'
+  version='2.0b'>
+  <metadata>
     <dc:type>Windows Registry Hive</dc:type>
   </metadata>
-  <creator version='1.0'>
+  <creator>
     <program>%(creator_program)s</program>
     <version>%(creator_version)s</version>
     <build_environment>
