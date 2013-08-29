@@ -40,3 +40,4 @@ py-compile
 
 .DS_Store
 scripts/regxml_extractor.sh
+tests/for_throwaway_vms_only/_autotool_vars.sh

@@ -5,7 +5,13 @@ AC_PREREQ(2.61)
 AC_INIT(regxml_extractor, 0.4.0, ajnelson@cs.ucsc.edu)
 AC_CONFIG_SRCDIR([scripts/regxml_extractor.sh.in])
 AM_INIT_AUTOMAKE
-AC_OUTPUT(Makefile deps/Makefile etc/Makefile lib/Makefile scripts/Makefile)
+AC_OUTPUT(
+  Makefile
+  deps/Makefile
+  etc/Makefile
+  lib/Makefile
+  scripts/Makefile
+)
 
 # Checks for programs.
 
@@ -64,6 +70,7 @@ fi
 
 AC_CONFIG_FILES([
   scripts/regxml_extractor.sh
+  tests/for_throwaway_vms_only/_autotool_vars.sh
 ])
 
 AC_OUTPUT

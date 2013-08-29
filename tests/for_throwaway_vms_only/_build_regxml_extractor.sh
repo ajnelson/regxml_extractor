@@ -47,10 +47,16 @@ make check
 make distcheck
 make install
 
+#Pick up autotool variables
+source _autotool_vars.sh
+
 #Run post-install tests
 regxml_extractor.sh -h
-hivexml deps/hivex/images/minimal
-hivexml deps/hivex/images/large
+for hive in minimal large; do
+  hivexml deps/hivex/images/$hive >$hive.regxml
+  "$PYTHON" "scripts/flatten_regxml.py" $hive.regxml >$hive.flattened.regxml
+  xmllint --format --schema="etc/regxml.xsd" $hive.flattened.regxml >$hive.flattened.checked.regxml
+done
 
 #Done.
 popd
