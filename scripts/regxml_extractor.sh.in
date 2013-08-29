@@ -219,7 +219,7 @@ else
     #(Experimental) Flatten RegXML
     "$PYTHON" "$pkgdatadir/python/flatten_regxml.py" "${x}.regxml" >"${x}.flattened.regxml" 2>"${x}.flattened.regxml.err.log"
     echo $? >"${x}.flattened.regxml.status.log"
-    xmllint --format "${x}.flattened.regxml" >"${x}.flattened.checked.regxml" 2>"${x}.flattened.checked.regxml.err.log"
+    xmllint --schema "$pkgdatadir/regxml.xsd" --format "${x}.flattened.regxml" >"${x}.flattened.checked.regxml" 2>"${x}.flattened.checked.regxml.err.log"
     echo $? >"${x}.flattened.checked.regxml.status.log"
 
     #If hivexml was successful, syntax-check RegXML, logging successes

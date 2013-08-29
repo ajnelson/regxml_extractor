@@ -7,3 +7,6 @@
 [submodule "deps/dfxml"]
 	path = deps/dfxml
 	url = https://github.com/simsong/dfxml.git
+[submodule "deps/regxml_schema"]
+	path = deps/regxml_schema
+	url = https://github.com/ajnelson/regxml_schema.git
