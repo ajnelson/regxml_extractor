@@ -54,9 +54,10 @@ source "$SCRIPTDIR/_autotool_vars.sh"
 regxml_extractor.sh -h
 for hive in minimal large; do
   hivexml deps/hivex/images/$hive >$hive.regxml
-  PYTHONPATH="$PYTHONPATH/lib" \
+  PYTHONPATH="$PWD/lib:$PYTHONPATH" \
     "$PYTHON" "scripts/flatten_regxml.py" $hive.regxml >$hive.flattened.regxml
   xmllint --format --schema "etc/regxml.xsd" $hive.flattened.regxml >$hive.flattened.checked.regxml
+  xmllint --noout $hive.flattened.checked.regxml
 done
 
 #Done.
