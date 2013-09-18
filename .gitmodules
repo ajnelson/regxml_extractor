@@ -3,7 +3,7 @@
 	url = https://github.com/ajnelson/hivex.git
 [submodule "deps/sleuthkit"]
 	path = deps/sleuthkit
-	url = https://github.com/ajnelson/sleuthkit.git
+	url = https://github.com/sleuthkit/sleuthkit.git
 [submodule "deps/dfxml"]
 	path = deps/dfxml
 	url = https://github.com/simsong/dfxml.git
