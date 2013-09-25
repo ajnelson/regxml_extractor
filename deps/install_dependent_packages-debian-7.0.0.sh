@@ -6,6 +6,9 @@ set -x
 #Assume Debian
 #TODO Add a check
 
+#Refresh package lists
+sudo apt-get update
+
 #Below the 'automake' line are "devel" packages, but we'll break that out after the Hivex revisions are upstream.
 sudo apt-get install \
   automake  \
