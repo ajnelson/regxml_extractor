@@ -210,7 +210,12 @@ if [ $(ls *hive 2>/dev/null | wc -l) -eq 0 ]; then
 else
   for x in $(ls *hive);
   do
-    #Generate RegXML
+    #(Experimental) Generate RegXML - flat
+    PYTHONPATH="${prefix}/local/share/hivex/python3:$PYTHONPATH" \
+      "${pkgdatadir}/python/rx_make_flat_regxml.py" "$x" >"${x}.regxml2" 2>"${x}.regxml2.err.log"
+    echo $? >"${x}.regxml2.status.log"
+
+    #Generate RegXML - hierarchical
     hivexml "${x}" >"${x}.regxml" 2>"${x}.hivexml.err.log"
     rchivexml=$?
     echo $rchivexml >"${x}.hivexml.status.log"

@@ -73,7 +73,4 @@ AC_CONFIG_FILES([
   tests/for_throwaway_vms_only/_autotool_vars.sh
 ])
 
-AC_CONFIG_SUBDIRS([deps/hivex
-                   deps/sleuthkit])
-
 AC_OUTPUT

@@ -16,26 +16,17 @@ if [ -L "lib/dfxml.py" -a ! -e "lib/dfxml.py" ] || [ -L "lib/fiwalk.py" -a ! -e 
 fi
 
 #Ensure Hivex and its Gnulib is checked out
-if [ ! -r "deps/hivex/.gnulib/README" ]; then
-  if [ ! -x "deps/hivex/autogen.sh" ]; then
-    git submodule init deps/hivex
-    git submodule sync deps/hivex
-    git submodule update deps/hivex
-  fi
-  pushd deps/hivex
-  ./bootstrap
-  popd
+if [ ! -x "deps/hivex/autogen.sh" ]; then
+  git submodule init deps/hivex
+  git submodule sync deps/hivex
+  git submodule update deps/hivex
 fi
 
-if [ ! -r "deps/sleuthkit/Makefile.in" ]; then
-  if [ ! -r "deps/sleuthkit/bootstrap" ]; then
-    git submodule init deps/sleuthkit
-    git submodule sync deps/sleuthkit
-    git submodule update deps/sleuthkit
-  fi
-  pushd deps/sleuthkit
-  ./bootstrap
-  popd
+#Ensure the RegXML Schema is checked out
+if [ ! -r "deps/regxml_schema/regxml.xsd" ]; then
+  git submodule init deps/regxml_schema
+  git submodule sync deps/regxml_schema
+  git submodule update deps/regxml_schema
 fi
 
 aclocal
