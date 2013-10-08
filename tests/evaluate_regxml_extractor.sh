@@ -9,6 +9,8 @@ usage=$usage"\t--force-fiwalk\n"
 usage=$usage"\t  Force fiwalk to run.\n"
 usage=$usage"\t-j\n"
 usage=$usage"\t  Execute RegXML Extractor on disk images in parallel.  Requires GNU Parallel.\n"
+usage=$usage"\t--timeout nsecs\n"
+usage=$usage"\t  Number of seconds to allow any of the Parallel jobs to run.  Default: indefinite.\n"
 usage=$usage"\n"
 
 usage_exit() {
@@ -21,6 +23,7 @@ GPARALLEL=$(which parallel)
 debug=0
 do_parallel=0
 force_fiwalk=
+timeout=
 
 while [ $# -ge 1 ]; do
   case $1 in
@@ -37,6 +40,10 @@ while [ $# -ge 1 ]; do
         do_parallel=0
       fi
       ;;
+    --timeout )
+      timeout=$2
+      shift
+      ;;
     * )
       break
       ;;
@@ -49,6 +56,11 @@ if [ $# -ne 1 ]; then
 fi
 
 imglist=$1
+
+timeout_flag=
+if [ ! -z "$timeout" ]; then
+  timeout_flag="--timeout=$timeout"
+fi
 
 if [ ! -r "$imglist" ]; then
   echo "Image list ($imglist) is not a readable file." >&2
@@ -83,7 +95,7 @@ else
   fi
   #AJN TODO Ubuntu 12.10 was triggering the '--tollef' flag somehow; that will be retired 20140222. At that point, '--gnu' can be dropped from this command.
   #Assumption: Fiwalk won't take more than four hours.
-  parallel --gnu $report_progress --timeout 14400 ./log_re_on_one_image.sh $force_fiwalk {} "$outdir_root" :::: "$imglist"
+  parallel --gnu $report_progress $timeout_flag ./log_re_on_one_image.sh $force_fiwalk {} "$outdir_root" :::: "$imglist"
 fi
 
 echo "Number of disk images processing successes: $(grep '0' ${outdir_root}/*.status.log | wc -l)"
