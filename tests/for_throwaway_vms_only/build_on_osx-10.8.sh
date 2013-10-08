@@ -1,3 +1,3 @@
 #!/bin/bash
 
-INSTALL_DEPS=install_dependent_packages-osx-10.8.sh ./_build_regxml_extractor.sh
+PYTHON3=python3.3 INSTALL_DEPS=install_dependent_packages-osx-10.8.sh ./_build_regxml_extractor.sh

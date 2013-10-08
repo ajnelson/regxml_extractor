@@ -4,6 +4,14 @@ get_abspath() {
   python -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
 
+if [ -z "$PYTHON3" ]; then
+  echo "$0: Error: You must specify PYTHON3 as an environment variable in order to build Hivex as RE requires.  For most systems, this can just be 'python3', though on OS X it may need to be 'python3.3' or similar.  Something as simple as this will suffice:" >&2
+  echo "" >&2
+  echo "    PYTHON3=python3 $0" >&2
+  echo "" >&2
+  exit 1
+fi
+
 case $1 in
   local )
     MAKEINSTALL="make install"
@@ -35,5 +43,5 @@ pushd $SCRIPTDIR/sleuthkit
 popd
 
 pushd $SCRIPTDIR/hivex
-(./autogen.sh && ./configure --disable-ruby --prefix="$INSTALLDIR" --with-python-installdir="$INSTALLDIR/share/hivex/python3" && make -j && $MAKEINSTALL) || exit 1
+(./autogen.sh && PYTHON=$PYTHON3 ./configure --disable-ruby --prefix="$INSTALLDIR" --with-python-installdir="$INSTALLDIR/share/hivex/python3" && make -j && $MAKEINSTALL) || exit 1
 popd
