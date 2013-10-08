@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -x
+
 #Ensure the dfxml.py and fiwalk.py files exist (they're symlinks in Git)
 if [ -L "lib/dfxml.py" -a ! -e "lib/dfxml.py" ] || [ -L "lib/fiwalk.py" -a ! -e "lib/fiwalk.py" ]; then
   if [ ! -d ".git" ]; then
@@ -12,6 +15,29 @@ if [ -L "lib/dfxml.py" -a ! -e "lib/dfxml.py" ] || [ -L "lib/fiwalk.py" -a ! -e 
   fi
 fi
 
+#Ensure Hivex and its Gnulib is checked out
+if [ ! -r "deps/hivex/.gnulib/README" ]; then
+  if [ ! -x "deps/hivex/autogen.sh" ]; then
+    git submodule init deps/hivex
+    git submodule sync deps/hivex
+    git submodule update deps/hivex
+  fi
+  pushd deps/hivex
+  ./bootstrap
+  popd
+fi
+
+if [ ! -r "deps/sleuthkit/Makefile.in" ]; then
+  if [ ! -r "deps/sleuthkit/bootstrap" ]; then
+    git submodule init deps/sleuthkit
+    git submodule sync deps/sleuthkit
+    git submodule update deps/sleuthkit
+  fi
+  pushd deps/sleuthkit
+  ./bootstrap
+  popd
+fi
+
 aclocal
 automake --add-missing
-autoreconf
+autoreconf -i
