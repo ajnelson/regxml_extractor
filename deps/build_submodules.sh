@@ -35,5 +35,5 @@ pushd $SCRIPTDIR/sleuthkit
 popd
 
 pushd $SCRIPTDIR/hivex
-(./autogen.sh && ./configure --disable-ruby --disable-python --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
+(./autogen.sh && ./configure --disable-ruby --prefix="$INSTALLDIR" --with-python-installdir="$INSTALLDIR/share/hivex/python3" && make -j && $MAKEINSTALL) || exit 1
 popd

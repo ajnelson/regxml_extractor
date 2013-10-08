@@ -16,6 +16,7 @@ sudo yum install \
   openssl-devel \
   perl-podlators \
   python3 \
+  python3-devel \
   python-dateutil \
   python-devel \
   automake \
