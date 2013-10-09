@@ -23,8 +23,14 @@ class Encodeable():
     Note that null cell names are simply converted to "".
     """
     def __init__(self, element_name, data=None, encoding=None):
+        """
+        @param data The data as a character string (not a byte string).
+        @param encoding Encoding that was applied to the data.
+        """
         if not isinstance(element_name, str):
             raise Exception("Element name must be a string.")
+        if not isinstance(data, str):
+            raise Exception("The data must be a string; encode to a string before making an Encodeable.")
         self._element_name = element_name
         self._data = data
         self._encoding = encoding
