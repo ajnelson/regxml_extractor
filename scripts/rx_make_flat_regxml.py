@@ -155,6 +155,9 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     #Fetch current cell's name
     #TODO Handle all encoding with base64 care
     cellname = get_cell_name(h, cell, celltype)
+    cellname_length = None
+    if celltype == "v":
+        cellname_length = h.value_key_len(cell)
 
     #Add encoded cellpath
     tmp = ET.Element("cellpath")
@@ -173,6 +176,8 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     #Add encoded cell name
     tmp = ET.Element("name")
     if not cellname is None:
+        if not cellname_length is None:
+            tmp.attrib["recorded_length"] = str(cellname_length)
         tmp.text = cellname
         e.append(tmp)
 
@@ -185,6 +190,17 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     tmp = ET.Element("name_type")
     tmp.text = celltype
     e.append(tmp)
+
+    #Add value size, if a value
+    if celltype == "v":
+        type_and_len = h.value_type(cell)
+        valuesize = str(type_and_len[1])
+        if type_and_len is None:
+            logging.error("Error retrieving type and length of value cell %r." % cell)
+        else:
+            tmp = ET.Element("valuesize")
+            tmp.text = valuesize
+            e.append(tmp)
 
     #Add the cell's allocation status
     tmp = ET.Element("alloc")
