@@ -5,6 +5,7 @@ __version__ = "0.0.1"
 import hivex
 import flatten_regxml
 import functools
+import base64
 import logging
 import sys
 import time
@@ -13,6 +14,21 @@ import dfxml
 
 XMLNS_REGXML = "http://www.forensicswiki.org/wiki/RegXML"
 ET.register_namespace("", XMLNS_REGXML)
+
+HIVE_VALUE_TYPES = {
+  0: "REG_NONE",
+  1: "REG_SZ",
+  2: "REG_EXPAND_SZ",
+  3: "REG_BINARY",
+  4: "REG_DWORD",
+  5: "REG_DWORD_BIG_ENDIAN",
+  6: "REG_LINK",
+  7: "REG_MULTI_SZ",
+  8: "REG_RESOURCE_LIST",
+  9: "REG_FULL_RESOURCE_DESCRIPTOR",
+  10: "REG_RESOURCE_REQUIREMENTS_LIST",
+  11: "REG_QWORD"
+}
 
 def _hivex_walk (h, node, pathstack):
     """
@@ -177,9 +193,64 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         e.append(tmp)
 
     #Add the value's data
+    #There is a bias to blindly base64 encoding everything, due to data types not being trustworthy
     if celltype == "v":
+        type_and_data = h.value_value(cell)
+        value_type = HIVE_VALUE_TYPES[type_and_data[0]]
+        logging.debug("type_and_data = %r" % (type_and_data,))
+
+        b64bytes = base64.b64encode(type_and_data[1])
+        b64chars = b64bytes.decode()
+
         tmp = ET.Element("data")
-        tmp.text = "TODO" #TODO
+        tmp.attrib["type"] = value_type
+
+        as_int = None
+        as_string = None
+        as_string_list = None
+        try:
+            if value_type in ["REG_NONE"]:
+                pass
+
+            #Since binary blobs are so frequently overloaded, blindly try interpreting them.  Python3 semantics in a try block are: Last successful assignment wins.
+            #TODO Check to see if the Hivex library jumps ship early on a type check
+            elif value_type in ["REG_BINARY"]:
+                try:
+                    as_string = h.value_string(cell)
+                    as_int = h.value_dword(cell)
+                    as_int = h.value_qword(cell)
+                except:
+                    pass
+
+            #TODO REG_LINK might be wrong to use here; I forget what's stashed in this cell type.
+            elif value_type in ["REG_SZ", "REG_EXPAND_SZ", "REG_LINK"]:
+                as_string = h.value_string(cell)
+
+            elif value_type in ["REG_MULTI_SZ"]:
+                as_string_list = h.value_multiple_strings(cell)
+
+            elif value_type in ["REG_DWORD", "REG_DWORD_BIG_ENDIAN"]:
+                as_int = h.value_dword(cell)
+
+            elif value_type in ["REG_QWORD"]:
+                as_int = h.value_qword(cell)
+
+            #This last block simply notes the types not investigated
+            elif value_type in ["REG_RESOURCE_LIST", "REG_FULL_RESOURCE_DESCRIPTOR", "REG_RESOURCE_REQUIREMENTS_LIST"]:
+                pass
+
+        except e:
+            logging.error("Exception: " + sys.exc_info()[0])
+            pass
+        if not as_int is None:
+            e.append(ET.Comment("As a number: %r" % as_int))
+        if not as_string is None:
+            e.append(ET.Comment("As a string: %r" % as_string))
+        if not as_string_list is None:
+            e.append(ET.Comment("As a string list: %r" % as_string_list))
+
+        tmp.attrib["encoding"] = "base64"
+        tmp.text = b64chars
         e.append(tmp)
 
     #Add all byte_runs
