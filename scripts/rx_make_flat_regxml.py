@@ -17,10 +17,11 @@ ET.register_namespace("", XMLNS_REGXML)
 def _hivex_walk (h, node, pathstack):
     """
     Generator.  Yields triplet:
-    * nodepath: descent list of nodes from the walk root, ending in the current internal node..
+    * nodepath: descent list of nodes from the walk root, ending in the current internal node.
     * nodes: List 
+    * values: List
     """
-    #logging.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
+    logging.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
     pathstack.append(node)
     nodes = h.node_children(node)
     values = h.node_values(node)
@@ -35,13 +36,13 @@ def hivex_walk (h, node):
     for result in _hivex_walk (h, node, []):
         yield result
 
-@functools.lru_cache(maxsize=128)
-def get_node_name(h, node):
-    return h.node_name(node)
-
-@functools.lru_cache(maxsize=128)
-def get_value_name(h, value):
-    return h.value_key(value)
+@functools.lru_cache(maxsize=None)
+def get_cell_name(h, cell, celltype):
+    assert celltype in ["k","v"]
+    if celltype == "k":
+        return h.node_name(cell)
+    elif celltype == "v":
+        return h.value_key(cell)
 
 def main ():
     h = hivex.Hivex (args.hive)
@@ -126,21 +127,29 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         del tmp2
         e.append(tmp)
 
+    #Fetch current cell's name
+    #TODO Handle all encoding with an Encodeable
+    cellname = get_cell_name(h, cell, celltype)
+
     #Add encoded cellpath
     tmp = ET.Element("cellpath")
-    #TODO Concatenate the encodable path names
+    namestack = []
+    #If the nodepath is provided, prepend the empty string to the path so it is absolute
+    if isinstance(nodepath,list):
+        namestack.append("")
+        for pathcell in nodepath:
+            namestack.append(get_cell_name(h, pathcell, "k"))
+    namestack.append(cellname)
     #TODO Handle encoding
+    cell_full_path = "\\".join(namestack)
+    tmp.text = cell_full_path
     e.append(tmp)
 
     #Add encoded cell name
     tmp = ET.Element("name")
-    #TODO Handle all encoding with an Encodeable
-    if celltype == "k":
-        tmp.text = get_node_name(h, cell)
-    elif celltype == "v":
-        #TODO
-        tmp.text = get_value_name(h, cell)
-    e.append(tmp)
+    if not cellname is None:
+        tmp.text = cellname
+        e.append(tmp)
 
     #Add id
     tmp = ET.Element("id")
@@ -162,7 +171,8 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     if celltype == "k":
         tmp = ET.Element("mtime")
         timestamp_numeric = h.node_timestamp(cell)
-        tmp.text = repr(timestamp_numeric) #TODO
+        timestamp_dftime = dftime_from_windows_filetime(timestamp_numeric)
+        tmp.text = str(timestamp_dftime) #TODO
         tmp.attrib["prec"] = "100ns"
         e.append(tmp)
 
@@ -178,6 +188,20 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     #e.append(tmp)
 
     return e
+
+def dftime_from_windows_filetime(wft):
+    """
+    Note that a filetime of 0 is interpreted as a null timestamp.  No Windows system truly cares about the year 1600.
+    """
+    #TODO Add fractional seconds to timestamps in the DFXML library.
+    if wft == 0:
+        return None
+
+    WINDOWS_TICK = 10000000
+    SEC_TO_UNIX_EPOCH = 11644473600
+
+    timestamp = wft / 10000000.0 - 11644473600
+    return dfxml.dftime(timestamp)
 
 if __name__ == "__main__":
     import argparse
