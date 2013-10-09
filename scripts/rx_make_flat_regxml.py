@@ -92,6 +92,15 @@ def main ():
     <start_time>%(start_time)s</start_time>
   </execution_environment>
   <hive>""" % meta)
+
+    #Record timestamp of hive
+    ts = h.last_modified()
+    dft = dftime_from_windows_filetime(ts)
+    if not dft is None:
+        print("""\
+    <mtime prec="100ns">%s</mtime>""" % str(dft))
+
+    #Walk hive structure
     for (nodepath, nodes, values) in hivex_walk(h, r):
         #logging.debug("(n, ns, vs) = %r" % ((n, ns, vs),))
         for value in values:
@@ -144,7 +153,7 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         e.append(tmp)
 
     #Fetch current cell's name
-    #TODO Handle all encoding with an Encodeable
+    #TODO Handle all encoding with base64 care
     cellname = get_cell_name(h, cell, celltype)
 
     #Add encoded cellpath
@@ -188,7 +197,7 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         tmp = ET.Element("mtime")
         timestamp_numeric = h.node_timestamp(cell)
         timestamp_dftime = dftime_from_windows_filetime(timestamp_numeric)
-        tmp.text = str(timestamp_dftime) #TODO
+        tmp.text = str(timestamp_dftime)
         tmp.attrib["prec"] = "100ns"
         e.append(tmp)
 
