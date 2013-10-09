@@ -3,15 +3,189 @@
 __version__ = "0.0.1"
 
 import hivex
+import flatten_regxml
+import functools
+import logging
+import sys
+import time
+import xml.etree.ElementTree as ET
+import dfxml
 
-def main():
-    pass
+XMLNS_REGXML = "http://www.forensicswiki.org/wiki/RegXML"
+ET.register_namespace("", XMLNS_REGXML)
+
+def _hivex_walk (h, node, pathstack):
+    """
+    Generator.  Yields triplet:
+    * nodepath: descent list of nodes from the walk root, ending in the current internal node..
+    * nodes: List 
+    """
+    #logging.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
+    pathstack.append(node)
+    nodes = h.node_children(node)
+    values = h.node_values(node)
+    yield (pathstack, nodes, values)
+    for n in nodes:
+        for result in _hivex_walk (h, n, pathstack):
+            yield result
+    pathstack.pop()
+
+def hivex_walk (h, node):
+    #TODO assert 'node' is a node
+    for result in _hivex_walk (h, node, []):
+        yield result
+
+@functools.lru_cache(maxsize=128)
+def get_node_name(h, node):
+    return h.node_name(node)
+
+@functools.lru_cache(maxsize=128)
+def get_value_name(h, value):
+    return h.value_key(value)
+
+def main ():
+    h = hivex.Hivex (args.hive)
+    logging.debug(dir(h))
+    r = h.root()
+    logging.debug("root = %r" % r)
+    
+    meta = dict()
+    meta["XMLNS_REGXML"] = XMLNS_REGXML
+    meta["program"] = sys.argv[0]
+    meta["version"] = __version__
+    meta["interpreter"] = "Python %s.%s.%s" % (sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+    meta["hivex_version"] = "TODO" #TODO
+    meta["command_line"] = " ".join(sys.argv)
+    meta["start_time"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    print("""\
+<?xml version="1.0"?>
+<regxml
+  xmlns="%(XMLNS_REGXML)s"
+  version="2.0">
+  <creator>
+    <program>%(program)s</program>
+    <version>%(version)s</version>
+  </creator>
+  <build_environment>
+    <interpreter>%(interpreter)s</interpreter>
+    <library name="Hivex" version="%(hivex_version)s"/>
+  </build_environment>
+  <execution_environment>
+    <command_line>%(command_line)s</command_line>
+    <start_time>%(start_time)s</start_time>
+  </execution_environment>
+  <hive>""" % meta)
+    for (nodepath, nodes, values) in hivex_walk(h, r):
+        #logging.debug("(n, ns, vs) = %r" % ((n, ns, vs),))
+        for value in values:
+            elem = hivex_value_to_Element(h, value, nodepath)
+            print(dfxml.ET_tostring(elem, encoding="unicode"))
+            del elem
+        for node in nodes:
+            elem = hivex_node_to_Element(h, node, nodepath)
+            print(dfxml.ET_tostring(elem, encoding="unicode"))
+            del elem
+    print("""\
+  </hive>
+</regxml>""")
+
+def hivex_node_to_Element(h, node, nodepath):
+    return _hivex_cell_to_Element(h, node, nodepath, "k")
+
+def hivex_value_to_Element(h, node, nodepath):
+    return _hivex_cell_to_Element(h, node, nodepath, "v")
+
+def _hivex_cell_to_Element(h, cell, nodepath, celltype):
+    logging.debug("_hivex_cell_to_Element(h, %r, %r, %r)" % (cell, nodepath, celltype))
+
+    assert celltype in ["k","v"]
+
+    e = ET.Element("cellobject")
+
+    #Add parent object reference
+    #Because hive nodes record parent references, use Hivex's API in addition to tracking the node path when possible.
+    #Note that hive values don't record parent references.
+    if h.root() == cell:
+        #The root element does not have a usable parent reference (#TODO Check this - is it null, or garbage values?)
+        e.attrib["root"] = "1"
+    else:
+        tmp = ET.Element("parent_object")
+        tmp2 = ET.Element("id")
+        parent_node_from_walk = nodepath[-1]
+        tmp2.text = str(parent_node_from_walk)
+        tmp2.attrib["from_walk"] = "1"
+        tmp.append(tmp2)
+        if celltype == "k":
+            parent_node_from_node = h.node_parent(cell)
+            #If there is a discrepancy, add another id; if there's no discrepancy, the first parent id reference gets the from_key tag.
+            if parent_node_from_node != parent_node_from_walk:
+                del tmp2
+                tmp2 = ET.Element("id")
+                tmp2.text = str(parent_node_from_node)
+            tmp2.attrib["from_key"] = "1"
+        del tmp2
+        e.append(tmp)
+
+    #Add encoded cellpath
+    tmp = ET.Element("cellpath")
+    #TODO Concatenate the encodable path names
+    #TODO Handle encoding
+    e.append(tmp)
+
+    #Add encoded cell name
+    tmp = ET.Element("name")
+    #TODO Handle all encoding with an Encodeable
+    if celltype == "k":
+        tmp.text = get_node_name(h, cell)
+    elif celltype == "v":
+        #TODO
+        tmp.text = get_value_name(h, cell)
+    e.append(tmp)
+
+    #Add id
+    tmp = ET.Element("id")
+    tmp.text = str(cell)
+    e.append(tmp)
+
+    #Add the cell's structural type
+    tmp = ET.Element("name_type")
+    tmp.text = celltype
+    e.append(tmp)
+
+    #Add the cell's allocation status
+    tmp = ET.Element("alloc")
+    #(Everything found at the moment is allocated)
+    tmp.text = "1"
+    e.append(tmp)
+
+    #Add the key's mtime
+    if celltype == "k":
+        tmp = ET.Element("mtime")
+        timestamp_numeric = h.node_timestamp(cell)
+        tmp.text = repr(timestamp_numeric) #TODO
+        tmp.attrib["prec"] = "100ns"
+        e.append(tmp)
+
+    #Add the value's data
+    if celltype == "v":
+        tmp = ET.Element("data")
+        tmp.text = "TODO" #TODO
+        e.append(tmp)
+
+    #Add all byte_runs
+    #TODO
+    #tmp = ET.Element("byte_runs")
+    #e.append(tmp)
+
+    return e
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--debug")
-    parser.add_argument("hive")
-    parser.parse_args()
+    parser = argparse.ArgumentParser ()
+    parser.add_argument ("-d", "--debug", action="store_true")
+    parser.add_argument ("hive")
+    args = parser.parse_args ()
 
-    main()
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
+
+    main ()
