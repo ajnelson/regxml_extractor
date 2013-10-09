@@ -37,7 +37,7 @@ def _hivex_walk (h, node, pathstack):
     * nodes: List 
     * values: List
     """
-    logging.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
+    #logging.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
     pathstack.append(node)
     nodes = h.node_children(node)
     values = h.node_values(node)
@@ -279,9 +279,47 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         e.append(tmp)
 
     #Add all byte_runs
-    #TODO
-    #tmp = ET.Element("byte_runs")
-    #e.append(tmp)
+    if celltype == "k":
+        dslength = h.node_struct_length(cell)
+
+        tmp = ET.Element("byte_runs")
+        tmp.attrib["facet"] = "metadata"
+
+        tmp2 = ET.Element("byte_run")
+        tmp2.attrib["file_offset"] = str(cell)
+        tmp2.attrib["len"] = str(dslength)
+        tmp.append(tmp2)
+        del tmp2
+
+        e.append(tmp)
+    elif celltype == "v":
+        dslength = h.value_struct_length(cell)
+        length_and_offset = h.value_data_cell_offset(cell) #TODO The documentation on this is wrong - what's returned is length, offset.
+
+        tmp = ET.Element("byte_runs")
+        tmp.attrib["facet"] = "metadata"
+        tmp2 = ET.Element("byte_run")
+        tmp2.attrib["file_offset"] = str(cell)
+        tmp2.attrib["len"] = str(dslength)
+        tmp.append(tmp2)
+        del tmp2
+        e.append(tmp)
+
+        tmp = ET.Element("byte_runs")
+        tmp.attrib["facet"] = "data"
+        tmp2 = ET.Element("byte_run")
+        if length_and_offset == (0,0):
+            #The (0,0) pair is the sentinel value returned for inlined data. Calculate data offset based on value struct knowledge.
+            br_offset = cell + 0xc
+            br_len = valuesize
+        else:
+            br_offset = length_and_offset[1]
+            br_len = length_and_offset[0]
+        tmp2.attrib["file_offset"] = str(br_offset)
+        tmp2.attrib["len"] = str(br_len)
+        tmp.append(tmp2)
+        del tmp2
+        e.append(tmp)
 
     return e
 
