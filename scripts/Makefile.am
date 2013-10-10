@@ -2,6 +2,7 @@
 repdir = ${pkgdatadir}/python
 
 rep_DATA = \
+  _autotool_vars.py \
   dfxml_tool.py
 
 rep_PYTHON = \
@@ -14,6 +15,7 @@ rep_PYTHON = \
 bin_SCRIPTS = regxml_extractor.sh
 
 EXTRA_DIST = \
+  _autotool_vars.py \
   dfxml_tool.py \
   flatten_regxml.py \
   rdifference.py \

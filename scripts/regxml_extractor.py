@@ -1,12 +1,50 @@
 #!/usr/bin/env python3
 
-__version__ = "0.0.1"
+#TODO Of course, this documentation is out of date since starting this afternoon
+"""
+Extraction step creates a directory hive_extraction, with contents:
+
+* hive_extraction.dfxml - DFXML excerpts of fiwalk's output.  Each fileobject includes an attribute, regxml:extraction_error="0" (or other exit status).
+* $fiwalk_id.hive
+
+New flat RegXML generator conversion step creates a directory conversion_with_libhivex, with contents:
+
+* $fiwalk_id.regxml
+* $fiwalk_id.regxml.out.log
+* $fiwalk_id.regxml.err.log
+* $fiwalk_id.regxml.status.log
+* $fiwalk_id.regxml.validation.log
+* conversion.dfxml - DFXML that describes each .hivexml and .regxml file in the directory, and the version of xmllint and libhivex used.  Includes original_fileobject.  Each fileobject for a .regxml file includes an attribute, regxml:regxml_validation_error="0" (or other exit status).
+
+Hivexml conversion step creates a directory conversion_with_hivexml, with contents:
+
+* $fiwalk_id.hivexml
+* $fiwalk_id.hivexml.err.log
+* $fiwalk_id.hivexml.status.log
+* $fiwalk_id.hivexml.linting.log
+* $fiwalk_id.hivexml.linted.log - Ensures that xmllint will run on it (so the XML is at least well-formed).
+* $fiwalk_id.regxml
+* $fiwalk_id.regxml.err.log
+* $fiwalk_id.regxml.status.log
+* $fiwalk_id.regxml.validation.log
+* conversion.dfxml - DFXML that describes each .hivexml and .regxml file in the directory, and the version of xmllint and libhivex used.  Includes original_fileobject.  Each fileobject for a .regxml file includes an attribute, regxml:valid_regxml="1|0".  Each fileobject for a .hivexml file includes an attribute, regxml:xmllint_error="0" (or other exit status).
+
+RegXML comparison step creates a directory conversion_comparisons, with contents:
+* $fiwalk_id.libhivex_vs_hivexml.txt
+* $fiwalk_id.hivexml_vs_libhivex.txt
+
+SQLite conversion step creates a directory as_sqlite, with contents:
+* out.sqlite - Created by walking conversion_with_hivexml/conversion.dfxml for successfully linted .hivexml files. (Will be .regxml files when the DFXML library is updated.)
+"""
+
+__version__ = "0.0.2"
 
 import logging
 import os
 import subprocess
 import dfxml
 import _autotool_vars
+import glob
 
 _dirstack = []
 def pushd(dirname):
@@ -23,7 +61,7 @@ class RegXML_Extractor:
     This class isn't really meant to be a well-modeled object.  It instead maintains some state to break up some function flow, without resorting to module-level variables.
     """
 
-    def __init__(self, output_root, target_hive=None, target_disk=None, dfxml_to_import=None, pretty=None):
+    def __init__(self, output_root, target_hive=None, target_disk=None, dfxml_to_import=None, pretty=None, debug=None):
         """
         @param output_root Output root directory.  Must not exist.
         @param target_hive Path to hive file.  Do not also pass target_disk.
@@ -35,6 +73,7 @@ class RegXML_Extractor:
             raise ValueError("RegXML_Extractor must be called on either a hive file or disk image.")
 
         self.pretty = pretty
+        self.debug = debug
 
         self._mode = None
         if not target_disk is None:
@@ -86,9 +125,9 @@ class RegXML_Extractor:
         os.makedirs(self.conversion_with_hivexml_dir)
         self.convert_with_hivexml()
 
-        self.conversion_with_hivexml_dir = os.path.join(self.output_root, "conversion_comparisons")
-        os.makedirs(self.conversion_with_hivexml_dir)
-        self.convert_with_hivexml()
+        self.conversion_comparisons_dir = os.path.join(self.output_root, "conversion_comparisons")
+        os.makedirs(self.conversion_comparisons_dir)
+        self.compare_conversions()
 
     def import_dfxml(self):
         os.symlink(self.dfxml_to_import, os.path.join(self.dfxml_generation_dir, "fiwalk.dfxml"))
@@ -110,7 +149,7 @@ class RegXML_Extractor:
                 for hive_name in glob.glob("*.hive"):
                     cmd.append(hive_name)
                 popd()
-                logging.debug(cmd)
+                logging.debug("cmd = %r" % cmd)
                 rc = subprocess.call(
                   cmd,
                   stdout=out_log,
@@ -148,13 +187,16 @@ class RegXML_Extractor:
                   "--format",
                   log_prefix
                 ]
+                logging.debug("cmd = %r" % cmd)
                 rc = subprocess.call(
                   cmd,
                   stdout=pretty_output,
                   stderr=linting_log
                 )
-            with open(log_prefix + ".linted.log", "w") as linted_log:
-                linted_log.write(str(rc))
+                with open(log_prefix + ".linted.log", "w") as linted_log:
+                    linted_log.write(str(rc))
+                if rc != 0:
+                    raise Exception("The DFXML file did not validate.  Aborting.")
 
     def extract_hives(self):
         #TODO
@@ -164,7 +206,59 @@ class RegXML_Extractor:
         pass
 
     def convert_with_hivexml(self):
-        pass
+        pushd(self.hive_extraction_dir)
+        #TODO Replace this glob with DFXML walk of hive_extraction.dfxml
+        hive_abs_paths = []
+        for hive_basename in glob.glob("*.hive"):
+            hive_abs_paths.append(os.path.join(self.hive_extraction_dir, hive_basename))
+        popd()
+        pushd(self.conversion_with_hivexml_dir)
+        for hive_abs_path in hive_abs_paths:
+            hive_basename = os.path.basename(hive_abs_path)
+            #Basename, no extension
+            hive_basename_ne = os.path.splitext(hive_basename)[0]
+            hive_id_prefix = os.path.join(self.conversion_with_hivexml_dir, hive_basename_ne)
+
+            #Generate Hivexml output
+            hivexml_file = hive_id_prefix + ".hivexml"
+            rc_hivexml = None
+            with open(hivexml_file, "w") as out_log:
+              with open(hivexml_file + ".err.log", "w") as err_log:
+                #TODO Once again, Hivex 1.3.8 fails to compile on OS X.  Need to hunt this down.
+                cmd = [_autotool_vars.hivexml]
+                if self.debug:
+                    cmd.append("-d")
+                cmd.append(hive_abs_path)
+                rc_hiveml = subprocess.call(
+                  cmd,
+                  stdout=out_log,
+                  stderr=err_log
+                )
+                with open(hivexml_file + ".status.log", "w") as status_log:
+                    status_log.write(str(rc_hivexml))
+            if rc_hivexml != 0:
+                logging.info("Hivexml did work on %r.  Skipping RegXML generation.")
+                continue
+            #TODO Lint output
+
+            #Generate RegXML
+            regxml_file = hive_id_prefix + ".regxml"
+            rc_flattener = None
+            with open(regxml_file, "w") as out_log:
+              with open(regxml_file + ".err.log", "w") as err_log:
+                rc_flattener = subprocess.call(
+                  [
+                    _autotool_vars.python3,
+                    os.path.join(os.path.join(_autotool_vars.pkgdatadir, "python", "flatten_regxml.py")),
+                    hivexml_file
+                  ],
+                  stdout=out_log,
+                  stderr=err_log
+                )
+                with open(regxml_file + ".status.log", "w") as status_log:
+                    status_log.write(str(rc_flattener))
+            #TODO Validate output
+        popd()
 
     def compare_conversions(self):
         pass
@@ -194,6 +288,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG if args_all.debug else logging.INFO)
 
     if args_all.command == "analyze_disk":
-        RegXML_Extractor(args_all.output_root, target_disk=args_all.disk_image, dfxml_to_import=args_all.import_dfxml, pretty=args_all.pretty)
+        RegXML_Extractor(args_all.output_root, target_disk=args_all.disk_image, dfxml_to_import=args_all.import_dfxml, pretty=args_all.pretty, debug=args_all.debug)
     elif args_all.command == "analyze_hive":
-        RegXML_Extractor(args_all.output_root, target_hive=args_all.hive_file)
+        RegXML_Extractor(args_all.output_root, target_hive=args_all.hive_file, pretty=args_all.pretty, debug=args_all.debug)
