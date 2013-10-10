@@ -1,6 +1,9 @@
 #repdir: RegXML Extractor Python directory
 repdir = ${pkgdatadir}/python
 
+rep_DATA = \
+  dfxml_tool.py
+
 rep_PYTHON = \
   flatten_regxml.py \
   rdifference.py \
@@ -11,6 +14,7 @@ rep_PYTHON = \
 bin_SCRIPTS = regxml_extractor.sh
 
 EXTRA_DIST = \
+  dfxml_tool.py \
   flatten_regxml.py \
   rdifference.py \
   regxml_extractor.sh \
