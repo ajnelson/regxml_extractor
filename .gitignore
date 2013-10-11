@@ -39,5 +39,7 @@ missing
 py-compile
 
 .DS_Store
+scripts/_autotool_vars.py
+scripts/_autotool_vars_py_from_sh.sh
 scripts/regxml_extractor.sh
 tests/for_throwaway_vms_only/_autotool_vars.sh

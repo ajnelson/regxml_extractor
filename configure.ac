@@ -35,6 +35,7 @@ AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
 if test "$HAVE_HIVEXML" != "yes"; then
   AC_MSG_ERROR([hivexml not found; refer to the README for Hivex compilation notes.])
 fi
+AC_SUBST(HIVEXML,hivexml)
 
 AC_CHECK_PROG(HAVE_ICAT,icat,yes)
 if test "$HAVE_ICAT" != "yes"; then
@@ -45,11 +46,13 @@ AC_CHECK_PROG(HAVE_FIWALK,fiwalk,yes)
 if test "$HAVE_FIWALK" != "yes"; then
   AC_MSG_ERROR([fiwalk not found; refer to the README for Sleuth Kit compilation notes.])
 fi
+AC_SUBST(FIWALK,fiwalk)
 
 AC_CHECK_PROG(HAVE_XMLLINT,xmllint,yes)
 if test "$HAVE_XMLLINT" != "yes"; then
   AC_MSG_ERROR([xmllint not found; refer to the README notes on xmllint.])
 fi
+AC_SUBST(XMLLINT,xmllint)
 
 AC_CHECK_PROG(HAVE_SQLITE3,sqlite3,yes)
 if test "$HAVE_SQLITE3" != "yes"; then
@@ -69,6 +72,7 @@ if test "$HAVE_PYMOD_SQLITE3" != "yes"; then
 fi
 
 AC_CONFIG_FILES([
+  scripts/_autotool_vars_py_from_sh.sh
   scripts/regxml_extractor.sh
   tests/for_throwaway_vms_only/_autotool_vars.sh
 ])

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+package="@PACKAGE@"
+prefix="@prefix@"
+datarootdir="@datarootdir@"
+pkgdatadir="${datarootdir}/${package}"
+
+cat <<EOF
+#Generated file - if you need this modified, edit _autotool_vars_py_from_sh.sh.in and re-run configure.
+package = "${package}"
+prefix = "${prefix}"
+datarootdir = "${datarootdir}"
+pkgdatadir = "${datarootdir}/${package}"
+fiwalk = "@FIWALK@"
+python2 = "python"
+python3 = "@PYTHON@"
+xmllint = "@XMLLINT@"
+hivexml = "@HIVEXML@"
+EOF
