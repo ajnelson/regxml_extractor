@@ -61,7 +61,7 @@ class RegXML_Extractor:
     This class isn't really meant to be a well-modeled object.  It instead maintains some state to break up some function flow, without resorting to module-level variables.
     """
 
-    def __init__(self, output_root, target_hive=None, target_disk=None, dfxml_to_import=None, pretty=None, debug=None):
+    def __init__(self, output_root, target_hive=None, target_disk=None, dfxml_to_import=None, pretty=None, debug=None, zap=None):
         """
         @param output_root Output root directory.  Must not exist.
         @param target_hive Path to hive file.  Do not also pass target_disk.
@@ -74,6 +74,7 @@ class RegXML_Extractor:
 
         self.pretty = pretty
         self.debug = debug
+        self.zap = zap
 
         self._mode = None
         if not target_disk is None:
@@ -97,6 +98,9 @@ class RegXML_Extractor:
             self._mode = "analyze_hive"
 
         self.output_root = os.path.abspath(output_root)
+        if os.path.exists(self.output_root) and self.zap:
+            import shutil
+            shutil.rmtree(self.output_root)
         os.makedirs(self.output_root)
 
         self.dfxml_generation_dir = os.path.join(self.output_root, "dfxml_generation")
@@ -202,16 +206,52 @@ class RegXML_Extractor:
         #TODO
         pass
 
+    def get_hives_to_analyze(self):
+        #TODO Replace this glob with DFXML walk of hive_extraction.dfxml
+        retval = []
+        pushd(self.hive_extraction_dir)
+        for hive_basename in glob.glob("*.hive"):
+            retval.append(os.path.join(self.hive_extraction_dir, hive_basename))
+        popd()
+        return retval
+
     def convert_with_libhivex(self):
-        pass
+        hive_abs_paths = self.get_hives_to_analyze()
+
+        pushd(self.conversion_with_libhivex_dir)
+        for hive_abs_path in hive_abs_paths:
+            hive_basename = os.path.basename(hive_abs_path)
+            #Basename, no extension
+            hive_basename_ne = os.path.splitext(hive_basename)[0]
+            hive_id_prefix = os.path.join(self.conversion_with_libhivex_dir, hive_basename_ne)
+
+            #Build command
+            cmd = [_autotool_vars.python3, os.path.join(_autotool_vars.pkgdatadir, "python", "rx_make_flat_regxml.py")]
+            if self.debug:
+                cmd.append("-d")
+            cmd.append(hive_abs_path)
+
+            #Generate RegXML output
+            libhivex_file = hive_id_prefix + ".regxml"
+            rc_libhivex = None
+            with open(libhivex_file, "w") as out_log:
+              with open(libhivex_file+ ".err.log", "w") as err_log:
+                rc_libhivex = subprocess.call(
+                  cmd,
+                  stdout=out_log,
+                  stderr=err_log
+                )
+                with open(libhivex_file + ".status.log", "w") as status_log:
+                    status_log.write(str(rc_libhivex))
+            if rc_libhivex != 0:
+                logging.info("Libhivex failed on %r." % hive_abs_path)
+                continue
+            #TODO Lint and validate output
+        popd()
 
     def convert_with_hivexml(self):
-        pushd(self.hive_extraction_dir)
-        #TODO Replace this glob with DFXML walk of hive_extraction.dfxml
-        hive_abs_paths = []
-        for hive_basename in glob.glob("*.hive"):
-            hive_abs_paths.append(os.path.join(self.hive_extraction_dir, hive_basename))
-        popd()
+        hive_abs_paths = self.get_hives_to_analyze()
+
         pushd(self.conversion_with_hivexml_dir)
         for hive_abs_path in hive_abs_paths:
             hive_basename = os.path.basename(hive_abs_path)
@@ -219,17 +259,19 @@ class RegXML_Extractor:
             hive_basename_ne = os.path.splitext(hive_basename)[0]
             hive_id_prefix = os.path.join(self.conversion_with_hivexml_dir, hive_basename_ne)
 
+            #Build command
+            cmd = [_autotool_vars.hivexml]
+            if self.debug:
+                cmd.append("-d")
+            cmd.append(hive_abs_path)
+
             #Generate Hivexml output
             hivexml_file = hive_id_prefix + ".hivexml"
             rc_hivexml = None
             with open(hivexml_file, "w") as out_log:
               with open(hivexml_file + ".err.log", "w") as err_log:
                 #TODO Once again, Hivex 1.3.8 fails to compile on OS X.  Need to hunt this down.
-                cmd = [_autotool_vars.hivexml]
-                if self.debug:
-                    cmd.append("-d")
-                cmd.append(hive_abs_path)
-                rc_hiveml = subprocess.call(
+                rc_hivexml = subprocess.call(
                   cmd,
                   stdout=out_log,
                   stderr=err_log
@@ -237,7 +279,7 @@ class RegXML_Extractor:
                 with open(hivexml_file + ".status.log", "w") as status_log:
                     status_log.write(str(rc_hivexml))
             if rc_hivexml != 0:
-                logging.info("Hivexml did work on %r.  Skipping RegXML generation.")
+                logging.info("Hivexml failed on %r.  Skipping RegXML generation." % hive_abs_path)
                 continue
             #TODO Lint output
 
@@ -272,6 +314,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("--pretty", help="Pretty-print XML whenever it is checked with xmllint.", action="store_true")
     parser.add_argument("--import-dfxml", help="Path to pre-generated DFXML file for the disk image.")
+    parser.add_argument("-Z", "--zap", help="Remove prior output. Use with care.", action="store_true")
     parser.add_argument("command")
     (args_init, args_extra) = parser.parse_known_args()
 
@@ -288,6 +331,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG if args_all.debug else logging.INFO)
 
     if args_all.command == "analyze_disk":
-        RegXML_Extractor(args_all.output_root, target_disk=args_all.disk_image, dfxml_to_import=args_all.import_dfxml, pretty=args_all.pretty, debug=args_all.debug)
+        RegXML_Extractor(args_all.output_root, target_disk=args_all.disk_image, dfxml_to_import=args_all.import_dfxml, pretty=args_all.pretty, debug=args_all.debug, zap=args_all.zap)
     elif args_all.command == "analyze_hive":
-        RegXML_Extractor(args_all.output_root, target_hive=args_all.hive_file, pretty=args_all.pretty, debug=args_all.debug)
+        RegXML_Extractor(args_all.output_root, target_hive=args_all.hive_file, pretty=args_all.pretty, debug=args_all.debug, zap=args_all.zap)
