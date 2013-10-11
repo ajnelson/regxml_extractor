@@ -29,13 +29,18 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.    
 
 #Set autotool variables
-GNU_GETOPT=@GNU_GETOPT@
-PYTHON=@PYTHON@
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-bindir=$exec_prefix/bin
-pkgdatadir=@datadir@/@PACKAGE@
-PACKAGE_VERSION=@PACKAGE_VERSION@
+GNU_GETOPT="@GNU_GETOPT@"
+PYTHON="@PYTHON@"
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="$exec_prefix/bin"
+datarootdir="@datarootdir@"
+pkgdatadir="${datarootdir}/@PACKAGE@"
+PACKAGE_VERSION="@PACKAGE_VERSION@"
+
+PYTHONPATH="${datarootdir}/hivex/python3:$PYTHONPATH" \
+  "$PYTHON" "${pkgdatadir}/python/regxml_extractor.py" "$@"
+exit 0
 
 #Set up usage string
 usage="Usage: $0 [option]... <disk image>\n"
