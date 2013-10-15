@@ -45,3 +45,7 @@ popd
 pushd $SCRIPTDIR/hivex
 (./autogen.sh && PYTHON=$PYTHON3 ./configure --disable-ruby --prefix="$INSTALLDIR" --with-python-installdir="$INSTALLDIR/share/hivex/python3" && make -j && $MAKEINSTALL) || exit 1
 popd
+
+pushd $SCRIPTDIR/hivex_modified
+(./autogen.sh && PYTHON=$PYTHON3 ./configure --disable-ruby --disable-python --prefix="$INSTALLDIR/share/hivex_modified" && make -j && $MAKEINSTALL) || exit 1
+popd

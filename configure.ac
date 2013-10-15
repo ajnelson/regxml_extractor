@@ -31,7 +31,7 @@ else
   fi
 fi
 
-AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes)
+AC_CHECK_PROG(HAVE_HIVEXML,hivexml,yes,,"${prefix}/share/hivex_modified/bin")
 if test "$HAVE_HIVEXML" != "yes"; then
   AC_MSG_ERROR([hivexml not found; refer to the README for Hivex compilation notes.])
 fi

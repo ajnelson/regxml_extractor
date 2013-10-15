@@ -37,6 +37,7 @@ bindir="$exec_prefix/bin"
 datarootdir="@datarootdir@"
 pkgdatadir="${datarootdir}/@PACKAGE@"
 PACKAGE_VERSION="@PACKAGE_VERSION@"
+HIVEXML="${prefix}/share/hivex_modified/bin/hivexml"
 
 PYTHONPATH="${datarootdir}/hivex/python3:$PYTHONPATH" \
   "$PYTHON" "${pkgdatadir}/python/regxml_extractor.py" "$@"
@@ -221,7 +222,7 @@ else
     echo $? >"${x}.regxml2.status.log"
 
     #Generate RegXML - hierarchical
-    hivexml "${x}" >"${x}.regxml" 2>"${x}.hivexml.err.log"
+    "$HIVEXML" "${x}" >"${x}.regxml" 2>"${x}.hivexml.err.log"
     rchivexml=$?
     echo $rchivexml >"${x}.hivexml.status.log"
     [ $rchivexml -ne 0 ] && continue
