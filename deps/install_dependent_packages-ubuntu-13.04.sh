@@ -21,4 +21,6 @@ sudo apt-get install \
   gettext \
   libtool \
   ocaml \
-  python-dateutil
+  python-dateutil \
+  python3-dateutil \
+  python3-dev
