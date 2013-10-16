@@ -50,7 +50,6 @@ import sys
 if sys.version_info.major < 3:
     raise Exception("%r requires Python major version 3." % sys.argv[0])
 
-
 _dirstack = []
 def pushd(dirname):
     global _dirstack
@@ -66,13 +65,14 @@ class RegXML_Extractor:
     This class isn't really meant to be a well-modeled object.  It instead maintains some state to break up some function flow, without resorting to module-level variables.
     """
 
-    def __init__(self, output_root, target_hive=None, target_disk=None, dfxml_to_import=None, pretty=None, debug=None, zap=None):
+    def __init__(self, output_root, target_hive=None, target_disk=None, dfxml_to_import=None, pretty=None, debug=None, zap=None, path_to_rx_py=None):
         """
         @param output_root Output root directory.  Must not exist.
         @param target_hive Path to hive file.  Do not also pass target_disk.
         @param target_disk Path to disk image.  Do not also pass target_hive.
         @param dfxml_to_import Optional path to generated disk image DFXML.  Pass with target_disk.
         @param pretty Has xmllint retain pretty-printed XML whenever it checks structure or validation.
+        @param path_to_rx_py Path to RegXML Extractor Python scripts.  For unit testing.
         """
         if target_hive is None and target_disk is None:
             raise ValueError("RegXML_Extractor must be called on either a hive file or disk image.")
@@ -80,6 +80,13 @@ class RegXML_Extractor:
         self.pretty = pretty
         self.debug = debug
         self.zap = zap
+
+        if path_to_rx_py is None:
+            self.path_to_rx_py = os.path.join(_autotool_vars.pkgdatadir, "python")
+        else:
+            self.path_to_rx_py = os.path.abspath(path_to_rx_py)
+        logging.debug("path_to_rx_py = %r" % path_to_rx_py)
+        logging.debug("self.path_to_rx_py = %r" % self.path_to_rx_py)
 
         self._mode = None
         if not target_disk is None:
@@ -147,7 +154,7 @@ class RegXML_Extractor:
             with open(os.path.join(self.hive_extraction_dir, "hive_extraction.dfxml.err.log"), "w") as err_log:
                 cmd = [
                   _autotool_vars.python2,
-                  os.path.join(_autotool_vars.pkgdatadir, "python", "dfxml_tool.py"),
+                  os.path.join(self.path_to_rx_py, "dfxml_tool.py"),
                   "--commandline",
                   "--iso-8601",
                   "--md5",
@@ -231,10 +238,12 @@ class RegXML_Extractor:
             hive_id_prefix = os.path.join(self.conversion_with_libhivex_dir, hive_basename_ne)
 
             #Build command
-            cmd = [_autotool_vars.python3, os.path.join(_autotool_vars.pkgdatadir, "python", "rx_make_flat_regxml.py")]
+            cmd = [_autotool_vars.python3, os.path.join(self.path_to_rx_py, "rx_make_flat_regxml.py")]
             if self.debug:
                 cmd.append("-d")
             cmd.append(hive_abs_path)
+            logging.debug("sys.path = %r" % sys.path)
+            logging.debug("cmd = %r" % cmd)
 
             #Generate RegXML output
             libhivex_file = hive_id_prefix + ".regxml"
@@ -319,6 +328,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("--pretty", help="Pretty-print XML whenever it is checked with xmllint.", action="store_true")
     parser.add_argument("--import-dfxml", help="Path to pre-generated DFXML file for the disk image.")
+    parser.add_argument("--path-to-rx-py", help="Path to RegXML Extractor Python scripts.  For unit testing.")
     parser.add_argument("-Z", "--zap", help="Remove prior output. Use with care.", action="store_true")
     parser.add_argument("command")
     (args_init, args_extra) = parser.parse_known_args()
@@ -336,6 +346,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG if args_all.debug else logging.INFO)
 
     if args_all.command == "analyze_disk":
-        RegXML_Extractor(args_all.output_root, target_disk=args_all.disk_image, dfxml_to_import=args_all.import_dfxml, pretty=args_all.pretty, debug=args_all.debug, zap=args_all.zap)
+        RegXML_Extractor(args_all.output_root, target_disk=args_all.disk_image, dfxml_to_import=args_all.import_dfxml, pretty=args_all.pretty, debug=args_all.debug, zap=args_all.zap, path_to_rx_py=args_all.path_to_rx_py)
     elif args_all.command == "analyze_hive":
-        RegXML_Extractor(args_all.output_root, target_hive=args_all.hive_file, pretty=args_all.pretty, debug=args_all.debug, zap=args_all.zap)
+        RegXML_Extractor(args_all.output_root, target_hive=args_all.hive_file, pretty=args_all.pretty, debug=args_all.debug, zap=args_all.zap, path_to_rx_py=args_all.path_to_rx_py)

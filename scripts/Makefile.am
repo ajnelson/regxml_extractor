@@ -28,3 +28,8 @@ EXTRA_DIST = \
 
 _autotool_vars.py: _autotool_vars_py_from_sh.sh
 	bash $< >$@
+
+TESTS_ENVIRONMENT = ../run
+
+TESTS = \
+  run_re_on_hivex_hives.sh

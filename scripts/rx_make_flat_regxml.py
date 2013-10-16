@@ -2,14 +2,22 @@
 
 __version__ = "0.0.2"
 
-import hivex
 import functools
 import base64
 import logging
 import sys
 import time
 import xml.etree.ElementTree as ET
-import dfxml
+
+try:
+    import dfxml
+    import hivex
+except:
+    logging.basicConfig(level=logging.INFO)
+    logging.error("Module imports failed.  The PYTHONPATH was this:")
+    logging.info("sys.path = %r", sys.path)
+    raise
+
 
 XMLNS_REGXML = "http://www.forensicswiki.org/wiki/RegXML"
 ET.register_namespace("", XMLNS_REGXML)

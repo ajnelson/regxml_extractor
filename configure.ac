@@ -76,5 +76,6 @@ AC_CONFIG_FILES([
   scripts/regxml_extractor.sh
   tests/for_throwaway_vms_only/_autotool_vars.sh
 ])
+AC_CONFIG_FILES([run],[chmod +x run])
 
 AC_OUTPUT

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#Execute without installing.
+#Developed using the Hivex run.in script as reference.  Another iterration may simply copy that script and reduce it to what RegXML Extractor needs.
+
+get_abspath() {
+  python -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
+}
+
+echo "$0: Debug: \$PWD = $PWD" >&2
+_run_dir="$(get_abspath "$(dirname "$0")")"
+echo "$0: Debug: \$_run_dir = $_run_dir" >&2
+
+export LIBRARY_PATH="${_run_dir}/deps/hivex/python:$LIBRARYPATH"
+echo "$0: Debug: \$LIBRARY_PATH = $LIBRARY_PATH" >&2
+
+export LD_LIBRARY_PATH="${_run_dir}/deps/hivex/python:$LD_LIBRARYPATH"
+echo "$0: Debug: \$LD_LIBRARY_PATH = $LD_LIBRARY_PATH" >&2
+
+export PYTHONPATH="${_run_dir}/lib:${_run_dir}/scripts:${_run_dir}/deps/hivex/python:$PYTHONPATH"
+echo "$0: Debug: \$PYTHONPATH = $PYTHONPATH" >&2
+
+export PYTHON3="@PYTHON@"
+echo "$0: Debug: \$PYTHON3 = $PYTHON3" >&2
+
+libtool=$(which libtool 2>/dev/null)
+if [ -z "$libtool" ]; then
+  libtool=$(which glibtool 2>/dev/null)
+fi
+echo "$0: Debug: \$libtool = $libtool" >&2
+
+$libtool --mode=execute "$@"
