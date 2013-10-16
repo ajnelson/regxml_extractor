@@ -4,6 +4,18 @@ get_abspath() {
   python -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1"
 }
 
+#OS X needs a few tweaks to running Hivex's ./configure
+#TODO At least OS X 10.8 needs it.  10.7 and 10.9 might too.  Check.
+hivex_configure_extra_flags=
+if [ ! -z "$RE_HIVEX_CONFIGURE_EXTRA_FLAGS" ]; then
+  hivex_configure_extra_flags="$RE_HIVEX_CONFIGURE_EXTRA_FLAGS"
+else
+  if [ "x$(uname -s)" == "xDarwin" ]; then
+    echo "$0: Error: On OS X 10.8, this script needs an extra environment variable passed in, \$RE_HIVEX_CONFIGURE_EXTRA_FLAGS." >&2
+    exit 1
+  fi
+fi
+
 case $1 in
   local )
     MAKEINSTALL="make install"
@@ -35,5 +47,5 @@ pushd $SCRIPTDIR/sleuthkit
 popd
 
 pushd $SCRIPTDIR/hivex
-(./autogen.sh && ./configure --disable-ruby --disable-python --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
+(./autogen.sh && ./configure --disable-ruby --disable-python --prefix="$INSTALLDIR" $hivex_configure_extra_flags && make -j && $MAKEINSTALL) || exit 1
 popd
