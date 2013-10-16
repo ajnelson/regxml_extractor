@@ -37,7 +37,7 @@ SQLite conversion step creates a directory as_sqlite, with contents:
 * out.sqlite - Created by walking conversion_with_hivexml/conversion.dfxml for successfully linted .hivexml files. (Will be .regxml files when the DFXML library is updated.)
 """
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 import logging
 import os
@@ -45,6 +45,11 @@ import subprocess
 import dfxml
 import _autotool_vars
 import glob
+import sys
+
+if sys.version_info.major < 3:
+    raise Exception("%r requires Python major version 3." % sys.argv[0])
+
 
 _dirstack = []
 def pushd(dirname):
