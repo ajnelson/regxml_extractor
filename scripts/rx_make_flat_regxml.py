@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
 import hivex
-import flatten_regxml
 import functools
 import base64
 import logging
