@@ -41,15 +41,17 @@ import dfxml,fiwalk
 import os,datetime
 import argparse
 
-def proc_dfxml(fi):
-    global hivexml_command
-    global imageabspath
+def fileobject_is_hive(fi):
+    """
+    All matching happens on file name for now (we might want libmagic checks later).
+    Names noted in Carvey, 2011 (_Windows Registry Forensics_), page 18.
+    Some names found by pattern-matching in test data.
+    """
     fn = fi.filename()
+
     if fn is None:
-        #All matching happens on file name for now (we might want libmagic checks later); move on for now.
-        return
-    #Names noted in Carvey, 2011 (_Windows Registry Forensics_), page 18
-    #Some names found by pattern-matching
+        return None
+
     if fn.lower().endswith((
       "ntuser.dat",
       "repair/sam",
@@ -62,33 +64,32 @@ def proc_dfxml(fi):
       "system32/config/system",
       "system32/config/components",
       "local settings/application data/microsoft/windows/usrclass.dat")):
-        outfilename = os.path.abspath(str(fi.tag("id")) + ".hive")
+        return True
+
+    return False
+
+def proc_dfxml(fi):
+    global imageabspath
+    if fileobject_is_hive(fi):
+        outfile_basename = str(fi.tag("id")) + ".hive"
+        outfile_abspath = os.path.abspath(outfile_basename)
         print("\t".join(map(str, [
-          outfilename,
+          outfile_abspath,
           imageabspath,
           fi.filename(),
           fi.mtime(), fi.atime(), fi.ctime(), fi.crtime()
         ])))
-        outfile = open(outfilename, "wb")
-        outfile.write(fi.contents())
-        outfile.close()
-        if hivexml_command:
-            command_string = hivexml_command + " " + outfilename + " >" + outfilename+".regxml" + " 2>" + outfilename + ".err.log"
-            sysrc = os.system(command_string)
-            if sysrc:
-                sys.stderr.write("Error, see err.log: " + command_string + "\n")
+        with open(outfile_abspath, "wb") as outfile:
+            outfile.write(fi.contents())
 
 if __name__=="__main__":
-    global hivexml_command
     global imageabspath
 
     parser = argparse.ArgumentParser(description="Find registry files in imagefile and dump hives to files in pwd in the order they're encountered, with a manifest printed to stdout.")
     parser.add_argument("-x", "--xml", dest="dfxml_file_name", help="Already-created DFXML file for imagefile")
-    parser.add_argument("--hivexml", dest="hivexml_command", action="store_const", const="hivexml", default="",  help="Run hivexml command on each hive, producing output at <hive>.regxml, stderr at <hive>.err.log")
     parser.add_argument("imagefilename", help="Image file")
     args = parser.parse_args()
     
-    hivexml_command = args.hivexml_command
 
     xmlfh = None
     if args.dfxml_file_name != None:
