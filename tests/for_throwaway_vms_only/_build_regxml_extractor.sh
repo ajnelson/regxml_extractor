@@ -58,11 +58,13 @@ source "$SCRIPTDIR/_autotool_vars.sh"
 #Run post-install tests
 regxml_extractor.sh -h
 for hive in minimal large; do
-  hivexml deps/hivex/images/$hive >$hive.regxml
+  $HOME/local/share/hivex_modified/bin/hivexml deps/hivex/images/$hive >$hive.hivexml
   PYTHONPATH="$PWD/lib:$PYTHONPATH" \
-    "$PYTHON" "scripts/flatten_regxml.py" $hive.regxml >$hive.flattened.regxml
-  xmllint --format --schema "etc/regxml.xsd" $hive.flattened.regxml >$hive.flattened.checked.regxml
-  xmllint --noout $hive.flattened.checked.regxml
+    "$PYTHON" "scripts/flatten_regxml.py" $hive.hivexml >$hive.regxml
+  xmllint --format --schema "etc/regxml.xsd" $hive.regxml >$hive.checked.regxml
+  xmllint --noout $hive.checked.regxml
+
+  regxml_extractor.sh analyze_hive deps/hivex/images/$hive $hive.regxml_extractor
 done
 
 #Done.
