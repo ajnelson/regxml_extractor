@@ -214,7 +214,10 @@ def proc_dfxml(fi):
             errstr = "Error extracting file %r; see %r." % (fi.filename(), outfile_abspath + ".err.log")
         elif checksum_match == False:
             errstr = "Checksum mismatch between the original recorded SHA-1 and the extracted file: %r." % fi.filename()
-        if not errstr is None:
+        if errstr is None:
+            tmpel.attrib["rx:extraction_success"] = "1"
+        else:
+            tmpel.attrib["rx:extraction_success"] = "0"
             logging.error(errstr)
             tmperr = ET.Element("error")
             tmperr.text = errstr
@@ -265,6 +268,7 @@ if __name__ == "__main__":
   xmlns='%(XMLNS_DFXML)s'
   xmlns:dc='http://purl.org/dc/elements/1.1/'
   xmlns:delta='%(XMLNS_DELTA)s'
+  xmlns:rx='https://github.com/ajnelson/regxml_extractor'>
   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
   <metadata>
     <dc:type>Disk Image Extracted-File Manifest</dc:type>
