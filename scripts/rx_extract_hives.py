@@ -268,7 +268,7 @@ if __name__ == "__main__":
   xmlns='%(XMLNS_DFXML)s'
   xmlns:dc='http://purl.org/dc/elements/1.1/'
   xmlns:delta='%(XMLNS_DELTA)s'
-  xmlns:rx='https://github.com/ajnelson/regxml_extractor'>
+  xmlns:rx='https://github.com/ajnelson/regxml_extractor'
   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
   <metadata>
     <dc:type>Disk Image Extracted-File Manifest</dc:type>
