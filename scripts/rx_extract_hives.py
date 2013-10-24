@@ -32,7 +32,7 @@
 For usage instructions, see the argument parser description below, or run this script without arguments.
 """
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 import sys
 
@@ -40,6 +40,8 @@ import dfxml,fiwalk
 
 import os,datetime
 import argparse
+
+import logging
 
 def fileobject_is_hive(fi):
     """
@@ -86,14 +88,16 @@ if __name__=="__main__":
     global imageabspath
 
     parser = argparse.ArgumentParser(description="Find registry files in imagefile and dump hives to files in pwd in the order they're encountered, with a manifest printed to stdout.")
+    parser.add_argument("-d", "--debug", help="Enable debug-level logging.", action="store_true")
     parser.add_argument("-x", "--xml", dest="dfxml_file_name", help="Already-created DFXML file for imagefile")
     parser.add_argument("imagefilename", help="Image file")
     args = parser.parse_args()
-    
 
     xmlfh = None
     if args.dfxml_file_name != None:
         xmlfh = open(args.dfxml_file_name, "rb")
     imageabspath = os.path.abspath(args.imagefilename)
+
+    logging.basicConfig(level=logging.DEBUG if args.debug else logging.INFO)
 
     fiwalk.fiwalk_using_sax(imagefile=open(imageabspath, "r"), xmlfile=xmlfh, callback=proc_dfxml)
