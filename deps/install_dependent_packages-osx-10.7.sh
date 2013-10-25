@@ -14,6 +14,7 @@ sudo port install \
   automake \
   getopt \
   libtool \
+  libxml2 \
   ocaml \
   pkgconfig \
   python33
