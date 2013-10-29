@@ -251,7 +251,7 @@ if __name__ == "__main__":
     imagefile = open(os.path.abspath(args.imagefilename), "rb")
     xmlfh = open(args.dfxml_file_name, "rb")
 
-    xoutfh = open("manifest.dfxml", "w")
+    xoutfh = open("extraction.dfxml", "w")
 
     metadict = dict()
     metadict["XMLNS_DFXML"] = dfxml.XMLNS_DFXML
