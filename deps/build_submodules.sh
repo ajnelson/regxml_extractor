@@ -43,7 +43,7 @@ set -v
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 pushd $SCRIPTDIR/sleuthkit
-(./bootstrap && ./configure --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
+(./bootstrap && ./configure --disable-java --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
 popd
 
 pushd $SCRIPTDIR/hivex
