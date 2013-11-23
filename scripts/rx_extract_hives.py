@@ -43,7 +43,11 @@ import argparse
 import subprocess
 import hashlib
 import logging
+
+#TODO Replace with:
+#import Objects
 import xml.etree.ElementTree as ET
+
 import copy
 
 def fileobject_is_hive(fi):
@@ -73,6 +77,7 @@ def fileobject_is_hive(fi):
 
     return False
 
+#TODO Replace with Object bindings
 def extract_byte_runs_to_file(fi, outfile, errlog=None, statlog=None):
         """
         (Unstable)
@@ -170,6 +175,7 @@ def proc_dfxml(fi):
     ])))
 
     #Extract file
+    #TODO use Object bindings
     rc = extract_byte_runs_to_file(
       fi,
       outfile = outfile_abspath,
