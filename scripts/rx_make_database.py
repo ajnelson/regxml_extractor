@@ -32,7 +32,7 @@
 For usage, run without arguments.
 """
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 import sys
 
@@ -286,10 +286,11 @@ def update_db(connection, cursor, table_name, update_dict, id_field, id, commit)
             connection.commit()
 
 def insert_db(cursor, table_name, update_dict):
-    if len(update_dict.keys()) > 0:
+    keys = [key for key in update_dict.keys()]
+    if len(keys) > 0:
         sql_insert_columns = []
         sql_insert_values = []
-        for k in update_dict.keys():
+        for k in keys:
             sql_insert_columns.append(k)
             sql_insert_values.append(update_dict[k])
         sql_insert_statement = "INSERT INTO " + table_name + "(" + ",".join(sql_insert_columns) + ") VALUES(" + ",".join("?" * len(sql_insert_columns)) + ");"
