@@ -1,13 +1,12 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 
 import functools
 import base64
 import logging
 import sys
 import time
-import xml.etree.ElementTree as ET
 import os
 
 _logger = logging.getLogger(os.path.basename(__file__))
@@ -15,9 +14,6 @@ _logger = logging.getLogger(os.path.basename(__file__))
 import hivex
 import dfxml
 import Objects
-
-XMLNS_REGXML = "http://www.forensicswiki.org/wiki/RegXML"
-ET.register_namespace("", XMLNS_REGXML)
 
 HIVE_VALUE_TYPES = {
   0: "REG_NONE",
@@ -40,6 +36,7 @@ def _hivex_walk (h, node, pathstack):
     * nodepath: descent list of nodes from the walk root, ending in the current internal node.
     * nodes: List 
     * values: List
+    Note that unlike os.walk, this does not return paths.  All lists returned are of the offsets that identify cells.
     """
     #_logger.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
     pathstack.append(node)
@@ -71,7 +68,7 @@ def regxml_object_from_hive(hive, fileobject=None):
     h = hivex.Hivex (args.hive)
     _logger.debug(dir(h))
     r = h.root()
-    _logger.debug("root = %r" % r)
+    _logger.debug("h.root() = %r." % r)
 
     rxdoc = Objects.RegXMLObject()
     rxdoc.version = "0.2.0"
@@ -79,7 +76,6 @@ def regxml_object_from_hive(hive, fileobject=None):
     rxdoc.program = sys.argv[0]
     rxdoc.program_version = __version__
     rxdoc.command_line = " ".join(sys.argv)
-    
 
     #NOTE: This is remaining metadata not yet integrated into RegXML Objects.
     meta = dict()
@@ -106,6 +102,9 @@ def regxml_object_from_hive(hive, fileobject=None):
         for value in values:
             obj = hivex_value_to_Object(h, value, nodepath)
             hive_object.append(obj)
+
+    rxdoc.append(hive_object)
+    return rxdoc
 
 def hivex_node_to_Object(h, node, nodepath):
     return _hivex_cell_to_Object(h, node, nodepath, "k")
@@ -141,11 +140,15 @@ def _hivex_cell_to_Object(h, cell, nodepath, celltype):
         co.parent_object = parent
 
     #Fetch current cell's name
-    #TODO Handle all encoding with base64 care
+    #TODO Handle all name encoding with base64 care
     cellname = get_cell_name(h, cell, celltype)
     cellname_length = None
     if celltype == "v":
-        cellname_length = h.value_key_len(cell)
+        #value_key_len is a little problematic at the time of this writing.
+        try:
+            cellname_length = h.value_key_len(cell)
+        except:
+            co.error = "Exception: %s." % str(sys.exc_info()[1])
 
     #Add encoded cellpath
     namestack = []
@@ -162,7 +165,7 @@ def _hivex_cell_to_Object(h, cell, nodepath, celltype):
     #Add encoded cell name
     if not cellname is None:
         co.basename = cellname
-        co.basename_length = cellname_length #Not specified yet whether this will be character length or byte length.
+        co.basename_length = cellname_length #TODO Not specified yet whether this will be character length or byte length.
 
     #Add id
     co.id = cell
@@ -176,7 +179,11 @@ def _hivex_cell_to_Object(h, cell, nodepath, celltype):
         valuesize = str(type_and_len[1])
         if type_and_len is None:
             _logger.error("Error retrieving type and length of value cell %r." % cell)
-            co.error("Error retrieving type and length of value cell %r." % cell)
+            if co.error:
+                co.error += "  "
+            else:
+                co.error = ""
+            co.error += "Error retrieving type and length of value cell %r." % cell
         else:
             co.valuesize = valuesize
 
@@ -200,9 +207,6 @@ def _hivex_cell_to_Object(h, cell, nodepath, celltype):
 
         b64bytes = base64.b64encode(type_and_data[1])
         b64chars = b64bytes.decode()
-
-        tmp = ET.Element("data")
-        tmp.attrib["type"] = value_type
 
         as_int = None
         as_string = None
@@ -239,7 +243,7 @@ def _hivex_cell_to_Object(h, cell, nodepath, celltype):
                 pass
 
         except e:
-            _logger.error("Exception: " + sys.exc_info()[0])
+            _logger.error("Exception: " + sys.exc_info()[1])
             pass
         conversions = dict()
         if not as_int is None:
@@ -253,6 +257,7 @@ def _hivex_cell_to_Object(h, cell, nodepath, celltype):
         co.data_encoding = "base64"
         co.data_type = value_type
         if len(conversions) > 0:
+            _logger.debug("Conversions: %r." % conversions)
             co.data_conversions = conversions
 
     #Add all byte_runs
