@@ -53,11 +53,3 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pushd $SCRIPTDIR/sleuthkit
 (./bootstrap && ./configure --prefix="$INSTALLDIR" && make -j && $MAKEINSTALL) || exit 1
 popd
-
-pushd $SCRIPTDIR/hivex
-(./autogen.sh && PYTHON=$PYTHON3 ./configure --disable-ruby --prefix="$INSTALLDIR" --with-python-installdir="$INSTALLDIR/share/hivex/python3" $hivex_configure_extra_flags && make -j && $MAKEINSTALL) || exit 1
-popd
-
-pushd $SCRIPTDIR/hivex_modified
-(./autogen.sh && PYTHON=$PYTHON3 ./configure --disable-ruby --disable-python --prefix="$INSTALLDIR/share/hivex_modified" $hivex_configure_extra_flags && make -j && $MAKEINSTALL) || exit 1
-popd

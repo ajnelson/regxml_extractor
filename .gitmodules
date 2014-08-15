@@ -1,6 +1,3 @@
-[submodule "deps/hivex"]
-	path = deps/hivex
-	url = https://github.com/libguestfs/hivex.git
 [submodule "deps/sleuthkit"]
 	path = deps/sleuthkit
 	url = https://github.com/sleuthkit/sleuthkit.git
