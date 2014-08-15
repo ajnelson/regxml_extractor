@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 
 import functools
 import base64
@@ -100,51 +100,45 @@ def regxml_object_from_hive(hive, fileobject=None):
     #Walk hive structure
     for (nodepath, nodes, values) in hivex_walk(h, r):
         #_logger.debug("(n, ns, vs) = %r" % ((n, ns, vs),))
-        for value in values:
-            elem = hivex_value_to_Element(h, value, nodepath)
-            print(dfxml.ET_tostring(elem, encoding="unicode"))
-            del elem
         for node in nodes:
-            elem = hivex_node_to_Element(h, node, nodepath)
-            print(dfxml.ET_tostring(elem, encoding="unicode"))
-            del elem
+            obj = hivex_node_to_Object(h, node, nodepath)
+            hive_object.append(obj)
+        for value in values:
+            obj = hivex_value_to_Object(h, value, nodepath)
+            hive_object.append(obj)
 
-def hivex_node_to_Element(h, node, nodepath):
-    return _hivex_cell_to_Element(h, node, nodepath, "k")
+def hivex_node_to_Object(h, node, nodepath):
+    return _hivex_cell_to_Object(h, node, nodepath, "k")
 
-def hivex_value_to_Element(h, node, nodepath):
-    return _hivex_cell_to_Element(h, node, nodepath, "v")
+def hivex_value_to_Object(h, node, nodepath):
+    return _hivex_cell_to_Object(h, node, nodepath, "v")
 
-def _hivex_cell_to_Element(h, cell, nodepath, celltype):
+def _hivex_cell_to_Object(h, cell, nodepath, celltype):
     _logger.debug("_hivex_cell_to_Element(h, %r, %r, %r)" % (cell, nodepath, celltype))
 
     assert celltype in ["k","v"]
 
-    e = ET.Element("cellobject")
+    co = Objects.CellObject()
 
     #Add parent object reference
     #Because hive nodes record parent references, use Hivex's API in addition to tracking the node path when possible.
     #Note that hive values don't record parent references.
     if h.root() == cell:
         #The root element does not have a usable parent reference (#TODO Check this - is it null, or garbage values?)
-        e.attrib["root"] = "1"
+        co.root = True
     else:
-        tmp = ET.Element("parent_object")
-        tmp2 = ET.Element("id")
         parent_node_from_walk = nodepath[-1]
-        tmp2.text = str(parent_node_from_walk)
-        tmp2.attrib["from_walk"] = "1"
-        tmp.append(tmp2)
+
+        parent = Objects.CellObject()
+        parent.id = parent_node_from_walk 
+
         if celltype == "k":
             parent_node_from_node = h.node_parent(cell)
-            #If there is a discrepancy, add another id; if there's no discrepancy, the first parent id reference gets the from_key tag.
+            #Check for a discrepancy, between parent recorded in the key, and the walk.
             if parent_node_from_node != parent_node_from_walk:
-                del tmp2
-                tmp2 = ET.Element("id")
-                tmp2.text = str(parent_node_from_node)
-            tmp2.attrib["from_key"] = "1"
-        del tmp2
-        e.append(tmp)
+                parent.error = "Parent reference discrepancy.  Parent ID from walk: %r.  Parent ID from node: %r." % (parent_node_from_walk, parent_node_from_node)
+
+        co.parent_object = parent
 
     #Fetch current cell's name
     #TODO Handle all encoding with base64 care
@@ -154,7 +148,6 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         cellname_length = h.value_key_len(cell)
 
     #Add encoded cellpath
-    tmp = ET.Element("cellpath")
     namestack = []
     #If the nodepath is provided, prepend the empty string to the path so it is absolute
     if isinstance(nodepath,list):
@@ -164,26 +157,18 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     namestack.append(cellname)
     #TODO Handle encoding
     cell_full_path = "\\".join(namestack)
-    tmp.text = cell_full_path
-    e.append(tmp)
+    co.cellpath = cell_full_path
 
     #Add encoded cell name
-    tmp = ET.Element("name")
     if not cellname is None:
-        if not cellname_length is None:
-            tmp.attrib["recorded_length"] = str(cellname_length)
-        tmp.text = cellname
-        e.append(tmp)
+        co.basename = cellname
+        co.basename_length = cellname_length #Not specified yet whether this will be character length or byte length.
 
     #Add id
-    tmp = ET.Element("id")
-    tmp.text = str(cell)
-    e.append(tmp)
+    co.id = cell
 
     #Add the cell's structural type
-    tmp = ET.Element("name_type")
-    tmp.text = celltype
-    e.append(tmp)
+    co.name_type = celltype
 
     #Add value size, if a value
     if celltype == "v":
@@ -191,32 +176,27 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         valuesize = str(type_and_len[1])
         if type_and_len is None:
             _logger.error("Error retrieving type and length of value cell %r." % cell)
+            co.error("Error retrieving type and length of value cell %r." % cell)
         else:
-            tmp = ET.Element("valuesize")
-            tmp.text = valuesize
-            e.append(tmp)
+            co.valuesize = valuesize
 
     #Add the cell's allocation status
-    tmp = ET.Element("alloc")
-    #(Everything found at the moment is allocated)
-    tmp.text = "1"
-    e.append(tmp)
+    #(Everything found with Hivex at the moment is allocated)
+    co.alloc = True
 
     #Add the key's mtime
     if celltype == "k":
-        tmp = ET.Element("mtime")
         timestamp_numeric = h.node_timestamp(cell)
-        timestamp_dftime = dftime_from_windows_filetime(timestamp_numeric)
-        tmp.text = str(timestamp_dftime)
-        tmp.attrib["prec"] = "100ns"
-        e.append(tmp)
+        co.mtime = dftime_from_windows_filetime(timestamp_numeric)
+        co.mtime.prec = "100ns"
 
     #Add the value's data
     #There is a bias to blindly base64 encoding everything, due to data types not being trustworthy
     if celltype == "v":
         type_and_data = h.value_value(cell)
-        value_type = HIVE_VALUE_TYPES[type_and_data[0]]
         _logger.debug("type_and_data = %r" % (type_and_data,))
+
+        value_type = HIVE_VALUE_TYPES[type_and_data[0]]
 
         b64bytes = base64.b64encode(type_and_data[1])
         b64chars = b64bytes.decode()
@@ -261,47 +241,48 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         except e:
             _logger.error("Exception: " + sys.exc_info()[0])
             pass
+        conversions = dict()
         if not as_int is None:
-            e.append(ET.Comment("As a number: %r" % as_int))
+            conversions["integer"] = as_int
         if not as_string is None:
-            e.append(ET.Comment("As a string: %r" % as_string))
+            conversions["string"] = as_string
         if not as_string_list is None:
-            e.append(ET.Comment("As a string list: %r" % as_string_list))
+            conversions["string_list"] = as_string_list
 
-        tmp.attrib["encoding"] = "base64"
-        tmp.text = b64chars
-        e.append(tmp)
+        co.data = b64chars
+        co.data_encoding = "base64"
+        co.data_type = value_type
+        if len(conversions) > 0:
+            co.data_conversions = conversions
 
     #Add all byte_runs
     if celltype == "k":
         dslength = h.node_struct_length(cell)
 
-        tmp = ET.Element("byte_runs")
-        tmp.attrib["facet"] = "metadata"
+        co.name_brs = Objects.ByteRuns()
+        co.name_brs.facet = "name"
 
-        tmp2 = ET.Element("byte_run")
-        tmp2.attrib["file_offset"] = str(cell)
-        tmp2.attrib["len"] = str(dslength)
-        tmp.append(tmp2)
-        del tmp2
+        tmpo = Objects.ByteRun()
+        tmpo.file_offset = cell
+        tmpo.len = dslength
+        co.name_brs.append(tmpo)
 
-        e.append(tmp)
+        #TODO Hivex will need extending to report the location of child reference lists.
+
     elif celltype == "v":
         dslength = h.value_struct_length(cell)
         length_and_offset = h.value_data_cell_offset(cell) #TODO The documentation on this is wrong - what's returned is length, offset.
 
-        tmp = ET.Element("byte_runs")
-        tmp.attrib["facet"] = "metadata"
-        tmp2 = ET.Element("byte_run")
-        tmp2.attrib["file_offset"] = str(cell)
-        tmp2.attrib["len"] = str(dslength)
-        tmp.append(tmp2)
-        del tmp2
-        e.append(tmp)
+        co.name_brs = Objects.ByteRuns()
+        co.name_brs.facet = "name"
+        tmpo = Objects.ByteRun()
+        tmpo.file_offset = cell
+        tmpo.len = dslength
+        co.name_brs.append(tmpo)
 
-        tmp = ET.Element("byte_runs")
-        tmp.attrib["facet"] = "data"
-        tmp2 = ET.Element("byte_run")
+        co.data_brs = Objects.ByteRuns()
+        co.data_brs.facet = "data"
+        tmpo = Objects.ByteRun()
         if length_and_offset == (0,0):
             #The (0,0) pair is the sentinel value returned for inlined data. Calculate data offset based on value struct knowledge.
             br_offset = cell + 0xc
@@ -309,13 +290,11 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         else:
             br_offset = length_and_offset[1]
             br_len = length_and_offset[0]
-        tmp2.attrib["file_offset"] = str(br_offset)
-        tmp2.attrib["len"] = str(br_len)
-        tmp.append(tmp2)
-        del tmp2
-        e.append(tmp)
+        tmpo.file_offset = br_offset
+        tmpo.len = br_len
+        co.data_brs.append(tmpo)
 
-    return e
+    return co
 
 def dftime_from_windows_filetime(wft):
     """
