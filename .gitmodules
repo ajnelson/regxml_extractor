@@ -7,6 +7,3 @@
 [submodule "deps/regxml_schema"]
 	path = deps/regxml_schema
 	url = https://github.com/ajnelson/regxml_schema.git
-[submodule "deps/hivex_modified"]
-	path = deps/hivex_modified
-	url = https://github.com/ajnelson/hivex.git
