@@ -1,15 +1,20 @@
 #!/usr/bin/python3
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
-import hivex
 import functools
 import base64
 import logging
 import sys
 import time
 import xml.etree.ElementTree as ET
+import os
+
+_logger = logging.getLogger(os.path.basename(__file__))
+
+import hivex
 import dfxml
+import Objects
 
 XMLNS_REGXML = "http://www.forensicswiki.org/wiki/RegXML"
 ET.register_namespace("", XMLNS_REGXML)
@@ -36,7 +41,7 @@ def _hivex_walk (h, node, pathstack):
     * nodes: List 
     * values: List
     """
-    #logging.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
+    #_logger.debug("_hivex_walk (%r, %r, %r)" % (h, node, pathstack))
     pathstack.append(node)
     nodes = h.node_children(node)
     values = h.node_values(node)
@@ -60,48 +65,41 @@ def get_cell_name(h, cell, celltype):
         return h.value_key(cell)
 
 def main ():
+    regxml_object_from_hive(args.hive).print_regxml(output_fh=sys.stdout)
+
+def regxml_object_from_hive(hive, fileobject=None):
     h = hivex.Hivex (args.hive)
-    logging.debug(dir(h))
+    _logger.debug(dir(h))
     r = h.root()
-    logging.debug("root = %r" % r)
+    _logger.debug("root = %r" % r)
+
+    rxdoc = Objects.RegXMLObject()
+    rxdoc.version = "0.2.0"
+    rxdoc.interpreter = "Python %s.%s.%s" % (sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+    rxdoc.program = sys.argv[0]
+    rxdoc.program_version = __version__
+    rxdoc.command_line = " ".join(sys.argv)
     
+
+    #NOTE: This is remaining metadata not yet integrated into RegXML Objects.
     meta = dict()
-    meta["XMLNS_REGXML"] = XMLNS_REGXML
-    meta["program"] = sys.argv[0]
-    meta["version"] = __version__
-    meta["interpreter"] = "Python %s.%s.%s" % (sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
     meta["hivex_version"] = "TODO" #TODO
-    meta["command_line"] = " ".join(sys.argv)
     meta["start_time"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    print("""\
-<?xml version="1.0"?>
-<regxml
-  xmlns="%(XMLNS_REGXML)s"
-  version="2.0">
-  <creator>
-    <program>%(program)s</program>
-    <version>%(version)s</version>
-  </creator>
-  <build_environment>
-    <interpreter>%(interpreter)s</interpreter>
-    <library name="Hivex" version="%(hivex_version)s"/>
-  </build_environment>
-  <execution_environment>
-    <command_line>%(command_line)s</command_line>
-    <start_time>%(start_time)s</start_time>
-  </execution_environment>
-  <hive>""" % meta)
+
+    hive_object = Objects.HiveObject()
 
     #Record timestamp of hive
     ts = h.last_modified()
     dft = dftime_from_windows_filetime(ts)
     if not dft is None:
-        print("""\
-    <mtime prec="100ns">%s</mtime>""" % str(dft))
+        hive_object.mtime = dft
+
+    if not fileobject is None:
+        hive_object.original_fileobject = fileobject
 
     #Walk hive structure
     for (nodepath, nodes, values) in hivex_walk(h, r):
-        #logging.debug("(n, ns, vs) = %r" % ((n, ns, vs),))
+        #_logger.debug("(n, ns, vs) = %r" % ((n, ns, vs),))
         for value in values:
             elem = hivex_value_to_Element(h, value, nodepath)
             print(dfxml.ET_tostring(elem, encoding="unicode"))
@@ -110,9 +108,6 @@ def main ():
             elem = hivex_node_to_Element(h, node, nodepath)
             print(dfxml.ET_tostring(elem, encoding="unicode"))
             del elem
-    print("""\
-  </hive>
-</regxml>""")
 
 def hivex_node_to_Element(h, node, nodepath):
     return _hivex_cell_to_Element(h, node, nodepath, "k")
@@ -121,7 +116,7 @@ def hivex_value_to_Element(h, node, nodepath):
     return _hivex_cell_to_Element(h, node, nodepath, "v")
 
 def _hivex_cell_to_Element(h, cell, nodepath, celltype):
-    logging.debug("_hivex_cell_to_Element(h, %r, %r, %r)" % (cell, nodepath, celltype))
+    _logger.debug("_hivex_cell_to_Element(h, %r, %r, %r)" % (cell, nodepath, celltype))
 
     assert celltype in ["k","v"]
 
@@ -195,7 +190,7 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
         type_and_len = h.value_type(cell)
         valuesize = str(type_and_len[1])
         if type_and_len is None:
-            logging.error("Error retrieving type and length of value cell %r." % cell)
+            _logger.error("Error retrieving type and length of value cell %r." % cell)
         else:
             tmp = ET.Element("valuesize")
             tmp.text = valuesize
@@ -221,7 +216,7 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
     if celltype == "v":
         type_and_data = h.value_value(cell)
         value_type = HIVE_VALUE_TYPES[type_and_data[0]]
-        logging.debug("type_and_data = %r" % (type_and_data,))
+        _logger.debug("type_and_data = %r" % (type_and_data,))
 
         b64bytes = base64.b64encode(type_and_data[1])
         b64chars = b64bytes.decode()
@@ -264,7 +259,7 @@ def _hivex_cell_to_Element(h, cell, nodepath, celltype):
                 pass
 
         except e:
-            logging.error("Exception: " + sys.exc_info()[0])
+            _logger.error("Exception: " + sys.exc_info()[0])
             pass
         if not as_int is None:
             e.append(ET.Comment("As a number: %r" % as_int))
