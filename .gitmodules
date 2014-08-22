@@ -7,3 +7,6 @@
 [submodule "deps/regxml_schema"]
 	path = deps/regxml_schema
 	url = https://github.com/ajnelson/regxml_schema.git
+[submodule "deps/python-registry"]
+	path = deps/python-registry
+	url = https://github.com/williballenthin/python-registry.git
