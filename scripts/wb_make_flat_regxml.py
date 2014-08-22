@@ -2,6 +2,8 @@
 
 #sudo port install py33-enum34
 
+__version__ = "0.0.2"
+
 import sys
 import logging
 import os
@@ -9,6 +11,8 @@ import os
 _logger = logging.getLogger(os.path.basename(__file__))
 
 from Registry import Registry
+
+import Objects
 
 def cell_walk(cell_path):
     """Like os.walk().  However, all lists are not paths, but RegistryKey or RegistryValue objects."""
@@ -18,9 +22,27 @@ def cell_walk(cell_path):
     for key in cell_path[-1].subkeys():
         yield from cell_walk(cell_path + [key])
 
+def CellObject_from_RegistryKey(rk, parent=None):
+    if rk is None:
+        return None
+
+    c = Objects.CellObject()
+
+    c.alloc = True
+    c.basename = rk.name()
+    c.cellpath = rk.path()
+    c.mtime = rk.timestamp()
+    c.name_type = "k"
+    c.parent_object = CellObject_from_RegistryKey(parent)
+
+    return c
+
 def main():
     global args
     reg = Registry.Registry(args.hive_file)
+
+    r = Objects.RegXMLObject()
+    h = Objects.HiveObject()
 
     for (iter_no, (cell_path, subkeys, values)) in enumerate(cell_walk([reg.root()])):
         #_logger.debug(cell_path[-1].path())
@@ -30,7 +52,13 @@ def main():
         #if tally > 10:
         #    break
 
-        print(str(cell_path[-1].timestamp()) + "\t" + cell_path[-1].path())
+        c = CellObject_from_RegistryKey(cell_path[-1])
+        c.id = iter_no
+        if iter_no == 0:
+            c.root = True
+        h.append(c)
+    r.append(h)
+    r.print_regxml(sys.stdout)
 
 if __name__ == "__main__":
     import argparse
