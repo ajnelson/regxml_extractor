@@ -2,7 +2,7 @@
 
 #sudo port install py33-enum34
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 import sys
 import logging
@@ -13,6 +13,8 @@ _logger = logging.getLogger(os.path.basename(__file__))
 from Registry import Registry
 
 import Objects
+
+_paths = set()
 
 def cell_walk(cell_path):
     """Like os.walk().  However, all lists are not paths, but RegistryKey or RegistryValue objects."""
@@ -38,7 +40,9 @@ def CellObject_from_RegistryKey(rk, parent=None):
     return c
 
 def main():
+    global _paths
     global args
+
     reg = Registry.Registry(args.hive_file)
 
     r = Objects.RegXMLObject()
@@ -56,6 +60,12 @@ def main():
         c.id = iter_no
         if iter_no == 0:
             c.root = True
+
+        if c.cellpath in _paths:
+            _logger.warning("Encountered a path multiple times: %r." % c.cellpath)
+        else:
+            _paths.add(c.cellpath)
+
         h.append(c)
     r.append(h)
     r.print_regxml(sys.stdout)
